@@ -1,0 +1,21 @@
+:root {
+  --primary-color: hsl(265, 100%, 25%);   /* #390080 */
+  --secondary-color: hsl(273, 67%, 41%);  /* #5e21ad */
+  --tertiary-color: hsl(274, 59%, 45%);   /* #6b31b8 */
+  --white-color: hsl(0, 0%, 96%);         /* #F5F5F5 */
+  --black-color: hsl(0, 0%, 4%);          /* #0A0A0A */
+}
+  
+  /* Global styles */
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--white-color);
+    color: var(--black-color);
+  }
+  
+  /* General Styles */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
