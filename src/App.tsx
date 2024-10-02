@@ -6,6 +6,7 @@ import Pricing from "./screens/Pricing";
 import Home from "./screens/Home";
 import SignIn from "./screens/SignIn";
 import Courses from "./screens/Courses";
+import SignUp from "./screens/SignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
@@ -30,6 +31,10 @@ const App: React.FC = () => {
                             element={route(<SignIn />, false)}
                         />
                         <Route path="/courses" element={route(<Courses />)} />
+                        <Route
+                            path="/signup"
+                            element={route(<SignUp />, false)}
+                        />
                     </Routes>
                 </Router>
             </div>

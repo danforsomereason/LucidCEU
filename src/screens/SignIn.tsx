@@ -1,7 +1,10 @@
 import React from "react";
 import { Button, TextField, Typography, Box, Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const SignIn: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
         <Box
             sx={{
@@ -101,7 +104,9 @@ const SignIn: React.FC = () => {
                 >
                     Don’t have an account?{" "}
                     <Link
-                        href="/signup"
+                        onClick={() => {
+                            navigate("/signup");
+                        }}
                         sx={{
                             textDecoration: "none",
                             color: "var(--secondary-color)",
