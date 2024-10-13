@@ -5,9 +5,27 @@ import {
     CardContent,
     Button,
     Grid,
+    Paper,
     Container,
 } from "@mui/material";
-import "../styles/Membership.css";
+
+const coursePackages = [
+    {
+        title: "Clinical Skills Package",
+        description:
+            "20 CEU hours including ethics, suicide risk assessment, and counseling topics to satisfy most states' continuing education requirements for counselors.",
+    },
+    {
+        title: "Human Resources Basics",
+        description:
+            "Find necessary trainings for your HR needs. Includes Handwashing, TB, Cultural Diversity/Equity/Inclusion, Sexual Harassment, and more to ensure your HR team is up-to-date.",
+    },
+    {
+        title: "Confidentiality & Privacy Package",
+        description:
+            "42 CFR, HIPAA, and other confidentiality regulations critical to patient privacy and legal compliance.",
+    },
+];
 
 const Membership: React.FC = () => {
     return (
@@ -16,6 +34,8 @@ const Membership: React.FC = () => {
                 className="membership-header"
                 variant="h2"
                 align="center"
+                pt={3}
+                sx={{ fontWeight: "bold" }}
                 gutterBottom
             >
                 Membership Options
@@ -47,53 +67,30 @@ const Membership: React.FC = () => {
                 Course Packages
             </Typography>
             <Grid container spacing={4}>
-                <Grid item xs={12} sm={6}>
-                    <Card className="membership-card">
-                        <CardContent>
+                {coursePackages.map((coursePackage, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                        <Paper
+                            className="membership-paper"
+                            sx={{ p: "20px", height: "100%" }}
+                            elevation={6}
+                        >
                             <Typography variant="h5" gutterBottom>
-                                Clinical Skills Package
+                                {coursePackage.title}
                             </Typography>
-                            <Typography variant="body1">
-                                20 CEU hours including ethics, suicide risk
-                                assessment, and counseling topics to satisfy
-                                most states' continuing education requirements
-                                for counselors.
+                            <Typography
+                                variant="body1"
+                                sx={{ mb: 3 }}
+                                gutterBottom
+                            >
+                                {coursePackage.description}
                             </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                    <Card className="membership-card">
-                        <CardContent>
-                            <Typography variant="h5" gutterBottom>
-                                Human Resources Basics
-                            </Typography>
-                            <Typography variant="body1">
-                                Handwashing, TB, Cultural
-                                Diversity/Equity/Inclusion, Sexual Harassment,
-                                and more to ensure your HR team is up-to-date.
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                    <Card className="membership-card">
-                        <CardContent>
-                            <Typography variant="h5" gutterBottom>
-                                Confidentiality & Privacy Package
-                            </Typography>
-                            <Typography variant="body1">
-                                42 CFR, HIPAA, and other confidentiality
-                                regulations critical to patient privacy and
-                                legal compliance.
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                            <Button variant="outlined" color="primary">
+                                Learn More
+                            </Button>
+                        </Paper>
+                    </Grid>
+                ))}
             </Grid>
-
             <Card
                 className="membership-card"
                 sx={{ marginTop: "30px", marginBottom: "30px" }}
