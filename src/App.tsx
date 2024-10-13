@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { ThemeProvider } from "@emotion/react";
 import theme from "./theme";
 import NavBar from "./components/NavBar";
-import Pricing from "./screens/Pricing";
+import Membership from "./screens/Membership";
 import Home from "./screens/Home";
 import SignIn from "./screens/SignIn";
 import Courses from "./screens/Courses";
@@ -25,7 +25,7 @@ const App: React.FC = () => {
                 <Router>
                     <Routes>
                         <Route path="/" element={route(<Home />)} />
-                        <Route path="/pricing" element={route(<Pricing />)} />
+                        <Route path="/membership" element={route(<Membership />)} />
                         <Route
                             path="/signin"
                             element={route(<SignIn />, false)}
