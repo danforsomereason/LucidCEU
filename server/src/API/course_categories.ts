@@ -1,14 +1,15 @@
 import express from "express";
 import mongoose from "mongoose";
-import "../models/CourseCategories";
+import CourseCategory from "../models/CourseCategories";
 
-const CourseCategory = mongoose.model("CourseCategory");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+    console.log("Model Name: ", CourseCategory.modelName);
+    
     try {
-        const courseCategories = await CourseCategory.find();
+        const courseCategories = await CourseCategory.find({});
         console.log(courseCategories);
 
         res.json(courseCategories);

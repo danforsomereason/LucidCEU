@@ -6,10 +6,6 @@ import courseCategoriesRouter from "./API/course_categories";
 import cors from "cors";
 
 dotenv.config();
-mongoose.connect(
-    "mongodb+srv://danhutcheson:s1eLSHwrhBM8OyMq@clusterlucid.al58s.mongodb.net/?retryWrites=true&w=majority&appName=clusterLucid"
-);
-console.log("Database connected");
 
 const app = express();
 
@@ -19,16 +15,24 @@ app.use("/api/v1/user", userRouter);
 
 app.use("/api/v1/course_categories", courseCategoriesRouter);
 
-// app.use(express.json());
+mongoose
+    .connect(
+        "mongodb+srv://danhutcheson:s1eLSHwrhBM8OyMq@clusterlucid.al58s.mongodb.net/?retryWrites=true&w=majority&appName=clusterLucid"
+    )
+    .then(() => {const db = mongoose.connection.db;
 
-// app.get("/", (req: Request, res: Response) => {
-//     res.send("is me, a test");
-// });
+        db?.listCollections().toArray((err:any, collections:any) => {
+          if (err) {
+            console.error("Error listing collections:", err);
+            return;
+          }
+          
+          console.log("Available Collections:");
+          collections.forEach(collection => console.log(collection.name));
+        });})
+    .catch((err) => console.error(err));
 
-// mongoose
-//     .connect(process.env.MONGO_URI || "")
-//     .then(() => console.log("MongoDB connected"))
-//     .catch((err) => console.error(err));
+
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
