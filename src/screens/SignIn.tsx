@@ -29,17 +29,22 @@ const SignIn: React.FC = () => {
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
             >
-                <Typography
+                <Link
+                    onClick={() => {
+                        navigate("/");
+                    }}
                     variant="h4"
                     sx={{
                         marginBottom: "20px",
                         color: "var(--secondary-color)",
                         fontSize: "2.75rem",
                         fontWeight: "bold",
+                        cursor: "pointer",
+                        textDecoration: "none",
                     }}
                 >
-                    Sign In
-                </Typography>
+                    LUCID
+                </Link>
 
                 <TextField
                     label="Email"
@@ -110,6 +115,7 @@ const SignIn: React.FC = () => {
                         sx={{
                             textDecoration: "none",
                             color: "var(--secondary-color)",
+                            cursor: "pointer",
                             fontWeight: "bold",
                             "&:hover": {
                                 color: "var(--primary-color)",

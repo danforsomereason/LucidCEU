@@ -73,6 +73,7 @@ const Membership: React.FC = () => {
                             className="membership-paper"
                             sx={{ p: "20px", height: "100%" }}
                             elevation={6}
+                            
                         >
                             <Typography variant="h5" gutterBottom>
                                 {coursePackage.title}
