@@ -12,27 +12,30 @@ const app = express();
 app.use(cors());
 
 app.use("/api/v1/user", userRouter);
-
 app.use("/api/v1/course_categories", courseCategoriesRouter);
 
-mongoose
-    .connect(
-        "mongodb+srv://danhutcheson:s1eLSHwrhBM8OyMq@clusterlucid.al58s.mongodb.net/?retryWrites=true&w=majority&appName=clusterLucid"
-    )
-    .then(() => {const db = mongoose.connection.db;
+const connectToDatabase = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI || "");
+        console.log("Connected to MongoDB");
 
-        db?.listCollections().toArray((err:any, collections:any) => {
-          if (err) {
-            console.error("Error listing collections:", err);
-            return;
-          }
-          
-          console.log("Available Collections:");
-          collections.forEach(collection => console.log(collection.name));
-        });})
-    .catch((err) => console.error(err));
+        const db = mongoose.connection.db;
+        const collections = await db?.listCollections().toArray();
+        if (collections) {
+            console.log("Available collections:");
+            collections.forEach((collection: any) =>
+                console.log(collection.name)
+            );
+        }
+    } catch (err) {
+        console.error(
+            "Error connecting to MongoDB or listing collections",
+            err
+        );
+    }
+};
 
-
+connectToDatabase();
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
