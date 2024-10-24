@@ -1,70 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/Hero.css";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import CourseCard from "./CourseCard";
+import CategoryCard from "./CategoryCard";
 import { getCourseCategories } from "../requests/courseCategories";
+import { getCourses } from "../requests/courses";
+import { log } from "console";
 
 const Hero: React.FC = () => {
-    const courseCategories = [
-        {
-            categoryID: 1,
-            categoryName: "Counseling Basics",
-            categoryDescription:
-                "Leverage the fundamentals of counseling and therapy.",
-        },
-        {
-            categoryID: 2,
-            categoryName: "Cognitive Behavioral Therapy",
-            categoryDescription:
-                "Master advanced techniques in CBT for impactful client work.",
-        },
-        {
-            categoryID: 3,
-            categoryName: "Group Therapy",
-            categoryDescription:
-                "Learn the best practices for conducting successful group therapy.",
-        },
-        {
-            categoryID: 4,
-            categoryName: "Human Resources",
-            categoryDescription:
-                "Ensure your team complies with HR guidelines.",
-        },
-        {
-            categoryID: 5,
-            categoryName: "Measurement-Based Care",
-            categoryDescription:
-                "Track and improve client outcomes using measurable care standards.",
-        },
-        {
-            categoryID: 6,
-            categoryName: "Addiction Treatment",
-            categoryDescription:
-                "Gain specialized knowledge in treating addiction and substance abuse.",
-        },
-        {
-            categoryID: 7,
-            categoryName: "Medical Records and HIPAA",
-            categoryDescription:
-                "Maintain confidentiality and compliance with medical record management.",
-        },
-        {
-            categoryID: 8,
-            categoryName: "Multicultural Theory & Diversity",
-            categoryDescription:
-                "Expand your knowledge and skills to work with diverse populations.",
-        },
-        {
-            categoryID: 9,
-            categoryName: "All Courses",
-            categoryDescription: "Browse all available courses in our catalog.",
-        },
-    ];
+    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
         getCourseCategories().then((data) => {
             console.log(data);
+            setCategories(data);
         });
     }, []);
 
@@ -91,7 +40,7 @@ const Hero: React.FC = () => {
                     Get Started
                 </Button>
             </section>
-            <section className="hero-course-gallery">
+            <section className="hero-category-gallery">
                 <Typography variant="h2">
                     Discover the LUCID difference
                 </Typography>
@@ -102,12 +51,22 @@ const Hero: React.FC = () => {
                     and accreditation standards. Simplify your training needs
                     with LUCID.
                 </Typography>
-                <div className="course-grid">
-                    {courseCategories.map((category, index) => (
-                        <CourseCard
-                            key={index}
-                            courseCategories={category}
-                        ></CourseCard>
+                <div className="category-grid">
+                    {categories.map((category: any) => (
+                        <div
+                            key={category._id}
+                            onClick={() => {
+                                getCourses(
+                                    `course_category=${category._id}`
+                                ).then((data) => {
+                                    console.log(data);
+                                });
+                            }}
+                        >
+                            <CategoryCard
+                                courseCategory={category}
+                            ></CategoryCard>
+                        </div>
                     ))}
                 </div>
             </section>

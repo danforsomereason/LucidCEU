@@ -2,17 +2,16 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import React from "react";
-import Hero from "./Hero";
 
-const CourseCard: React.FC<any> = ({ courseCategories }) => {
+const CourseCard: React.FC<any> = ({ course }) => {
     return (
         <Card className="course-card">
             <CardHeader
                 className="course-card-header"
-                title={courseCategories.categoryName}
+                title={course.course_name}
             />
             <CardContent className="course-card-content">
-                <p>{courseCategories.categoryDescription}</p>
+                <p>{course.course_description}</p>
             </CardContent>
         </Card>
     );

@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRouter from "./API/user";
+import userRouter from "./API/users";
 import courseCategoriesRouter from "./API/course_categories";
+import coursesRouter from "./API/courses";
 import cors from "cors";
 
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(cors());
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/course_categories", courseCategoriesRouter);
+app.use("/api/v1/courses", coursesRouter);
 
 const connectToDatabase = async () => {
     try {

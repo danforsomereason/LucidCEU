@@ -1,16 +1,15 @@
 import express from "express";
 import mongoose from "mongoose";
-import CourseCategory from "../models/CourseCategories";
-
+import Course from "../models/Course";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-    
-    try {
-        const courseCategories = await CourseCategory.find({});
 
-        res.json(courseCategories);
+    try {
+        const course = await Course.find(req.query);
+
+        res.json(course);
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
     }
