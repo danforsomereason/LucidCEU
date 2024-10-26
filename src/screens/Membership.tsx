@@ -8,6 +8,7 @@ import {
     Paper,
     Container,
 } from "@mui/material";
+import "../styles/Membership.css";
 
 const coursePackages = [
     {
@@ -29,7 +30,7 @@ const coursePackages = [
 
 const Membership: React.FC = () => {
     return (
-        <Container maxWidth="md">
+        <Container maxWidth="md" className="membership-container">
             <Typography
                 className="membership-header"
                 variant="h2"
