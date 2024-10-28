@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-    Container,
     Grid,
-    Paper,
-    CardContent,
-    Card,
     Divider,
     FormGroup,
     Typography,
@@ -22,15 +18,14 @@ import Pagination from "@mui/material/Pagination";
 import CourseCard from "../components/CourseCard";
 import { getCourses } from "../requests/courses";
 import "../styles/Courses.css";
-import { set } from "mongoose";
 
-const topics = [
-    "Confidentiality",
-    "Treatment",
-    "Ethics & Legal",
-    "Substance Abuse",
-    "Mental Health",
+const tags = [
     "Human Resources",
+    "Treatment",
+    "Addiction",
+    "Ethics & Legal",
+    "Cultural Diversity",
+    "Confidentiality",
 ];
 
 const licenseTypes = ["Counseling (NBCC) CEUs", "SW CEUs", "Nursing CEUs"];
@@ -39,51 +34,49 @@ const Courses: React.FC = () => {
     const [courses, setCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [search, setSearch] = useState("");
-    const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [selectedLicenseTypes, setSelectedLicenseTypes] = useState<string[]>(
         []
     );
+    const [sortOption, setSortOption] = useState("recommended");
     const [currentPage, setCurrentPage] = useState(1);
     const coursesPerPage = 12;
 
-    // fetch courses from the server
+    // Fetch courses from the server
     useEffect(() => {
         getCourses().then((data) => {
             console.log(data);
             setCourses(data);
-            // Initially all courses are displayed
             setFilteredCourses(data);
         });
     }, []);
 
-    // Update filtered courses based on search, topics, and license types
+    // Update filtered courses based on search, tags, and license types
     useEffect(() => {
         let results = courses.filter((course: any) => {
             const matchesSearch = course.course_name
                 .toLowerCase()
                 .includes(search.toLowerCase());
-            const matchesTopic = selectedTopics.length
-                ? selectedTopics.includes(course.topic)
+            const matchesTag = selectedTags.length
+                ? selectedTags.some((tag) => course.course_tags.includes(tag))
                 : true;
             const matchesLicense = selectedLicenseTypes.length
                 ? selectedLicenseTypes.includes(course.license_type)
                 : true;
 
-            return matchesSearch && matchesTopic && matchesLicense;
+            return matchesSearch && matchesTag && matchesLicense;
         });
         setFilteredCourses(results);
         setCurrentPage(1); // Reset to first page when filters change
-    }, [search, selectedTopics, selectedLicenseTypes, courses]);
+    }, [search, selectedTags, selectedLicenseTypes, courses]);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
     };
 
-    const handleTopicChange = (topic: string) => {
-        setSelectedTopics((prev) =>
-            prev.includes(topic)
-                ? prev.filter((t) => t !== topic)
-                : [...prev, topic]
+    const handleTagChange = (tag: string) => {
+        setSelectedTags((prev) =>
+            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
         );
     };
 
@@ -93,6 +86,16 @@ const Courses: React.FC = () => {
                 ? prev.filter((t) => t !== type)
                 : [...prev, type]
         );
+    };
+
+    const handleSortChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+        setSortOption(e.target.value as string);
+    };
+
+    const handleClearFilters = () => {
+        setSelectedTags([]);
+        setSelectedLicenseTypes([]);
+        setSearch("");
     };
 
     // Pagination logic
@@ -151,7 +154,7 @@ const Courses: React.FC = () => {
                         alignItems: "center",
                         flexWrap: "wrap",
                         gap: 2,
-                        padding: "0 5vw",
+                        padding: "0 10vw",
                         mt: 2,
                         mb: 4,
                     }}
@@ -201,68 +204,82 @@ const Courses: React.FC = () => {
                             </MenuItem>
                         </Select>
                     </FormControl>
-                    <Button variant="contained" color="secondary">
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleClearFilters}
+                    >
                         Clear Filters
                     </Button>
                 </Box>
                 {/* Sidebar and Mapped Courses side-by-side */}
-                <Box sx={{ display: "flex", padding: "0 5vw" }}>
+                <Box sx={{ display: "flex", padding: "0 10vw" }}>
                     {/* Sidebar */}
                     <Box
-                sx={{
-                    width: "20%",
-                    paddingRight: "2rem",
-                    display: { xs: "none", md: "block" },
-                }}
-            >
-                <Typography variant="h6" gutterBottom>
-                    Filter
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
+                        sx={{
+                            width: "20%",
+                            paddingRight: "2rem",
+                            display: { xs: "none", md: "block" },
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom>
+                            Filter
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
 
-                <Typography variant="subtitle1">Topic</Typography>
-                <FormGroup>
-                    {topics.map((topic) => (
-                        <FormControlLabel
-                            key={topic}
-                            control={
-                                <Checkbox
-                                    checked={selectedTopics.includes(topic)}
-                                    onChange={() => handleTopicChange(topic)}
-                                />
-                            }
-                            label={topic}
-                        />
-                    ))}
-                </FormGroup>
-
-                <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                    License Type
-                </Typography>
-                <FormGroup>
-                    {licenseTypes.map((type) => (
-                        <FormControlLabel
-                            key={type}
-                            control={
-                                <Checkbox
-                                    checked={selectedLicenseTypes.includes(
-                                        type
-                                    )}
-                                    onChange={() =>
-                                        handleLicenseTypeChange(type)
+                        <Typography variant="subtitle1" fontWeight="bold">
+                            Tags
+                        </Typography>
+                        <FormGroup>
+                            {tags.map((tag) => (
+                                <FormControlLabel
+                                    key={tag}
+                                    control={
+                                        <Checkbox
+                                            checked={selectedTags.includes(
+                                                tag
+                                            )}
+                                            onChange={() =>
+                                                handleTagChange(tag)
+                                            }
+                                        />
                                     }
+                                    label={tag}
                                 />
-                            }
-                            label={type}
-                        />
-                    ))}
-                </FormGroup>
-            </Box>
+                            ))}
+                        </FormGroup>
+
+                        <Typography
+                            variant="subtitle1"
+                            fontWeight="bold"
+                            sx={{ mt: 2 }}
+                        >
+                            License Type
+                        </Typography>
+                        <FormGroup>
+                            {licenseTypes.map((type) => (
+                                <FormControlLabel
+                                    key={type}
+                                    control={
+                                        <Checkbox
+                                            checked={selectedLicenseTypes.includes(
+                                                type
+                                            )}
+                                            onChange={() =>
+                                                handleLicenseTypeChange(type)
+                                            }
+                                        />
+                                    }
+                                    label={type}
+                                />
+                            ))}
+                        </FormGroup>
+                    </Box>
 
                     {/* Mapped Courses & Pagination */}
-                    <Box>
+                    <Box className="course-">
                         <Grid className="course-grid">
-                            {courses.map((course: any) => (
+                            {currentCourses.map((course: any) => (
                                 <Grid
                                     item
                                     xs={12}
@@ -270,7 +287,10 @@ const Courses: React.FC = () => {
                                     md={4}
                                     key={course._id}
                                 >
-                                    <CourseCard course={course}></CourseCard>
+                                    <CourseCard
+                                        course={course}
+                                        className="course-card"
+                                    ></CourseCard>
                                 </Grid>
                             ))}
                         </Grid>
