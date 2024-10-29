@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Grid,
     Divider,
@@ -31,6 +31,7 @@ const tags = [
 const licenseTypes = ["Counseling (NBCC) CEUs", "SW CEUs", "Nursing CEUs"];
 
 const Courses: React.FC = () => {
+    const searchRef = useRef<HTMLDivElement | null>(null);
     const [courses, setCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [search, setSearch] = useState("");
@@ -41,6 +42,13 @@ const Courses: React.FC = () => {
     const [sortOption, setSortOption] = useState("recommended");
     const [currentPage, setCurrentPage] = useState(1);
     const coursesPerPage = 12;
+
+    // Scroll to search list
+    const handleBrowseClick = () => {
+        if (searchRef.current) {
+            searchRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
 
     // Fetch courses from the server
     useEffect(() => {
@@ -141,7 +149,12 @@ const Courses: React.FC = () => {
                         handwashing to HIPAA compliance.
                     </Box>
                 </Typography>
-                <Button variant="contained" color="primary" sx={{ mt: 4 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 4, zIndex: 1 }}
+                    onClick={handleBrowseClick}
+                >
                     Browse
                 </Button>
             </Box>
@@ -149,6 +162,7 @@ const Courses: React.FC = () => {
             <Box>
                 {/* Filter and sorting controls section */}
                 <Box
+                    ref={searchRef}
                     sx={{
                         display: "flex",
                         alignItems: "center",
@@ -236,9 +250,7 @@ const Courses: React.FC = () => {
                                     key={tag}
                                     control={
                                         <Checkbox
-                                            checked={selectedTags.includes(
-                                                tag
-                                            )}
+                                            checked={selectedTags.includes(tag)}
                                             onChange={() =>
                                                 handleTagChange(tag)
                                             }
