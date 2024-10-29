@@ -7,6 +7,7 @@ interface ICourse extends Document {
     course_state: string;
     course_category: string;
     tags: string[];
+    learning_objectives: string[];
     course_description: string;
     course_instructor: string;
     course_price: number;
@@ -22,6 +23,7 @@ const CourseSchema: Schema = new Schema({
         ref: "CourseCategory",
     },
     tags: { type: [String], required: false },
+    learning_objectives: { type: [String], required: true },
     course_instructor: { type: String, required: true },
     course_price: { type: Number, required: true },
     course_description: { type: String, required: true },
