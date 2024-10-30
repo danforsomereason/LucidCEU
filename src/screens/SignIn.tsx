@@ -1,7 +1,10 @@
 import React from "react";
 import { Button, TextField, Typography, Box, Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const SignIn: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
         <Box
             sx={{
@@ -26,17 +29,22 @@ const SignIn: React.FC = () => {
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
             >
-                <Typography
+                <Link
+                    onClick={() => {
+                        navigate("/");
+                    }}
                     variant="h4"
                     sx={{
                         marginBottom: "20px",
                         color: "var(--secondary-color)",
                         fontSize: "2.75rem",
                         fontWeight: "bold",
+                        cursor: "pointer",
+                        textDecoration: "none",
                     }}
                 >
-                    Sign In
-                </Typography>
+                    LUCID
+                </Link>
 
                 <TextField
                     label="Email"
@@ -101,10 +109,13 @@ const SignIn: React.FC = () => {
                 >
                     Don’t have an account?{" "}
                     <Link
-                        href="/signup"
+                        onClick={() => {
+                            navigate("/signup");
+                        }}
                         sx={{
                             textDecoration: "none",
                             color: "var(--secondary-color)",
+                            cursor: "pointer",
                             fontWeight: "bold",
                             "&:hover": {
                                 color: "var(--primary-color)",

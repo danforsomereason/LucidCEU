@@ -4,6 +4,18 @@
   --tertiary-color: hsl(274, 59%, 45%);   /* #6b31b8 */
   --white-color: hsl(0, 0%, 96%);         /* #F5F5F5 */
   --black-color: hsl(0, 0%, 4%);          /* #0A0A0A */
+
+
+  --color-indigo-500: #180a3d;
+  --color-indigo-450: #281160;
+  --color-indigo-400: #371783;
+  --color-indigo-350: #431ca3;
+  --color-indigo-300: #5022c3;
+  --color-indigo-250: #8072e6;
+  --color-indigo-200: #c0c4fc;
+  --color-indigo-150: #d8e0fb;
+  --color-indigo-100: #eeeffc;
+ 
 }
   
   /* Global styles */

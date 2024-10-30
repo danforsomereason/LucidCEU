@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const NavBar: React.FC = () => {
     const navigate = useNavigate();
 
+    // const isUserLoggedIn = false;
     return (
         <AppBar
             position="static"
@@ -60,14 +61,14 @@ const NavBar: React.FC = () => {
                     <Typography
                         variant="body1"
                         onClick={() => {
-                            navigate("/pricing");
+                            navigate("/membership");
                         }}
                     >
                         <a
                             href="#"
                             style={{ textDecoration: "none", color: "inherit" }}
                         >
-                            Pricing
+                            Membership
                         </a>
                     </Typography>
                     <Typography
