@@ -27,7 +27,9 @@ const NavBar: React.FC = () => {
             position="static"
             sx={{ backgroundColor: "var(--black-color)", padding: "10px 20px" }}
         >
-            <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+            <Toolbar
+                style={{ display: "flex", justifyContent: "space-between" }}
+            >
                 <Typography
                     variant="h4"
                     onClick={() => {
@@ -56,17 +58,32 @@ const NavBar: React.FC = () => {
                     }}
                 >
                     <Typography variant="body1" onClick={() => navigate("/")}>
-                        <a href="#" style={{ textDecoration: "none", color: "inherit" }}>
+                        <a
+                            href="#"
+                            style={{ textDecoration: "none", color: "inherit" }}
+                        >
                             Home
                         </a>
                     </Typography>
-                    <Typography variant="body1" onClick={() => navigate("/membership")}>
-                        <a href="#" style={{ textDecoration: "none", color: "inherit" }}>
+                    <Typography
+                        variant="body1"
+                        onClick={() => navigate("/membership")}
+                    >
+                        <a
+                            href="#"
+                            style={{ textDecoration: "none", color: "inherit" }}
+                        >
                             Membership
                         </a>
                     </Typography>
-                    <Typography variant="body1" onClick={() => navigate("/courses")}>
-                        <a href="#" style={{ textDecoration: "none", color: "inherit" }}>
+                    <Typography
+                        variant="body1"
+                        onClick={() => navigate("/courses")}
+                    >
+                        <a
+                            href="#"
+                            style={{ textDecoration: "none", color: "inherit" }}
+                        >
                             Courses
                         </a>
                     </Typography>
@@ -97,10 +114,38 @@ const NavBar: React.FC = () => {
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={() => { navigate("/"); handleMenuClose(); }}>Home</MenuItem>
-                    <MenuItem onClick={() => { navigate("/membership"); handleMenuClose(); }}>Membership</MenuItem>
-                    <MenuItem onClick={() => { navigate("/courses"); handleMenuClose(); }}>Courses</MenuItem>
-                    <MenuItem onClick={() => { navigate("/signin"); handleMenuClose(); }}>Sign In</MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            navigate("/");
+                            handleMenuClose();
+                        }}
+                    >
+                        Home
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            navigate("/membership");
+                            handleMenuClose();
+                        }}
+                    >
+                        Membership
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            navigate("/courses");
+                            handleMenuClose();
+                        }}
+                    >
+                        Courses
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            navigate("/signin");
+                            handleMenuClose();
+                        }}
+                    >
+                        Sign In
+                    </MenuItem>
                 </Menu>
             </Toolbar>
         </AppBar>

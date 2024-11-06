@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { ThemeProvider } from "@emotion/react";
+import { ThemeProvider } from "@mui/material/styles"; // Change this from @emotion/react
 import theme from "./theme";
 import NavBar from "./components/NavBar";
 import Membership from "./screens/Membership";
@@ -13,7 +13,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 const App: React.FC = () => {
     const route = (screen: ReactNode, showNavbar: boolean = true) => {
         return (
-            <div>
+            <div style={{ minHeight: "100vh" }}>
                 {showNavbar && <NavBar />}
                 {screen}
             </div>
@@ -22,11 +22,14 @@ const App: React.FC = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div>
-                <Router>
+            <Router>
+                <div style={{ minHeight: "100vh" }}>
                     <Routes>
                         <Route path="/" element={route(<Home />)} />
-                        <Route path="/membership" element={route(<Membership />)} />
+                        <Route
+                            path="/membership"
+                            element={route(<Membership />)}
+                        />
                         <Route
                             path="/signin"
                             element={route(<SignIn />, false)}
@@ -38,8 +41,8 @@ const App: React.FC = () => {
                         />
                         <Route path="/lesson" element={route(<Lesson />)} />
                     </Routes>
-                </Router>
-            </div>
+                </div>
+            </Router>
         </ThemeProvider>
     );
 };
