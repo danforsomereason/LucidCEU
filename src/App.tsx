@@ -7,6 +7,7 @@ import Home from "./screens/Home";
 import SignIn from "./screens/SignIn";
 import Courses from "./screens/Courses";
 import SignUp from "./screens/SignUp";
+import Lesson from "./screens/Lesson";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
                             path="/signup"
                             element={route(<SignUp />, false)}
                         />
+                        <Route path="/lesson" element={route(<Lesson />)} />
                     </Routes>
                 </Router>
             </div>
