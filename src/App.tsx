@@ -7,7 +7,7 @@ import Home from "./screens/Home";
 import SignIn from "./screens/SignIn";
 import Courses from "./screens/Courses";
 import SignUp from "./screens/SignUp";
-import Lesson from "./screens/Lesson";
+import CourseModule from "./screens/CourseModule";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
@@ -36,8 +36,8 @@ const App: React.FC = () => {
                     <Route path="/courses" element={route(<Courses />)} />
                     <Route path="/signup" element={route(<SignUp />, false)} />
                     <Route 
-                        path="/lesson" 
-                        element={route(<Lesson />, true, 'fixed')}  // Set navbar to fixed for Lesson page
+                        path="/module" 
+                        element={route(<CourseModule />, true, 'fixed')}  // Set navbar to fixed for Lesson page
                     />
                 </Routes>
             </Router>

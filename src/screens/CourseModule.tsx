@@ -1,4 +1,4 @@
-// src/screens/Lesson.tsx
+// src/screens/CourseModule.tsx
 import React, { useState } from "react";
 import {
     Box,
@@ -18,7 +18,7 @@ const DRAWER_WIDTH = 280;
 const NAVBAR_HEIGHT = 84;
 
 // Types
-interface Section {
+interface Module {
     id: number;
     title: string;
     content: string;
@@ -26,7 +26,7 @@ interface Section {
 }
 
 // Styled Components
-const LessonContainer = styled(Box)({
+const ModuleContainer = styled(Box)({
     display: "flex",
     minHeight: "100vh",
     backgroundColor: "#f5f5f5",
@@ -79,9 +79,9 @@ const HelpButton = styled(Button)(({ theme }) => ({
     left: theme.spacing(3),
 }));
 
-const Lesson: React.FC = () => {
+const CourseModule: React.FC = () => {
     // Sample data - replace with your actual data
-    const [sections] = useState<Section[]>([
+    const [modules] = useState<Module[]>([
         {
             id: 1,
             title: "Intro to Course",
@@ -103,15 +103,15 @@ const Lesson: React.FC = () => {
         { id: 4, title: "Quiz", content: "Content...", completed: false },
     ]);
 
-    const [currentSectionId, setCurrentSectionId] = useState(1);
+    const [currentModuleId, setCurrentModuleId] = useState(1);
 
     // Calculate progress
     const progress =
-        (sections.filter((s) => s.completed).length / sections.length) * 100;
-    const currentSection = sections.find((s) => s.id === currentSectionId);
+        (modules.filter((m) => m.completed).length / modules.length) * 100;
+    const currentModule = modules.find((m) => m.id === currentModuleId);
 
     return (
-        <LessonContainer>
+        <ModuleContainer>
             {/* Sidebar */}
             <SideBar>
                 <CourseTitle>
@@ -123,30 +123,30 @@ const Lesson: React.FC = () => {
                     </Typography>
                 </CourseTitle>
 
-                {sections.map((section) => (
+                {modules.map((module) => (
                     <SectionItem
-                        key={section.id}
-                        onClick={() => setCurrentSectionId(section.id)}
+                        key={module.id}
+                        onClick={() => setCurrentModuleId(module.id)}
                         sx={{
                             bgcolor:
-                                currentSectionId === section.id
+                                currentModuleId === module.id
                                     ? "action.selected"
                                     : "transparent",
                         }}
                     >
-                        {section.completed ? (
+                        {module.completed ? (
                             <CheckCircleIcon color="success" />
                         ) : (
                             <CancelIcon color="disabled" />
                         )}
                         <Typography
                             color={
-                                section.completed
+                                module.completed
                                     ? "text.primary"
                                     : "text.secondary"
                             }
                         >
-                            {section.title}
+                            {module.title}
                         </Typography>
                     </SectionItem>
                 ))}
@@ -184,7 +184,7 @@ const Lesson: React.FC = () => {
                         color="text.secondary"
                         gutterBottom
                     >
-                        {currentSection?.title}
+                        {currentModule?.title}
                     </Typography>
                     <Typography variant="body1" paragraph>
                         Here is a paragraph of text that serves as the main
@@ -206,11 +206,11 @@ const Lesson: React.FC = () => {
                             color="secondary"
                             endIcon={<NavigateNextIcon />}
                             onClick={() => {
-                                const nextSection = sections.find(
-                                    (s) => s.id > currentSectionId
+                                const nextModule = modules.find(
+                                    (m) => m.id > currentModuleId
                                 );
-                                if (nextSection) {
-                                    setCurrentSectionId(nextSection.id);
+                                if (nextModule) {
+                                    setCurrentModuleId(nextModule.id);
                                 }
                             }}
                         >
@@ -219,8 +219,8 @@ const Lesson: React.FC = () => {
                     </Box>
                 </Paper>
             </MainContent>
-        </LessonContainer>
+        </ModuleContainer>
     );
 };
 
-export default Lesson;
+export default CourseModule;
