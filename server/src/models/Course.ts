@@ -11,6 +11,7 @@ interface ICourse extends Document {
     course_description: string;
     course_instructor: string;
     course_price: number;
+    course_sections: string[];
     url: string;
 }
 // Define the schema for the Course model
@@ -27,6 +28,7 @@ const CourseSchema: Schema = new Schema({
     course_instructor: { type: String, required: true },
     course_price: { type: Number, required: true },
     course_description: { type: String, required: true },
+    course_sections: { type: [String], required: true },
     url: { type: String, required: true },
 });
 // Create the Course model

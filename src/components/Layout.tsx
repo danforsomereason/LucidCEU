@@ -6,19 +6,20 @@ interface LayoutProps {
   children: ReactNode;
   showNavbar?: boolean;
   fullWidth?: boolean;
+  navbarStyle?: 'fixed' | 'static';
 }
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled(Box)({
   minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  overflow: 'hidden', // Add this to prevent page-level scrolling
-}));
+});
 
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
   showNavbar = true,
-  fullWidth = false 
+  fullWidth = false,
+  navbarStyle = 'static' as const
 }) => {
   return (
     <StyledBox>
@@ -26,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({
         <Box 
           component="header" 
           sx={{ 
-            position: 'fixed',
+            position: navbarStyle,
             top: 0,
             left: 0,
             right: 0,
@@ -40,9 +41,7 @@ const Layout: React.FC<LayoutProps> = ({
         component="main"
         sx={{
           flexGrow: 1,
-          height: showNavbar ? 'calc(100vh - 84px)' : '100vh',
-          marginTop: showNavbar ? '84px' : 0, // Add top margin to account for fixed navbar
-          overflow: 'hidden', // Hide overflow at the page level
+          marginTop: navbarStyle === 'fixed' ? '84px' : 0,
           ...(fullWidth && {
             width: '100%',
             maxWidth: 'none'

@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
-import { ThemeProvider } from "@mui/material/styles"; // Change this from @emotion/react
+import React from "react";
+import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
-import NavBar from "./components/NavBar";
+import Layout from "./components/Layout";
 import Membership from "./screens/Membership";
 import Home from "./screens/Home";
 import SignIn from "./screens/SignIn";
@@ -11,37 +11,35 @@ import Lesson from "./screens/Lesson";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
-    const route = (screen: ReactNode, showNavbar: boolean = true) => {
+    const route = (
+        screen: React.ReactNode, 
+        showNavbar: boolean = true,
+        navbarStyle: 'fixed' | 'static' = 'static'
+    ) => {
         return (
-            <div style={{ minHeight: "100vh" }}>
-                {showNavbar && <NavBar />}
+            <Layout 
+                showNavbar={showNavbar}
+                navbarStyle={navbarStyle}
+            >
                 {screen}
-            </div>
+            </Layout>
         );
     };
 
     return (
         <ThemeProvider theme={theme}>
             <Router>
-                <div style={{ minHeight: "100vh" }}>
-                    <Routes>
-                        <Route path="/" element={route(<Home />)} />
-                        <Route
-                            path="/membership"
-                            element={route(<Membership />)}
-                        />
-                        <Route
-                            path="/signin"
-                            element={route(<SignIn />, false)}
-                        />
-                        <Route path="/courses" element={route(<Courses />)} />
-                        <Route
-                            path="/signup"
-                            element={route(<SignUp />, false)}
-                        />
-                        <Route path="/lesson" element={route(<Lesson />)} />
-                    </Routes>
-                </div>
+                <Routes>
+                    <Route path="/" element={route(<Home />)} />
+                    <Route path="/membership" element={route(<Membership />)} />
+                    <Route path="/signin" element={route(<SignIn />, false)} />
+                    <Route path="/courses" element={route(<Courses />)} />
+                    <Route path="/signup" element={route(<SignUp />, false)} />
+                    <Route 
+                        path="/lesson" 
+                        element={route(<Lesson />, true, 'fixed')}  // Set navbar to fixed for Lesson page
+                    />
+                </Routes>
             </Router>
         </ThemeProvider>
     );
