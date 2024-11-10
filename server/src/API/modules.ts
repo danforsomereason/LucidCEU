@@ -1,14 +1,14 @@
 import express from "express";
-import Course from "../models/Course";
+import Module from "../models/Module";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
 
     try {
-        const course = await Course.find(req.query);
+        const module = await Module.find(req.query);
 
-        res.json(course);
+        res.json(module);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Internal Server Error" });

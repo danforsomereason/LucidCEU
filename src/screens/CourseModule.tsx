@@ -80,13 +80,13 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
-    // Sample data - replace with your actual data
+    // Separate initial module data from completion state
     const [modules] = useState<Module[]>([
         {
             id: 1,
             title: "Intro to Course",
             content: "Content...",
-            completed: true,
+            completed: false,  // Start with all modules uncompleted
         },
         {
             id: 2,
@@ -100,15 +100,34 @@ const CourseModule: React.FC = () => {
             content: "Content...",
             completed: false,
         },
-        { id: 4, title: "Quiz", content: "Content...", completed: false },
+        { 
+            id: 4, 
+            title: "Quiz", 
+            content: "Content...", 
+            completed: false 
+        },
     ]);
 
+    // Track completed module IDs
+    const [completedModules, setCompletedModules] = useState<number[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState(1);
 
-    // Calculate progress
-    const progress =
-        (modules.filter((m) => m.completed).length / modules.length) * 100;
-    const currentModule = modules.find((m) => m.id === currentModuleId);
+    // Calculate progress based on completed modules
+    const progress = (completedModules.length / modules.length) * 100;
+
+    // Handle moving to next module
+    const handleNextModule = () => {
+        // Mark current module as complete
+        if (!completedModules.includes(currentModuleId)) {
+            setCompletedModules(prev => [...prev, currentModuleId]);
+        }
+
+        // Find and set next module
+        const nextModule = modules.find(m => m.id > currentModuleId);
+        if (nextModule) {
+            setCurrentModuleId(nextModule.id);
+        }
+    };
 
     return (
         <ModuleContainer>
@@ -128,22 +147,20 @@ const CourseModule: React.FC = () => {
                         key={module.id}
                         onClick={() => setCurrentModuleId(module.id)}
                         sx={{
-                            bgcolor:
-                                currentModuleId === module.id
-                                    ? "action.selected"
-                                    : "transparent",
+                            bgcolor: currentModuleId === module.id
+                                ? "action.selected"
+                                : "transparent",
                         }}
                     >
-                        {module.completed ? (
+                        {completedModules.includes(module.id) ? (
                             <CheckCircleIcon color="success" />
                         ) : (
                             <CancelIcon color="disabled" />
                         )}
                         <Typography
-                            color={
-                                module.completed
-                                    ? "text.primary"
-                                    : "text.secondary"
+                            color={completedModules.includes(module.id)
+                                ? "text.primary"
+                                : "text.secondary"
                             }
                         >
                             {module.title}
@@ -184,7 +201,7 @@ const CourseModule: React.FC = () => {
                         color="text.secondary"
                         gutterBottom
                     >
-                        {currentModule?.title}
+                        {modules.find(m => m.id === currentModuleId)?.title}
                     </Typography>
                     <Typography variant="body1" paragraph>
                         Here is a paragraph of text that serves as the main
@@ -205,14 +222,7 @@ const CourseModule: React.FC = () => {
                             variant="contained"
                             color="secondary"
                             endIcon={<NavigateNextIcon />}
-                            onClick={() => {
-                                const nextModule = modules.find(
-                                    (m) => m.id > currentModuleId
-                                );
-                                if (nextModule) {
-                                    setCurrentModuleId(nextModule.id);
-                                }
-                            }}
+                            onClick={handleNextModule}  // Use new handler
                         >
                             NEXT
                         </Button>
