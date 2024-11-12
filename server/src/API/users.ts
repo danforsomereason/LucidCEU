@@ -1,11 +1,33 @@
 import express from "express";
 import mongoose from "mongoose";
+import auth from "../middleware/auth";
+import User from "../models/User";
 
 const router = express.Router();
+const { requireAuth, localLogin } = auth;
 
-router.post("/", async (req, res) => {
-    console.log('HIT')
-    res.sendStatus(200);
-  });
+router.post("/signup", async (req: any, res: any) => {
+    try {
+        const existingUser = await User.findOne({
+            email: req.body.user.email,
+            dt_deleted: null,
+        });
+
+        if (existingUser) return res.sendStatus(403);
+
+        const newUser = new User(req.body.user);
+
+        (newUser as any).setPassword(req.body.password);
+
+        const savedUser = await newUser.save();
+        res.json({
+            token: (newUser as any).generateJWT(),
+            user: savedUser,
+        });
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+});
 
 export default router;
