@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Button,
     TextField,
@@ -8,6 +9,7 @@ import {
     Stack,
     FormControlLabel,
     Checkbox,
+    Link
 } from "@mui/material";
 import { createUser } from "../requests/user";
 
@@ -21,6 +23,7 @@ interface SignUpFormData {
 }
 
 const SignUp: React.FC = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<SignUpFormData>({
         firstName: "",
         lastName: "",
@@ -54,31 +57,42 @@ const SignUp: React.FC = () => {
         <Box
             sx={{
                 display: "flex",
-                justifyContent: "center",
+                flexDirection: "column",
                 alignItems: "center",
+                justifyContent: "center",
                 minHeight: "100vh",
-                bgcolor: "#f5f5f5", // Light gray background
-                py: 4,
+                padding: "0 20px",
+                backgroundColor: "var(--white-color)",
+                color: "var(--black-color)",
             }}
         >
             <Paper
                 elevation={3}
                 sx={{
-                    p: 4,
                     width: "100%",
-                    maxWidth: 500,
-                    bgcolor: "white", // White background for the form
+                    maxWidth: "500px",
+                    textAlign: "center",
+                    backgroundColor: "hsl(0, 0%, 98%)",
+                    padding: "40px",
+                    borderRadius: "10px",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
             >
-                <Typography
+                <Link
+                    onClick={() => navigate("/")}
                     variant="h4"
-                    component="h1"
-                    gutterBottom
-                    align="center"
-                    sx={{ color: "#2c3e50" }} // Dark blue-gray color for heading
+                    sx={{
+                        marginBottom: "20px",
+                        color: "var(--secondary-color)",
+                        fontSize: "2.75rem",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        textDecoration: "none",
+                        display: "block",
+                    }}
                 >
-                    Sign Up
-                </Typography>
+                    LUCID
+                </Link>
 
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={3}>
@@ -91,6 +105,19 @@ const SignUp: React.FC = () => {
                                 fullWidth
                                 required
                                 variant="outlined"
+                                sx={{
+                                    backgroundColor: "hsl(0, 0%, 95%)",
+                                    input: { color: "var(--black-color)" },
+                                    label: { color: "var(--black-color)" },
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                            borderColor: "var(--primary-color)",
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "var(--secondary-color)",
+                                        },
+                                    },
+                                }}
                             />
                             <TextField
                                 label="Last Name"
@@ -100,6 +127,19 @@ const SignUp: React.FC = () => {
                                 fullWidth
                                 required
                                 variant="outlined"
+                                sx={{
+                                    backgroundColor: "hsl(0, 0%, 95%)",
+                                    input: { color: "var(--black-color)" },
+                                    label: { color: "var(--black-color)" },
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                            borderColor: "var(--primary-color)",
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "var(--secondary-color)",
+                                        },
+                                    },
+                                }}
                             />
                         </Box>
 
@@ -112,6 +152,19 @@ const SignUp: React.FC = () => {
                             fullWidth
                             required
                             variant="outlined"
+                            sx={{
+                                backgroundColor: "hsl(0, 0%, 95%)",
+                                input: { color: "var(--black-color)" },
+                                label: { color: "var(--black-color)" },
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "var(--primary-color)",
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: "var(--secondary-color)",
+                                    },
+                                },
+                            }}
                         />
 
                         <TextField
@@ -123,6 +176,19 @@ const SignUp: React.FC = () => {
                             fullWidth
                             required
                             variant="outlined"
+                            sx={{
+                                backgroundColor: "hsl(0, 0%, 95%)",
+                                input: { color: "var(--black-color)" },
+                                label: { color: "var(--black-color)" },
+                                "& .MuiOutlinedInput-root": {
+                                    "& fieldset": {
+                                        borderColor: "var(--primary-color)",
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: "var(--secondary-color)",
+                                    },
+                                },
+                            }}
                         />
 
                         <FormControlLabel
@@ -132,9 +198,9 @@ const SignUp: React.FC = () => {
                                     onChange={handleChange}
                                     name="isOrganization"
                                     sx={{
-                                        color: "#3f51b5", // Primary blue color for checkbox
+                                        color: "var(--primary-color)",
                                         "&.Mui-checked": {
-                                            color: "#3f51b5",
+                                            color: "var(--secondary-color)",
                                         },
                                     }}
                                 />
@@ -151,6 +217,19 @@ const SignUp: React.FC = () => {
                                 fullWidth
                                 required
                                 variant="outlined"
+                                sx={{
+                                    backgroundColor: "hsl(0, 0%, 95%)",
+                                    input: { color: "var(--black-color)" },
+                                    label: { color: "var(--black-color)" },
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": {
+                                            borderColor: "var(--primary-color)",
+                                        },
+                                        "&:hover fieldset": {
+                                            borderColor: "var(--secondary-color)",
+                                        },
+                                    },
+                                }}
                             />
                         )}
 
@@ -159,15 +238,37 @@ const SignUp: React.FC = () => {
                             variant="contained"
                             size="large"
                             sx={{
-                                mt: 2,
-                                bgcolor: "#3f51b5", // Primary blue
+                                padding: "15px 30px",
+                                backgroundColor: "var(--secondary-color)",
+                                color: "var(--white-color)",
                                 "&:hover": {
-                                    bgcolor: "#303f9f", // Darker blue on hover
+                                    backgroundColor: "var(--primary-color)",
                                 },
                             }}
                         >
                             Register
                         </Button>
+
+                        <Typography
+                            variant="body1"
+                            sx={{ marginTop: "20px", color: "var(--black-color)" }}
+                        >
+                            Already have an account?{" "}
+                            <Link
+                                onClick={() => navigate("/signin")}
+                                sx={{
+                                    textDecoration: "none",
+                                    color: "var(--secondary-color)",
+                                    cursor: "pointer",
+                                    fontWeight: "bold",
+                                    "&:hover": {
+                                        color: "var(--primary-color)",
+                                    },
+                                }}
+                            >
+                                Sign In
+                            </Link>
+                        </Typography>
                     </Stack>
                 </form>
             </Paper>
