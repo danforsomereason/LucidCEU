@@ -1,5 +1,5 @@
 // src/screens/CourseModule.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Typography,
@@ -7,6 +7,7 @@ import {
     Button,
     LinearProgress,
     styled,
+    CircularProgress,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -19,10 +20,14 @@ const NAVBAR_HEIGHT = 84;
 
 // Types
 interface Module {
-    id: number;
-    title: string;
-    content: string;
-    completed: boolean;
+    _id: string;
+    course_name: string;
+    course_id: string;
+    heading: string;
+    text_content: string[];
+    estimated_time: number;
+    order: number;
+    completed?: boolean; 
 }
 
 // Styled Components
@@ -80,53 +85,100 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
-    // Separate initial module data from completion state
-    const [modules] = useState<Module[]>([
-        {
-            id: 1,
-            title: "Intro to Course",
-            content: "Content...",
-            completed: false,  // Start with all modules uncompleted
-        },
-        {
-            id: 2,
-            title: "Background and history",
-            content: "Content...",
-            completed: false,
-        },
-        {
-            id: 3,
-            title: "Understanding complex concepts in counseling",
-            content: "Content...",
-            completed: false,
-        },
-        { 
-            id: 4, 
-            title: "Quiz", 
-            content: "Content...", 
-            completed: false 
-        },
-    ]);
+    const [modules, setModules] = useState<Module[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [completedModules, setCompletedModules] = useState<string[]>([]);
+    const [currentModuleId, setCurrentModuleId] = useState<string>("");
 
-    // Track completed module IDs
-    const [completedModules, setCompletedModules] = useState<number[]>([]);
-    const [currentModuleId, setCurrentModuleId] = useState(1);
+    // Fetch modules data
+    useEffect(() => {
+        const fetchModules = async () => {
+            try {
+                const courseResponse = await fetch('http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!courseResponse.ok) {
+                    throw new Error(`HTTP error! status: ${courseResponse.status}`);
+                }
+                
+                const courseData = await courseResponse.json();
+                console.log('Course data:', courseData);
+                
+                if (!courseData.course_modules || courseData.course_modules.length === 0) {
+                    console.error('No course modules found in the course data');
+                    setLoading(false);
+                    return;
+                }
+
+                const modulesResponse = await fetch(
+                    `http://localhost:5001/api/v1/modules?ids=${courseData.course_modules.join(',')}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!modulesResponse.ok) {
+                    throw new Error(`HTTP error! status: ${modulesResponse.status}`);
+                }
+                
+                const modulesData = await modulesResponse.json();
+                console.log('Modules data:', modulesData);
+
+                if (Array.isArray(modulesData)) {
+                    const sortedModules = modulesData.sort((a: Module, b: Module) => a.order - b.order);
+                    setModules(sortedModules);
+                    setCurrentModuleId(sortedModules[0]?._id || "");
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching course/modules:', error);
+                setLoading(false);
+            }
+        };
+        fetchModules();
+    }, []);
+
+    // Add loading state handling
+    if (loading) {
+        return (
+            <ModuleContainer>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <CircularProgress />
+                </Box>
+            </ModuleContainer>
+        );
+    }
+
+    const currentModule = modules.find(m => m._id === currentModuleId);
+
+    // Debug current module
+    console.log('Current module:', currentModule);
+    console.log('All modules:', modules);
+    console.log('Completed modules:', completedModules);
 
     // Calculate progress based on completed modules
     const progress = (completedModules.length / modules.length) * 100;
 
     // Handle moving to next module
     const handleNextModule = () => {
+        if (!currentModuleId) return;
+        
         // Mark current module as complete
         if (!completedModules.includes(currentModuleId)) {
             setCompletedModules(prev => [...prev, currentModuleId]);
         }
 
-        // Find and set next module
-        const nextModule = modules.find(m => m.id > currentModuleId);
-        if (nextModule) {
-            setCurrentModuleId(nextModule.id);
+        // Find current module index and move to next
+        const currentIndex = modules.findIndex(m => m._id === currentModuleId);
+        if (currentIndex < modules.length - 1) {
+            setCurrentModuleId(modules[currentIndex + 1]._id);
         }
+        // Could add navigation to quiz here when all modules complete
     };
 
     return (
@@ -135,35 +187,32 @@ const CourseModule: React.FC = () => {
             <SideBar>
                 <CourseTitle>
                     <Typography variant="h6">
-                        Name of the Course will be located here
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                        by Name of Instructor
+                        {modules[0]?.course_name || "Loading..."}
                     </Typography>
                 </CourseTitle>
 
                 {modules.map((module) => (
                     <SectionItem
-                        key={module.id}
-                        onClick={() => setCurrentModuleId(module.id)}
+                        key={module._id}
+                        onClick={() => setCurrentModuleId(module._id)}
                         sx={{
-                            bgcolor: currentModuleId === module.id
+                            bgcolor: currentModuleId === module._id
                                 ? "action.selected"
                                 : "transparent",
                         }}
                     >
-                        {completedModules.includes(module.id) ? (
+                        {completedModules.includes(module._id) ? (
                             <CheckCircleIcon color="success" />
                         ) : (
                             <CancelIcon color="disabled" />
                         )}
                         <Typography
-                            color={completedModules.includes(module.id)
+                            color={completedModules.includes(module._id)
                                 ? "text.primary"
                                 : "text.secondary"
                             }
                         >
-                            {module.title}
+                            {module.heading}
                         </Typography>
                     </SectionItem>
                 ))}
@@ -194,35 +243,24 @@ const CourseModule: React.FC = () => {
                 {/* Content */}
                 <Paper sx={{ p: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        HEADING - NAME OF THE COURSE SECTION
+                        {currentModule?.heading || "Loading..."}
                     </Typography>
-                    <Typography
-                        variant="h5"
-                        color="text.secondary"
-                        gutterBottom
-                    >
-                        {modules.find(m => m.id === currentModuleId)?.title}
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        Here is a paragraph of text that serves as the main
-                        course content. Here, users will read relevant
-                        information to learn the course material. Users will
-                        learn about the topic presented. Each course will be
-                        divided into sections which are like chapters...
-                    </Typography>
+                    
+                    {currentModule?.text_content.map((paragraph, index) => (
+                        <Typography key={index} variant="body1" paragraph>
+                            {paragraph}
+                        </Typography>
+                    ))}
 
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            mt: 4,
-                        }}
-                    >
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Estimated time: {currentModule?.estimated_time} minutes
+                        </Typography>
                         <Button
                             variant="contained"
                             color="secondary"
                             endIcon={<NavigateNextIcon />}
-                            onClick={handleNextModule}  // Use new handler
+                            onClick={handleNextModule}
                         >
                             NEXT
                         </Button>
