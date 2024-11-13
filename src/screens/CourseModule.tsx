@@ -31,6 +31,10 @@ interface Module {
     completed?: boolean; 
 }
 
+interface SectionItemProps {
+    isLocked?: boolean;
+}
+
 // Styled Components
 const ModuleContainer = styled(Box)({
     display: "flex",
@@ -68,15 +72,16 @@ const CourseTitle = styled(Box)(({ theme }) => ({
     borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
-const SectionItem = styled(Box)(({ theme }) => ({
+const SectionItem = styled(Box)<SectionItemProps>(({ theme, isLocked }) => ({
     padding: theme.spacing(2),
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(2),
-    cursor: "pointer",
+    cursor: isLocked ? 'not-allowed' : 'pointer',
     "&:hover": {
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: isLocked ? 'transparent' : theme.palette.action.hover,
     },
+    opacity: isLocked ? 0.5 : 1,
 }));
 
 const HelpButton = styled(Button)(({ theme }) => ({
@@ -96,21 +101,31 @@ const CourseModule: React.FC = () => {
     useEffect(() => {
         const fetchModules = async () => {
             try {
+                // Add error logging for debugging
                 const courseResponse = await fetch('http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40', {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
                 
+                // Log raw response
+                console.log('Course Response:', courseResponse);
+                
                 if (!courseResponse.ok) {
                     throw new Error(`HTTP error! status: ${courseResponse.status}`);
                 }
                 
                 const courseData = await courseResponse.json();
-                console.log('Course data:', courseData);
+                // Log full course data structure
+                console.log('Course data structure:', JSON.stringify(courseData, null, 2));
                 
-                if (!courseData.course_modules || courseData.course_modules.length === 0) {
-                    console.error('No course modules found in the course data');
+                if (!courseData.course_modules || !Array.isArray(courseData.course_modules)) {
+                    throw new Error('Invalid course modules data structure');
+                }
+
+                // Only proceed if we have module IDs
+                if (courseData.course_modules.length === 0) {
+                    setModules([]);
                     setLoading(false);
                     return;
                 }
@@ -124,21 +139,28 @@ const CourseModule: React.FC = () => {
                     }
                 );
                 
+                // Log modules response
+                console.log('Modules Response:', modulesResponse);
+                
                 if (!modulesResponse.ok) {
                     throw new Error(`HTTP error! status: ${modulesResponse.status}`);
                 }
                 
                 const modulesData = await modulesResponse.json();
-                console.log('Modules data:', modulesData);
+                // Log full modules data structure
+                console.log('Modules data structure:', JSON.stringify(modulesData, null, 2));
 
-                if (Array.isArray(modulesData)) {
-                    const sortedModules = modulesData.sort((a: Module, b: Module) => a.order - b.order);
-                    setModules(sortedModules);
-                    setCurrentModuleId(sortedModules[0]?._id || "");
+                if (!Array.isArray(modulesData)) {
+                    throw new Error('Modules data is not an array');
                 }
-                setLoading(false);
+
+                const sortedModules = modulesData.sort((a: Module, b: Module) => a.order - b.order);
+                setModules(sortedModules);
+                setCurrentModuleId(sortedModules[0]?._id || "");
             } catch (error) {
-                console.error('Error fetching course/modules:', error);
+                console.error('Detailed fetch error:', error);
+                setModules([]);  // Set empty modules on error
+            } finally {
                 setLoading(false);
             }
         };
@@ -166,21 +188,38 @@ const CourseModule: React.FC = () => {
     // Calculate progress based on completed modules
     const progress = (completedModules.length / modules.length) * 100;
 
-    // Handle moving to next module
-    const handleNextModule = () => {
-        if (!currentModuleId) return;
+    // Helper function to check if a module is accessible
+    const isModuleAccessible = (moduleId: string) => {
+        const moduleIndex = modules.findIndex(m => m._id === moduleId);
+        const lastCompletedIndex = Math.max(
+            -1,
+            ...completedModules.map(id => modules.findIndex(m => m._id === id))
+        );
         
-        // Mark current module as complete
-        if (!completedModules.includes(currentModuleId)) {
-            setCompletedModules(prev => [...prev, currentModuleId]);
+        return moduleIndex <= lastCompletedIndex + 1;
+    };
+
+    // Update module selection handler
+    const handleModuleSelect = (moduleId: string) => {
+        if (isModuleAccessible(moduleId)) {
+            setCurrentModuleId(moduleId);
+        }
+    };
+
+    const handleNextModule = () => {
+        // Mark current module as completed if it's not already
+        if (currentModuleId && !completedModules.includes(currentModuleId)) {
+            setCompletedModules([...completedModules, currentModuleId]);
         }
 
-        // Find current module index and move to next
+        // Find the next module
         const currentIndex = modules.findIndex(m => m._id === currentModuleId);
-        if (currentIndex < modules.length - 1) {
-            setCurrentModuleId(modules[currentIndex + 1]._id);
+        const nextModule = modules[currentIndex + 1];
+
+        // If there's a next module, set it as current
+        if (nextModule) {
+            setCurrentModuleId(nextModule._id);
         }
-        // Could add navigation to quiz here when all modules complete
     };
 
     return (
@@ -193,31 +232,35 @@ const CourseModule: React.FC = () => {
                     </Typography>
                 </CourseTitle>
 
-                {modules.map((module) => (
-                    <SectionItem
-                        key={module._id}
-                        onClick={() => setCurrentModuleId(module._id)}
-                        sx={{
-                            bgcolor: currentModuleId === module._id
-                                ? "action.selected"
-                                : "transparent",
-                        }}
-                    >
-                        {completedModules.includes(module._id) ? (
-                            <CheckCircleIcon color="success" />
-                        ) : (
-                            <CancelIcon color="disabled" />
-                        )}
-                        <Typography
-                            color={completedModules.includes(module._id)
-                                ? "text.primary"
-                                : "text.secondary"
-                            }
+                {modules.map((module) => {
+                    const isLocked = !isModuleAccessible(module._id);
+                    return (
+                        <SectionItem
+                            key={module._id}
+                            onClick={() => handleModuleSelect(module._id)}
+                            isLocked={isLocked}
+                            sx={{
+                                bgcolor: currentModuleId === module._id
+                                    ? "action.selected"
+                                    : "transparent",
+                                pointerEvents: isLocked ? 'none' : 'auto',
+                            }}
                         >
-                            {module.heading}
-                        </Typography>
-                    </SectionItem>
-                ))}
+                            {completedModules.includes(module._id) ? (
+                                <CheckCircleIcon color="success" />
+                            ) : isLocked ? (
+                                <CancelIcon color="disabled" />
+                            ) : (
+                                <CheckCircleIcon color="disabled" />
+                            )}
+                            <Typography
+                                color={isLocked ? "text.disabled" : "text.primary"}
+                            >
+                                {module.heading}
+                            </Typography>
+                        </SectionItem>
+                    );
+                })}
 
                 <SectionItem
                     sx={{
