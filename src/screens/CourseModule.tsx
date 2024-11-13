@@ -13,6 +13,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import QuizIcon from '@mui/icons-material/Quiz';
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -89,6 +90,7 @@ const CourseModule: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [completedModules, setCompletedModules] = useState<string[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState<string>("");
+    const [quizCompleted, setQuizCompleted] = useState(false);
 
     // Fetch modules data
     useEffect(() => {
@@ -216,6 +218,28 @@ const CourseModule: React.FC = () => {
                         </Typography>
                     </SectionItem>
                 ))}
+
+                <SectionItem
+                    sx={{
+                        mt: 2,
+                        borderTop: 1,
+                        borderColor: 'divider',
+                        opacity: completedModules.length === modules.length ? 1 : 0.5,
+                        pointerEvents: completedModules.length === modules.length ? 'auto' : 'none'
+                    }}
+                >
+                    {quizCompleted ? (
+                        <CheckCircleIcon color="success" />
+                    ) : (
+                        <CancelIcon color="disabled" />
+                    )}
+                    <Typography
+                        color={quizCompleted ? "text.primary" : "text.secondary"}
+                    >
+                        Course Quiz
+                    </Typography>
+                    <QuizIcon sx={{ ml: 'auto' }} />
+                </SectionItem>
 
                 <HelpButton
                     variant="contained"
