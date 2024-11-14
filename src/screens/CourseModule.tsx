@@ -8,12 +8,14 @@ import {
     LinearProgress,
     styled,
     CircularProgress,
+    BoxProps,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import QuizIcon from '@mui/icons-material/Quiz';
+import QuizIcon from "@mui/icons-material/Quiz";
+import CourseQuiz from "../components/CourseQuiz";
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -28,10 +30,10 @@ interface Module {
     text_content: string[];
     estimated_time: number;
     order: number;
-    completed?: boolean; 
+    completed?: boolean;
 }
 
-interface SectionItemProps {
+interface SectionItemProps extends BoxProps {
     isLocked?: boolean;
 }
 
@@ -72,14 +74,16 @@ const CourseTitle = styled(Box)(({ theme }) => ({
     borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
-const SectionItem = styled(Box)<SectionItemProps>(({ theme, isLocked }) => ({
+const SectionItem = styled(Box, {
+    shouldForwardProp: (prop) => prop !== "isLocked",
+})<SectionItemProps>(({ theme, isLocked }) => ({
     padding: theme.spacing(2),
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(2),
-    cursor: isLocked ? 'not-allowed' : 'pointer',
+    cursor: isLocked ? "not-allowed" : "pointer",
     "&:hover": {
-        backgroundColor: isLocked ? 'transparent' : theme.palette.action.hover,
+        backgroundColor: isLocked ? "transparent" : theme.palette.action.hover,
     },
     opacity: isLocked ? 0.5 : 1,
 }));
@@ -96,31 +100,43 @@ const CourseModule: React.FC = () => {
     const [completedModules, setCompletedModules] = useState<string[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState<string>("");
     const [quizCompleted, setQuizCompleted] = useState(false);
+    const [showQuiz, setShowQuiz] = useState(false);
 
     // Fetch modules data
     useEffect(() => {
         const fetchModules = async () => {
             try {
                 // Add error logging for debugging
-                const courseResponse = await fetch('http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40', {
-                    headers: {
-                        'Content-Type': 'application/json'
+                const courseResponse = await fetch(
+                    "http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40",
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
                     }
-                });
-                
+                );
+
                 // Log raw response
-                console.log('Course Response:', courseResponse);
-                
+                console.log("Course Response:", courseResponse);
+
                 if (!courseResponse.ok) {
-                    throw new Error(`HTTP error! status: ${courseResponse.status}`);
+                    throw new Error(
+                        `HTTP error! status: ${courseResponse.status}`
+                    );
                 }
-                
+
                 const courseData = await courseResponse.json();
                 // Log full course data structure
-                console.log('Course data structure:', JSON.stringify(courseData, null, 2));
-                
-                if (!courseData.course_modules || !Array.isArray(courseData.course_modules)) {
-                    throw new Error('Invalid course modules data structure');
+                console.log(
+                    "Course data structure:",
+                    JSON.stringify(courseData, null, 2)
+                );
+
+                if (
+                    !courseData.course_modules ||
+                    !Array.isArray(courseData.course_modules)
+                ) {
+                    throw new Error("Invalid course modules data structure");
                 }
 
                 // Only proceed if we have module IDs
@@ -131,35 +147,44 @@ const CourseModule: React.FC = () => {
                 }
 
                 const modulesResponse = await fetch(
-                    `http://localhost:5001/api/v1/modules?ids=${courseData.course_modules.join(',')}`,
+                    `http://localhost:5001/api/v1/modules?ids=${courseData.course_modules.join(
+                        ","
+                    )}`,
                     {
                         headers: {
-                            'Content-Type': 'application/json'
-                        }
+                            "Content-Type": "application/json",
+                        },
                     }
                 );
-                
+
                 // Log modules response
-                console.log('Modules Response:', modulesResponse);
-                
+                console.log("Modules Response:", modulesResponse);
+
                 if (!modulesResponse.ok) {
-                    throw new Error(`HTTP error! status: ${modulesResponse.status}`);
+                    throw new Error(
+                        `HTTP error! status: ${modulesResponse.status}`
+                    );
                 }
-                
+
                 const modulesData = await modulesResponse.json();
                 // Log full modules data structure
-                console.log('Modules data structure:', JSON.stringify(modulesData, null, 2));
+                console.log(
+                    "Modules data structure:",
+                    JSON.stringify(modulesData, null, 2)
+                );
 
                 if (!Array.isArray(modulesData)) {
-                    throw new Error('Modules data is not an array');
+                    throw new Error("Modules data is not an array");
                 }
 
-                const sortedModules = modulesData.sort((a: Module, b: Module) => a.order - b.order);
+                const sortedModules = modulesData.sort(
+                    (a: Module, b: Module) => a.order - b.order
+                );
                 setModules(sortedModules);
                 setCurrentModuleId(sortedModules[0]?._id || "");
             } catch (error) {
-                console.error('Detailed fetch error:', error);
-                setModules([]);  // Set empty modules on error
+                console.error("Detailed fetch error:", error);
+                setModules([]); // Set empty modules on error
             } finally {
                 setLoading(false);
             }
@@ -171,31 +196,40 @@ const CourseModule: React.FC = () => {
     if (loading) {
         return (
             <ModuleContainer>
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
                     <CircularProgress />
                 </Box>
             </ModuleContainer>
         );
     }
 
-    const currentModule = modules.find(m => m._id === currentModuleId);
+    const currentModule = modules.find((m) => m._id === currentModuleId);
 
     // Debug current module
-    console.log('Current module:', currentModule);
-    console.log('All modules:', modules);
-    console.log('Completed modules:', completedModules);
+    console.log("Current module:", currentModule);
+    console.log("All modules:", modules);
+    console.log("Completed modules:", completedModules);
 
     // Calculate progress based on completed modules
     const progress = (completedModules.length / modules.length) * 100;
 
     // Helper function to check if a module is accessible
     const isModuleAccessible = (moduleId: string) => {
-        const moduleIndex = modules.findIndex(m => m._id === moduleId);
+        const moduleIndex = modules.findIndex((m) => m._id === moduleId);
         const lastCompletedIndex = Math.max(
             -1,
-            ...completedModules.map(id => modules.findIndex(m => m._id === id))
+            ...completedModules.map((id) =>
+                modules.findIndex((m) => m._id === id)
+            )
         );
-        
+
         return moduleIndex <= lastCompletedIndex + 1;
     };
 
@@ -213,13 +247,20 @@ const CourseModule: React.FC = () => {
         }
 
         // Find the next module
-        const currentIndex = modules.findIndex(m => m._id === currentModuleId);
+        const currentIndex = modules.findIndex(
+            (m) => m._id === currentModuleId
+        );
         const nextModule = modules[currentIndex + 1];
 
         // If there's a next module, set it as current
         if (nextModule) {
             setCurrentModuleId(nextModule._id);
         }
+    };
+
+    const handleQuizComplete = (passed: boolean) => {
+        setQuizCompleted(passed);
+        // TODO Add to backend
     };
 
     return (
@@ -240,10 +281,11 @@ const CourseModule: React.FC = () => {
                             onClick={() => handleModuleSelect(module._id)}
                             isLocked={isLocked}
                             sx={{
-                                bgcolor: currentModuleId === module._id
-                                    ? "action.selected"
-                                    : "transparent",
-                                pointerEvents: isLocked ? 'none' : 'auto',
+                                bgcolor:
+                                    currentModuleId === module._id
+                                        ? "action.selected"
+                                        : "transparent",
+                                pointerEvents: isLocked ? "none" : "auto",
                             }}
                         >
                             {completedModules.includes(module._id) ? (
@@ -254,7 +296,9 @@ const CourseModule: React.FC = () => {
                                 <CheckCircleIcon color="disabled" />
                             )}
                             <Typography
-                                color={isLocked ? "text.disabled" : "text.primary"}
+                                color={
+                                    isLocked ? "text.disabled" : "text.primary"
+                                }
                             >
                                 {module.heading}
                             </Typography>
@@ -266,9 +310,15 @@ const CourseModule: React.FC = () => {
                     sx={{
                         mt: 2,
                         borderTop: 1,
-                        borderColor: 'divider',
-                        opacity: completedModules.length === modules.length ? 1 : 0.5,
-                        pointerEvents: completedModules.length === modules.length ? 'auto' : 'none'
+                        borderColor: "divider",
+                        opacity:
+                            completedModules.length === modules.length
+                                ? 1
+                                : 0.5,
+                        pointerEvents:
+                            completedModules.length === modules.length
+                                ? "auto"
+                                : "none",
                     }}
                 >
                     {quizCompleted ? (
@@ -277,11 +327,13 @@ const CourseModule: React.FC = () => {
                         <CancelIcon color="disabled" />
                     )}
                     <Typography
-                        color={quizCompleted ? "text.primary" : "text.secondary"}
+                        color={
+                            quizCompleted ? "text.primary" : "text.secondary"
+                        }
                     >
                         Course Quiz
                     </Typography>
-                    <QuizIcon sx={{ ml: 'auto' }} />
+                    <QuizIcon sx={{ ml: "auto" }} />
                 </SectionItem>
 
                 <HelpButton
@@ -307,32 +359,53 @@ const CourseModule: React.FC = () => {
                     />
                 </Paper>
 
-                {/* Content */}
-                <Paper sx={{ p: 4 }}>
-                    <Typography variant="h4" gutterBottom>
-                        {currentModule?.heading || "Loading..."}
-                    </Typography>
-                    
-                    {currentModule?.text_content.map((paragraph, index) => (
-                        <Typography key={index} variant="body1" paragraph>
-                            {paragraph}
+                {/* Show quiz when all modules are completed */}
+                {completedModules.length === modules.length ? (
+                    <>
+                        {console.log(
+                            "Passing courseId:",
+                            modules[0]?.course_id
+                        )}
+                        <CourseQuiz
+                            courseId={modules[0]?.course_id || ""}
+                            onQuizComplete={handleQuizComplete}
+                        />
+                    </>
+                ) : (
+                    /* existing module content */
+                    <Paper sx={{ p: 4 }}>
+                        <Typography variant="h4" gutterBottom>
+                            {currentModule?.heading || "Loading..."}
                         </Typography>
-                    ))}
 
-                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-                        <Typography variant="body2" color="text.secondary">
-                            Estimated time: {currentModule?.estimated_time} minutes
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            endIcon={<NavigateNextIcon />}
-                            onClick={handleNextModule}
+                        {currentModule?.text_content.map((paragraph, index) => (
+                            <Typography key={index} variant="body1" paragraph>
+                                {paragraph}
+                            </Typography>
+                        ))}
+
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                mt: 4,
+                            }}
                         >
-                            NEXT
-                        </Button>
-                    </Box>
-                </Paper>
+                            <Typography variant="body2" color="text.secondary">
+                                Estimated time: {currentModule?.estimated_time}{" "}
+                                minutes
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                endIcon={<NavigateNextIcon />}
+                                onClick={handleNextModule}
+                            >
+                                NEXT
+                            </Button>
+                        </Box>
+                    </Paper>
+                )}
             </MainContent>
         </ModuleContainer>
     );

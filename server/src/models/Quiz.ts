@@ -18,9 +18,14 @@ interface IQuiz extends Document {
 
 const QuizSchema: Schema = new Schema({
     course_id: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Course", 
-        required: true 
+        type: String, 
+        required: true,
+        validate: {
+            validator: function(v: string) {
+                return mongoose.Types.ObjectId.isValid(v);
+            },
+            message: (props: { value: string }) => `${props.value} is not a valid ObjectId string!`
+        }
     },
     quiz_title: { type: String, required: true },
     questions: [{
