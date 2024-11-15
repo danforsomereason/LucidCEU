@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 // Define the interface for the Course document
 interface ICourse extends Document {
     course_name: string;
-    CE_hour: number;
+    ce_hours: number;
     course_state: string;
     course_category: string;
     tags: string[];
@@ -13,11 +13,15 @@ interface ICourse extends Document {
     course_price: number;
     course_sections: string[];
     url: string;
+    approved_by?: Array<{
+        board: "NBCC" | "APA" | "ASWB" | "NAADAC" | "CAMFT" | "Nursing";
+        logo_url: string;
+    }>;
 }
 // Define the schema for the Course model
 const CourseSchema: Schema = new Schema({
     course_name: { type: String, required: true },
-    CE_hour: { type: Number, required: true },
+    ce_hours: { type: Number, required: true },
     course_state: { type: String, required: true },
     course_category: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +34,14 @@ const CourseSchema: Schema = new Schema({
     course_description: { type: String, required: true },
     course_sections: { type: [String], required: true },
     url: { type: String, required: true },
+    approved_by: [{
+        board: {
+            type: String,
+            enum: ["NBCC", "APA", "ASWB", "NAADAC", "CAMFT", "Nursing"],
+            required: false
+        },
+        logo_url: { type: String, required: false }
+    }]
 });
 // Create the Course model
 const Course = mongoose.model<ICourse>("Course", CourseSchema);

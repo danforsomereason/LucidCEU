@@ -106,7 +106,6 @@ const CourseModule: React.FC = () => {
     useEffect(() => {
         const fetchModules = async () => {
             try {
-                // Add error logging for debugging
                 const courseResponse = await fetch(
                     "http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40",
                     {
@@ -116,9 +115,6 @@ const CourseModule: React.FC = () => {
                     }
                 );
 
-                // Log raw response
-                console.log("Course Response:", courseResponse);
-
                 if (!courseResponse.ok) {
                     throw new Error(
                         `HTTP error! status: ${courseResponse.status}`
@@ -126,11 +122,6 @@ const CourseModule: React.FC = () => {
                 }
 
                 const courseData = await courseResponse.json();
-                // Log full course data structure
-                console.log(
-                    "Course data structure:",
-                    JSON.stringify(courseData, null, 2)
-                );
 
                 if (
                     !courseData.course_modules ||
@@ -157,9 +148,6 @@ const CourseModule: React.FC = () => {
                     }
                 );
 
-                // Log modules response
-                console.log("Modules Response:", modulesResponse);
-
                 if (!modulesResponse.ok) {
                     throw new Error(
                         `HTTP error! status: ${modulesResponse.status}`
@@ -167,11 +155,6 @@ const CourseModule: React.FC = () => {
                 }
 
                 const modulesData = await modulesResponse.json();
-                // Log full modules data structure
-                console.log(
-                    "Modules data structure:",
-                    JSON.stringify(modulesData, null, 2)
-                );
 
                 if (!Array.isArray(modulesData)) {
                     throw new Error("Modules data is not an array");
@@ -211,11 +194,6 @@ const CourseModule: React.FC = () => {
     }
 
     const currentModule = modules.find((m) => m._id === currentModuleId);
-
-    // Debug current module
-    console.log("Current module:", currentModule);
-    console.log("All modules:", modules);
-    console.log("Completed modules:", completedModules);
 
     // Calculate progress based on completed modules
     const progress = (completedModules.length / modules.length) * 100;
@@ -362,10 +340,6 @@ const CourseModule: React.FC = () => {
                 {/* Show quiz when all modules are completed */}
                 {completedModules.length === modules.length ? (
                     <>
-                        {console.log(
-                            "Passing courseId:",
-                            modules[0]?.course_id
-                        )}
                         <CourseQuiz
                             courseId={modules[0]?.course_id || ""}
                             onQuizComplete={handleQuizComplete}

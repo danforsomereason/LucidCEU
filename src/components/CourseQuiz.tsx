@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {Box, Typography, Paper, Button, Radio, RadioGroup, FormControlLabel, FormControl, Alert, CircularProgress} from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface QuizQuestion {
     order: number;
@@ -17,6 +18,11 @@ interface QuizProps {
     onQuizComplete: (passed: boolean) => void;
 }
 
+interface LocationState {
+    attemptNumber?: number;
+    retakeQuiz?: boolean;
+}
+
 const CourseQuiz: React.FC<QuizProps> = ({ courseId, onQuizComplete }) => {
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -25,6 +31,8 @@ const CourseQuiz: React.FC<QuizProps> = ({ courseId, onQuizComplete }) => {
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -144,18 +152,38 @@ const CourseQuiz: React.FC<QuizProps> = ({ courseId, onQuizComplete }) => {
             setShowFeedback(true);
             setUserAnswers({ ...userAnswers, [currentQuestionIndex]: selectedAnswer });
         } else {
-            // Move to next question
+            // Move to next question or complete quiz
             setShowFeedback(false);
             setSelectedAnswer('');
+            
             if (currentQuestionIndex < questions.length - 1) {
                 setCurrentQuestionIndex(currentQuestionIndex + 1);
             } else {
-                // Calculate final score and complete quiz
-                const correctAnswers = Object.entries(userAnswers).filter(
+                // Count previous correct answers
+                const previousCorrectAnswers = Object.entries(userAnswers).filter(
                     ([index, answer]) => answer.toLowerCase() === questions[Number(index)].correct_answer.toLowerCase()
                 ).length;
-                const score = (correctAnswers / questions.length) * 100;
-                onQuizComplete(score >= 80);
+
+                // Check if final answer is correct
+                const isFinalAnswerCorrect = selectedAnswer.toLowerCase() === currentQuestion.correct_answer.toLowerCase();
+
+                // Calculate total correct answers
+                const totalCorrectAnswers = previousCorrectAnswers + (isFinalAnswerCorrect ? 1 : 0);
+
+                // Calculate final score
+                const score = Math.round((totalCorrectAnswers / questions.length) * 100);
+                
+                // Get attempt number from location state or default to 1
+                const currentAttempt = (location.state as LocationState)?.attemptNumber || 1;
+                
+                // Navigate to results page
+                navigate('/quiz-results', {
+                    state: {
+                        score,
+                        courseId,
+                        attemptNumber: currentAttempt
+                    }
+                });
             }
         }
     };
