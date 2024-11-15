@@ -148,35 +148,28 @@ const CourseQuiz: React.FC<QuizProps> = ({ courseId, onQuizComplete }) => {
 
     const handleNextQuestion = () => {
         if (!showFeedback) {
-            // Show feedback first
             setShowFeedback(true);
             setUserAnswers({ ...userAnswers, [currentQuestionIndex]: selectedAnswer });
         } else {
-            // Move to next question or complete quiz
             setShowFeedback(false);
             setSelectedAnswer('');
             
             if (currentQuestionIndex < questions.length - 1) {
                 setCurrentQuestionIndex(currentQuestionIndex + 1);
             } else {
-                // Count previous correct answers
-                const previousCorrectAnswers = Object.entries(userAnswers).filter(
+                const finalAnswers = {
+                    ...userAnswers,
+                    [currentQuestionIndex]: selectedAnswer
+                };
+
+                const totalCorrectAnswers = Object.entries(finalAnswers).filter(
                     ([index, answer]) => answer.toLowerCase() === questions[Number(index)].correct_answer.toLowerCase()
                 ).length;
 
-                // Check if final answer is correct
-                const isFinalAnswerCorrect = selectedAnswer.toLowerCase() === currentQuestion.correct_answer.toLowerCase();
-
-                // Calculate total correct answers
-                const totalCorrectAnswers = previousCorrectAnswers + (isFinalAnswerCorrect ? 1 : 0);
-
-                // Calculate final score
                 const score = Math.round((totalCorrectAnswers / questions.length) * 100);
                 
-                // Get attempt number from location state or default to 1
                 const currentAttempt = (location.state as LocationState)?.attemptNumber || 1;
                 
-                // Navigate to results page
                 navigate('/quiz-results', {
                     state: {
                         score,

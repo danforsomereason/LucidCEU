@@ -13,6 +13,7 @@ import {
     FormControlLabel,
     Checkbox,
     Box,
+    SelectChangeEvent,
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import CourseCard from "../components/CourseCard";
@@ -96,8 +97,8 @@ const Courses: React.FC = () => {
         );
     };
 
-    const handleSortChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-        setSortOption(e.target.value as string);
+    const handleSortChange = (event: SelectChangeEvent<string>) => {
+        setSortOption(event.target.value);
     };
 
     const handleClearFilters = () => {
@@ -135,7 +136,7 @@ const Courses: React.FC = () => {
                 <Typography variant="h2" gutterBottom>
                     All the courses you need - in one place.
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom component="div">
                     <Box>
                         Find the perfect course for you, whether you're looking
                         to learn a new skill, maintain your licensure, or stay
@@ -189,7 +190,6 @@ const Courses: React.FC = () => {
                                 borderColor: "var(--color-indigo-450)",
                             },
                         }}
-                        defaultValue="recommended"
                     />
                     <FormControl variant="outlined">
                         <InputLabel sx={{ color: "var(--color-indigo-450)" }}>
@@ -197,7 +197,8 @@ const Courses: React.FC = () => {
                         </InputLabel>
                         <Select
                             label="Sort By"
-                            defaultValue="recommended"
+                            value={sortOption}
+                            onChange={handleSortChange}
                             sx={{
                                 backgroundColor: "var(--white-color)",
                                 "& .MuiOutlinedInput-notchedOutline": {
