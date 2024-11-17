@@ -19,6 +19,7 @@ import Pagination from "@mui/material/Pagination";
 import CourseCard from "../components/CourseCard";
 import { getCourses } from "../requests/courses";
 import "../styles/Courses.css";
+import { useSearchParams } from "react-router-dom";
 
 const tags = [
     "Human Resources",
@@ -43,6 +44,7 @@ const Courses: React.FC = () => {
     const [sortOption, setSortOption] = useState("recommended");
     const [currentPage, setCurrentPage] = useState(1);
     const coursesPerPage = 12;
+    const [searchParams] = useSearchParams();
 
     // Scroll to search list
     const handleBrowseClick = () => {
@@ -53,12 +55,23 @@ const Courses: React.FC = () => {
 
     // Fetch courses from the server
     useEffect(() => {
-        getCourses().then((data) => {
-            console.log(data);
-            setCourses(data);
-            setFilteredCourses(data);
-        });
-    }, []);
+        const categoryId = searchParams.get("category");
+        if (categoryId) {
+            console.log("Category ID from URL:", categoryId);
+
+            getCourses(`?course_category=${categoryId}`).then((data) => {
+                console.log("Filtered courses:", data);
+                setCourses(data);
+                setFilteredCourses(data);
+            });
+        } else {
+            getCourses().then((data) => {
+                console.log("All courses:", data);
+                setCourses(data);
+                setFilteredCourses(data);
+            });
+        }
+    }, [searchParams]);
 
     // Update filtered courses based on search, tags, and license types
     useEffect(() => {
@@ -70,7 +83,7 @@ const Courses: React.FC = () => {
                 ? selectedTags.some((tag) => course.course_tags.includes(tag))
                 : true;
             const matchesLicense = selectedLicenseTypes.length
-                ? selectedLicenseTypes.includes(course.license_type)
+                ? selectedLicenseTypes.some((type) => course.course_tags.includes(type))
                 : true;
 
             return matchesSearch && matchesTag && matchesLicense;
@@ -114,11 +127,18 @@ const Courses: React.FC = () => {
         indexOfFirstCourse,
         indexOfLastCourse
     );
-
-    // Handle page change
     const handlePageChange = (e: React.ChangeEvent<unknown>, value: number) => {
         setCurrentPage(value);
     };
+
+    useEffect(() => {
+        const tagFromUrl = searchParams.get("tag");
+        if (tagFromUrl) {
+            setSelectedTags((prev) =>
+                prev.includes(tagFromUrl) ? prev : [...prev, tagFromUrl]
+            );
+        }
+    }, [searchParams]); 
 
     return (
         <>
