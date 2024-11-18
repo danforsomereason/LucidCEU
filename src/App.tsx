@@ -9,20 +9,18 @@ import Courses from "./screens/Courses";
 import SignUp from "./screens/SignUp";
 import CourseModule from "./screens/CourseModule";
 import QuizResults from "./screens/QuizResults";
-import CourseDescription from './screens/CourseDescription';
+import CourseDescription from "./screens/CourseDescription";
+import Dashboard from "./screens/Dashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
     const route = (
-        screen: React.ReactNode, 
+        screen: React.ReactNode,
         showNavbar: boolean = true,
-        navbarStyle: 'fixed' | 'static' = 'static'
+        navbarStyle: "fixed" | "static" = "static"
     ) => {
         return (
-            <Layout 
-                showNavbar={showNavbar}
-                navbarStyle={navbarStyle}
-            >
+            <Layout showNavbar={showNavbar} navbarStyle={navbarStyle}>
                 {screen}
             </Layout>
         );
@@ -37,18 +35,22 @@ const App: React.FC = () => {
                     <Route path="/signin" element={route(<SignIn />, false)} />
                     <Route path="/courses" element={route(<Courses />)} />
                     <Route path="/signup" element={route(<SignUp />, false)} />
-                    <Route 
-                        path="/module" 
+                    <Route
+                        path="/module"
                         // Navbar is fixed for Module page
-                        element={route(<CourseModule />, true, 'fixed')} 
+                        element={route(<CourseModule />, true, "fixed")}
                     />
-                    <Route 
-                        path="/quiz-results" 
-                        element={route(<QuizResults />)} 
+                    <Route
+                        path="/quiz-results"
+                        element={route(<QuizResults />)}
                     />
-                    <Route 
-                        path="/course/:courseId" 
-                        element={route(<CourseDescription />, true, 'fixed')} 
+                    <Route
+                        path="/course/:courseId"
+                        element={route(<CourseDescription />, true, "fixed")}
+                    />
+                    <Route
+                        path="/dashboard"
+                        element={route(<Dashboard />, true, "fixed")}
                     />
                 </Routes>
             </Router>

@@ -30,4 +30,8 @@ router.post("/signup", async (req: any, res: any) => {
     }
 });
 
+router.post("/login", localLogin, async (req: any, res: any) => {
+    const token = (req.user as any).generateJWT();
+    res.json({ token });
+});
 export default router;

@@ -1,9 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, TextField, Typography, Box, Link } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { login } from "../requests/user";
+
+interface SignUpFormData {
+    email: string;
+    password: string;
+}
 
 const SignIn: React.FC = () => {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState<SignUpFormData>({
+        email: "",
+        password: "",
+    });
+
+    const handleSignIn = async () => {
+        await login(formData.email, formData.password);
+        navigate("/dashboard");
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     return (
         <Box
@@ -49,6 +72,9 @@ const SignIn: React.FC = () => {
                 <TextField
                     label="Email"
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     variant="outlined"
                     fullWidth
                     sx={{
@@ -70,6 +96,9 @@ const SignIn: React.FC = () => {
                 <TextField
                     label="Password"
                     type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
                     variant="outlined"
                     fullWidth
                     sx={{
@@ -89,6 +118,7 @@ const SignIn: React.FC = () => {
                 />
 
                 <Button
+                    onClick={handleSignIn}
                     variant="contained"
                     fullWidth
                     sx={{
