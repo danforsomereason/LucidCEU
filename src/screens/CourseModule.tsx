@@ -16,6 +16,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
+import { useLocation } from 'react-router-dom';
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -95,6 +96,8 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
+    const location = useLocation();
+    const { courseId } = location.state || {};
     const [modules, setModules] = useState<Module[]>([]);
     const [loading, setLoading] = useState(true);
     const [completedModules, setCompletedModules] = useState<string[]>([]);
@@ -107,7 +110,7 @@ const CourseModule: React.FC = () => {
         const fetchModules = async () => {
             try {
                 const courseResponse = await fetch(
-                    "http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40",
+                    `http://localhost:5001/api/v1/courses/${courseId}`,
                     {
                         headers: {
                             "Content-Type": "application/json",
@@ -172,8 +175,11 @@ const CourseModule: React.FC = () => {
                 setLoading(false);
             }
         };
-        fetchModules();
-    }, []);
+        
+        if (courseId) {
+            fetchModules();
+        }
+    }, [courseId]);
 
     // Add loading state handling
     if (loading) {

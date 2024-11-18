@@ -60,13 +60,19 @@ const Courses: React.FC = () => {
             console.log("Category ID from URL:", categoryId);
 
             getCourses(`?course_category=${categoryId}`).then((data) => {
-                console.log("Filtered courses:", data);
+                // console.log("Course data structure:", data[0]);
+                // console.log("Course ID type:", typeof data[0]._id);
+                // console.log("Course ID value:", data[0]._id);
+                // console.log("Filtered courses:", data);
                 setCourses(data);
                 setFilteredCourses(data);
             });
         } else {
             getCourses().then((data) => {
-                console.log("All courses:", data);
+                // console.log("Course data structure:", data[0]);
+                // console.log("Course ID type:", typeof data[0]._id);
+                // console.log("Course ID value:", data[0]._id);
+                // console.log("All courses:", data);
                 setCourses(data);
                 setFilteredCourses(data);
             });
