@@ -9,7 +9,7 @@ interface ICourse extends Document {
     course_description: string;
     course_instructor: string;
     course_price: number;
-    course_sections: string[];
+    course_modules: string[];
     url: string;
     approved_by?: Array<{
         board: "NBCC" | "APA" | "ASWB" | "NAADAC" | "CAMFT" | "Nursing";
@@ -26,7 +26,7 @@ const CourseSchema: Schema = new Schema({
     course_instructor: { type: String, required: true },
     course_price: { type: Number, required: true },
     course_description: { type: String, required: true },
-    course_sections: { type: [String], required: true },
+    course_modules: { type: [String], required: true },
     url: { type: String, required: true },
     approved_by: [
         {

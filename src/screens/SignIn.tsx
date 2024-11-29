@@ -9,19 +9,48 @@ interface SignUpFormData {
 }
 
 const SignIn: React.FC = () => {
+    // navigate to the dashboard page after successful login
     const navigate = useNavigate();
+
+    // Create a state to store the form data
+    // SignUpFormData is an interface that defines the shape of the form data, so the angle brackets are used to create a state of that type
+    // Iniitially, the form data is an empty object with empty strings for both fields
+    // Remember, that as a user types in the form, the state is updated and the component is re-rendered
     const [formData, setFormData] = useState<SignUpFormData>({
         email: "",
         password: "",
     });
 
+    // Create a state to store an error message
+    const [error, setError] = useState<string>("");
+
+    // Function to handle the sign in process
     const handleSignIn = async () => {
-        await login(formData.email, formData.password);
-        navigate("/dashboard");
+        // Attempting to login with the provided email and password
+        try {
+            // Call the login function imported from requests/user.ts
+            // This is an async operation that returns a Promise, so we use await
+            // We pass the email and password from our form state as arguments
+            await login(formData.email, formData.password);
+
+            // After successful login, use the navigate function from react-router-dom
+            // to programmatically redirect the user to the dashboard page
+            // The navigate function accepts a path string as an argument
+            // In App.tsx, the dashboard path is defined as "/dashboard"
+            navigate("/dashboard");
+        } catch (err) {
+            setError("Invalid email or password");
+        }
     };
 
+    // Function to handle the change in the form fields
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // name here is the name of the input field, value is the value of the input field
+        // for instance, instead of saying const name = e.target.name and const value = e.target.value,we can say const { name, value } = e.target;
         const { name, value } = e.target;
+        setError("");
+        // Update corresponding field in the form data
+        // prev is the previous state, we spread it to keep the other fields the same and then update the field that changed
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -116,7 +145,9 @@ const SignIn: React.FC = () => {
                         },
                     }}
                 />
-
+                {error && (
+                    <Typography sx={{ color: "red" }}>{error}</Typography>
+                )}
                 <Button
                     onClick={handleSignIn}
                     variant="contained"

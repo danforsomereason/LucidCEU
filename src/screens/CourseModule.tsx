@@ -170,7 +170,7 @@ const CourseModule: React.FC = () => {
                 setCurrentModuleId(sortedModules[0]?._id || "");
             } catch (error) {
                 console.error("Detailed fetch error:", error);
-                setModules([]); // Set empty modules on error
+                setModules([]); 
             } finally {
                 setLoading(false);
             }
@@ -201,7 +201,7 @@ const CourseModule: React.FC = () => {
 
     const currentModule = modules.find((m) => m._id === currentModuleId);
 
-    // Calculate progress based on completed modules
+
     const progress = (completedModules.length / modules.length) * 100;
 
     // Helper function to check if a module is accessible
@@ -324,6 +324,17 @@ const CourseModule: React.FC = () => {
                     variant="contained"
                     color="primary"
                     startIcon={<HelpOutlineIcon />}
+                    onClick={() => {
+                        alert(
+                            "Course Instructions:\n\n" +
+                            "1. Read through each module carefully\n" +
+                            "2. Complete modules in order - they unlock sequentially\n" + 
+                            "3. Click 'NEXT' at the bottom of each section\n" +
+                            "4. After finishing all modules, take the course quiz\n" +
+                            "5. Pass the quiz to receive your certificate\n\n" +
+                            "Need more help? Contact support@lucidceu.com"
+                        );
+                    }}
                 >
                     HELP
                 </HelpButton>

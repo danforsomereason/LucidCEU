@@ -31,7 +31,22 @@ router.post("/signup", async (req: any, res: any) => {
 });
 
 router.post("/login", localLogin, async (req: any, res: any) => {
-    const token = (req.user as any).generateJWT();
-    res.json({ token });
+    const email = req.body.email;
+
+    const password = req.body.password;
+    try {
+        const existingUser = await User.findOne({
+            email,
+            dt_deleted: null,
+        });
+        if (existingUser) {
+            const token = (req.user as any).generateJWT();
+            res.json({ token });
+        
+        }
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
 });
 export default router;
