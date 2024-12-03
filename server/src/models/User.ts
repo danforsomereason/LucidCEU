@@ -6,12 +6,13 @@ interface IUser extends Document {
     first_name: string;
     last_name: string;
     email: string;
-    role: "admin" | "user" | "guest" | "instructor";
+    role: mongoose.Types.ObjectId;
     password_hash: string;
     salt: string;
     course_progress: mongoose.Types.ObjectId[];
     certificates: mongoose.Types.ObjectId[];
     survey_responses: mongoose.Types.ObjectId[];
+    organization: mongoose.Types.ObjectId;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -19,7 +20,7 @@ const UserSchema = new Schema<IUser>(
         first_name: { type: String, required: true },
         last_name: { type: String, required: true },
         email: { type: String, required: true },
-        role: { type: String, required: true, default: "user" },
+        role: { type: Schema.Types.ObjectId, required: true, default: "user" },
         password_hash: { type: String, required: true },
         salt: { type: String, required: true },
         course_progress: [
@@ -29,6 +30,7 @@ const UserSchema = new Schema<IUser>(
         survey_responses: [
             { type: Schema.Types.ObjectId, ref: "SurveyResponse" },
         ],
+        organization: [{type: Schema.Types.ObjectId, ref: "Organization"}]
     },
     {
         timestamps: {

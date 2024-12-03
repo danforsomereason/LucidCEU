@@ -49,6 +49,7 @@ const SignUp: React.FC = () => {
             first_name: formData.firstName,
             last_name: formData.lastName,
         };
+        
         const response = await createUser(userData, formData.password);
         console.log(response);
     };
