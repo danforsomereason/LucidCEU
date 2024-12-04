@@ -13,11 +13,13 @@ import {
     FormControlLabel,
     Checkbox,
     Box,
+    SelectChangeEvent,
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import CourseCard from "../components/CourseCard";
 import { getCourses } from "../requests/courses";
 import "../styles/Courses.css";
+import { useSearchParams } from "react-router-dom";
 
 const tags = [
     "Human Resources",
@@ -42,6 +44,7 @@ const Courses: React.FC = () => {
     const [sortOption, setSortOption] = useState("recommended");
     const [currentPage, setCurrentPage] = useState(1);
     const coursesPerPage = 12;
+    const [searchParams] = useSearchParams();
 
     // Scroll to search list
     const handleBrowseClick = () => {
@@ -52,12 +55,29 @@ const Courses: React.FC = () => {
 
     // Fetch courses from the server
     useEffect(() => {
-        getCourses().then((data) => {
-            console.log(data);
-            setCourses(data);
-            setFilteredCourses(data);
-        });
-    }, []);
+        const categoryId = searchParams.get("category");
+        if (categoryId) {
+            console.log("Category ID from URL:", categoryId);
+
+            getCourses(`?course_category=${categoryId}`).then((data) => {
+                // console.log("Course data structure:", data[0]);
+                // console.log("Course ID type:", typeof data[0]._id);
+                // console.log("Course ID value:", data[0]._id);
+                // console.log("Filtered courses:", data);
+                setCourses(data);
+                setFilteredCourses(data);
+            });
+        } else {
+            getCourses().then((data) => {
+                // console.log("Course data structure:", data[0]);
+                // console.log("Course ID type:", typeof data[0]._id);
+                // console.log("Course ID value:", data[0]._id);
+                // console.log("All courses:", data);
+                setCourses(data);
+                setFilteredCourses(data);
+            });
+        }
+    }, [searchParams]);
 
     // Update filtered courses based on search, tags, and license types
     useEffect(() => {
@@ -69,7 +89,7 @@ const Courses: React.FC = () => {
                 ? selectedTags.some((tag) => course.course_tags.includes(tag))
                 : true;
             const matchesLicense = selectedLicenseTypes.length
-                ? selectedLicenseTypes.includes(course.license_type)
+                ? selectedLicenseTypes.some((type) => course.course_tags.includes(type))
                 : true;
 
             return matchesSearch && matchesTag && matchesLicense;
@@ -96,8 +116,8 @@ const Courses: React.FC = () => {
         );
     };
 
-    const handleSortChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-        setSortOption(e.target.value as string);
+    const handleSortChange = (event: SelectChangeEvent<string>) => {
+        setSortOption(event.target.value);
     };
 
     const handleClearFilters = () => {
@@ -113,11 +133,18 @@ const Courses: React.FC = () => {
         indexOfFirstCourse,
         indexOfLastCourse
     );
-
-    // Handle page change
     const handlePageChange = (e: React.ChangeEvent<unknown>, value: number) => {
         setCurrentPage(value);
     };
+
+    useEffect(() => {
+        const tagFromUrl = searchParams.get("tag");
+        if (tagFromUrl) {
+            setSelectedTags((prev) =>
+                prev.includes(tagFromUrl) ? prev : [...prev, tagFromUrl]
+            );
+        }
+    }, [searchParams]); 
 
     return (
         <>
@@ -135,7 +162,7 @@ const Courses: React.FC = () => {
                 <Typography variant="h2" gutterBottom>
                     All the courses you need - in one place.
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom component="div">
                     <Box>
                         Find the perfect course for you, whether you're looking
                         to learn a new skill, maintain your licensure, or stay
@@ -189,7 +216,6 @@ const Courses: React.FC = () => {
                                 borderColor: "var(--color-indigo-450)",
                             },
                         }}
-                        defaultValue="recommended"
                     />
                     <FormControl variant="outlined">
                         <InputLabel sx={{ color: "var(--color-indigo-450)" }}>
@@ -197,7 +223,8 @@ const Courses: React.FC = () => {
                         </InputLabel>
                         <Select
                             label="Sort By"
-                            defaultValue="recommended"
+                            value={sortOption}
+                            onChange={handleSortChange}
                             sx={{
                                 backgroundColor: "var(--white-color)",
                                 "& .MuiOutlinedInput-notchedOutline": {

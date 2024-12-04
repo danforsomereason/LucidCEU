@@ -16,6 +16,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
+import { useLocation } from 'react-router-dom';
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -95,6 +96,8 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
+    const location = useLocation();
+    const { courseId } = location.state || {};
     const [modules, setModules] = useState<Module[]>([]);
     const [loading, setLoading] = useState(true);
     const [completedModules, setCompletedModules] = useState<string[]>([]);
@@ -106,18 +109,14 @@ const CourseModule: React.FC = () => {
     useEffect(() => {
         const fetchModules = async () => {
             try {
-                // Add error logging for debugging
                 const courseResponse = await fetch(
-                    "http://localhost:5001/api/v1/courses/6716bd8a6ac3f9aac2507b40",
+                    `http://localhost:5001/api/v1/courses/${courseId}`,
                     {
                         headers: {
                             "Content-Type": "application/json",
                         },
                     }
                 );
-
-                // Log raw response
-                console.log("Course Response:", courseResponse);
 
                 if (!courseResponse.ok) {
                     throw new Error(
@@ -126,11 +125,6 @@ const CourseModule: React.FC = () => {
                 }
 
                 const courseData = await courseResponse.json();
-                // Log full course data structure
-                console.log(
-                    "Course data structure:",
-                    JSON.stringify(courseData, null, 2)
-                );
 
                 if (
                     !courseData.course_modules ||
@@ -157,9 +151,6 @@ const CourseModule: React.FC = () => {
                     }
                 );
 
-                // Log modules response
-                console.log("Modules Response:", modulesResponse);
-
                 if (!modulesResponse.ok) {
                     throw new Error(
                         `HTTP error! status: ${modulesResponse.status}`
@@ -167,11 +158,6 @@ const CourseModule: React.FC = () => {
                 }
 
                 const modulesData = await modulesResponse.json();
-                // Log full modules data structure
-                console.log(
-                    "Modules data structure:",
-                    JSON.stringify(modulesData, null, 2)
-                );
 
                 if (!Array.isArray(modulesData)) {
                     throw new Error("Modules data is not an array");
@@ -184,13 +170,16 @@ const CourseModule: React.FC = () => {
                 setCurrentModuleId(sortedModules[0]?._id || "");
             } catch (error) {
                 console.error("Detailed fetch error:", error);
-                setModules([]); // Set empty modules on error
+                setModules([]); 
             } finally {
                 setLoading(false);
             }
         };
-        fetchModules();
-    }, []);
+        
+        if (courseId) {
+            fetchModules();
+        }
+    }, [courseId]);
 
     // Add loading state handling
     if (loading) {
@@ -212,12 +201,7 @@ const CourseModule: React.FC = () => {
 
     const currentModule = modules.find((m) => m._id === currentModuleId);
 
-    // Debug current module
-    console.log("Current module:", currentModule);
-    console.log("All modules:", modules);
-    console.log("Completed modules:", completedModules);
 
-    // Calculate progress based on completed modules
     const progress = (completedModules.length / modules.length) * 100;
 
     // Helper function to check if a module is accessible
@@ -340,6 +324,17 @@ const CourseModule: React.FC = () => {
                     variant="contained"
                     color="primary"
                     startIcon={<HelpOutlineIcon />}
+                    onClick={() => {
+                        alert(
+                            "Course Instructions:\n\n" +
+                            "1. Read through each module carefully\n" +
+                            "2. Complete modules in order - they unlock sequentially\n" + 
+                            "3. Click 'NEXT' at the bottom of each section\n" +
+                            "4. After finishing all modules, take the course quiz\n" +
+                            "5. Pass the quiz to receive your certificate\n\n" +
+                            "Need more help? Contact support@lucidceu.com"
+                        );
+                    }}
                 >
                     HELP
                 </HelpButton>
@@ -362,10 +357,6 @@ const CourseModule: React.FC = () => {
                 {/* Show quiz when all modules are completed */}
                 {completedModules.length === modules.length ? (
                     <>
-                        {console.log(
-                            "Passing courseId:",
-                            modules[0]?.course_id
-                        )}
                         <CourseQuiz
                             courseId={modules[0]?.course_id || ""}
                             onQuizComplete={handleQuizComplete}

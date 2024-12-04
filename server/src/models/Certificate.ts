@@ -4,6 +4,7 @@ interface IssueHistory {
     issued_at: Date;
     certificate_number: string;
     quiz_score: number;
+    certificate_url?: string;
 }
 
 interface ICertificate extends Document {
@@ -14,6 +15,7 @@ interface ICertificate extends Document {
         issued_at: Date;
         certificate_number: string;
         quiz_score: number;
+        certificate_url?: string;
     }>;
     approved_by: Array<{
         board: "NBCC" | "APA" | "ASWB" | "NAADAC" | "CAMFT" | "Nursing";
@@ -31,6 +33,7 @@ const CertificateSchema: Schema = new Schema({
             issued_at: { type: Date, default: Date.now },
             certificate_number: { type: String, required: true },
             quiz_score: { type: Number, required: true },
+            certificate_url: { type: String, required: false },
         },
     ],
     approved_by: [

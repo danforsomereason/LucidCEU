@@ -22,6 +22,10 @@ const NavBar: React.FC = () => {
         setAnchorEl(null);
     };
 
+    const token = localStorage.getItem("token");
+
+
+
     return (
         <AppBar
             position="static"
@@ -93,10 +97,18 @@ const NavBar: React.FC = () => {
                 <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => navigate("/signin")}
+                    onClick={() => {
+                        if (token) {
+                            localStorage.removeItem("token");
+                            navigate("/");
+                        } else {
+                            navigate("/signin");
+                        }
+
+                    }}
                     sx={{ display: { xs: "none", md: "block" } }}
                 >
-                    Sign In
+                    {token ? "Log Out" : "Sign In"}
                 </Button>
 
                 {/* Hamburger IconButton for mobile screen sizes */}

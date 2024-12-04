@@ -53,19 +53,8 @@ const Hero: React.FC = () => {
                 </Typography>
                 <div className="category-grid">
                     {categories.map((category: any) => (
-                        <div
-                            key={category._id}
-                            onClick={() => {
-                                getCourses(
-                                    `course_category=${category._id}`
-                                ).then((data) => {
-                                    console.log(data);
-                                });
-                            }}
-                        >
-                            <CategoryCard
-                                courseCategory={category}
-                            ></CategoryCard>
+                        <div key={category._id}>
+                            <CategoryCard courseCategory={category} />
                         </div>
                     ))}
                 </div>

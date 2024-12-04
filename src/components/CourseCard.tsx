@@ -1,17 +1,68 @@
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardHeader from "@mui/material/CardHeader";
-import React from "react";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    Box,
+    CardActionArea,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-const CourseCard: React.FC<any> = ({ course }) => {
+interface CourseCardProps {
+    course: {
+        _id: string;
+        course_name: string;
+        course_description: string;
+        ce_hours: number;
+    };
+    className?: string;
+}
+
+const CourseCard: React.FC<CourseCardProps> = ({ course, className }) => {
+    const navigate = useNavigate();
+
+    const handleViewDetails = () => {
+        navigate(`/course/${course._id}`);
+    };
+
     return (
-        <Card className="course-card">
+        <Card className={`course-card ${className || ""}`}>
             <CardHeader
                 className="course-card-header"
                 title={course.course_name}
+                sx={{
+                    pb: 0,
+                    "& .MuiCardHeader-content": {
+                        "& .MuiCardHeader-title": {
+                            fontSize: "1.25rem",
+                            fontWeight: "bold",
+                        },
+                    },
+                }}
             />
-            <CardContent className="course-card-content">
+            <CardContent
+                className="course-card-content"
+                sx={{ pt: 0, position: "relative", height: "100%" }}
+            >
                 <p>{course.course_description}</p>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 0,
+                    }}
+                >
+                    <p>CE Hours: {course.ce_hours}</p>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleViewDetails}
+                        sx={{ mt: 0, padding: '4px 12px' }}
+                    >
+                        View Details
+                    </Button>
+                </Box>
             </CardContent>
         </Card>
     );
