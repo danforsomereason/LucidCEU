@@ -13,6 +13,7 @@ interface IUser extends Document {
     certificates: mongoose.Types.ObjectId[];
     survey_responses: mongoose.Types.ObjectId[];
     organization: mongoose.Types.ObjectId;
+    license_type: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -30,7 +31,8 @@ const UserSchema = new Schema<IUser>(
         survey_responses: [
             { type: Schema.Types.ObjectId, ref: "SurveyResponse" },
         ],
-        organization: [{type: Schema.Types.ObjectId, ref: "Organization"}]
+        organization: [{type: Schema.Types.ObjectId, ref: "Organization"}],
+        license_type: { type: String, required: true },
     },
     {
         timestamps: {

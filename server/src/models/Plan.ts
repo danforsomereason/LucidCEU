@@ -2,21 +2,28 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IPlan extends Document {
     name: string;
-    price: number;
+    basePrice: number;
+    userLimit: number;
+    includedAdmins: number;
+    additionalAdminPrice: number;
+    instructorPrice: number;
     features: string[];
-    max_users: number;
-    max_courses: number;
+    storageLimit: number; // in GB
+    additionalStoragePrice: number; // price per additional GB
     is_active: boolean;
 }
 
 const PlanSchema = new Schema<IPlan>(
     {
         name: { type: String, required: true },
-        price: { type: Number, required: true },
-        // price per seat
+        basePrice: { type: Number, required: true },
+        userLimit: { type: Number, required: true },
+        includedAdmins: { type: Number, required: true, default: 1 },
+        additionalAdminPrice: { type: Number, required: true, default: 20 },
+        instructorPrice: { type: Number, required: true, default: 100 },
         features: [{ type: String, required: true }],
-        max_users: { type: Number, required: true },
-        max_courses: { type: Number, required: true },
+        storageLimit: { type: Number, required: true }, // in GB
+        additionalStoragePrice: { type: Number, required: true }, // price per GB
         is_active: { type: Boolean, required: true, default: true },
     },
     {

@@ -11,6 +11,9 @@ import CourseModule from "./screens/CourseModule";
 import QuizResults from "./screens/QuizResults";
 import CourseDescription from "./screens/CourseDescription";
 import Dashboard from "./screens/Dashboard";
+import IndividualCheckout from "./screens/signup/IndividualCheckout";
+import TeamOrgSignup from "./screens/signup/TeamOrgSignup";
+import EnterpriseSignup from "./screens/signup/EnterpriseSignup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
@@ -34,7 +37,19 @@ const App: React.FC = () => {
                     <Route path="/membership" element={route(<Membership />)} />
                     <Route path="/signin" element={route(<SignIn />, false)} />
                     <Route path="/courses" element={route(<Courses />)} />
-                    <Route path="/signup" element={route(<SignUp />, false)} />
+                    <Route path="/signup" element={route(<SignUp />)} />
+                    <Route
+                        path="/signup/individual"
+                        element={route(<IndividualCheckout />)}
+                    />
+                    <Route
+                        path="/signup/team-org"
+                        element={route(<TeamOrgSignup />)}
+                    />
+                    <Route
+                        path="/signup/enterprise"
+                        element={route(<EnterpriseSignup />)}
+                    />
                     <Route
                         path="/module"
                         // Navbar is fixed for Module page
