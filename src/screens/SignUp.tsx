@@ -189,7 +189,9 @@ const PricingPlans: React.FC = () => {
                                     variant="contained"
                                     size="large"
                                     fullWidth
-                                    onClick={() => handlePlanSelection(plan.title)}
+                                    onClick={() =>
+                                        handlePlanSelection(plan.title)
+                                    }
                                     sx={{
                                         mt: 4,
                                         py: 1.5,
@@ -285,7 +287,7 @@ const PricingPlans: React.FC = () => {
                                     </Typography>
                                     <Box sx={{ mt: 1 }}>
                                         <Typography>
-                                            • Custom Solutions
+                                            • Priority Support
                                         </Typography>
                                         <Typography>
                                             • Enterprise Dashboard

@@ -18,6 +18,7 @@ import {
     InputLabel,
     SelectChangeEvent,
 } from "@mui/material";
+import { format, addYears } from "date-fns";
 
 interface UserFormData {
     first_name: string;
@@ -27,7 +28,6 @@ interface UserFormData {
     confirm_password: string;
     license_type: string;
     has_organization: boolean;
-    organization?: string;
 }
 
 const steps = ["Account Details", "Payment Information", "Review"];
@@ -114,7 +114,13 @@ const IndividualCheckout: React.FC = () => {
                                 <Typography color="text.secondary">
                                     Duration
                                 </Typography>
-                                <Typography>1 Year</Typography>
+                                <Typography>
+                                    {format(new Date(), "MM/dd/yyyy")} -{" "}
+                                    {format(
+                                        addYears(new Date(), 1),
+                                        "MM/dd/yyyy"
+                                    )}
+                                </Typography>
                             </Box>
                             <Box
                                 sx={{
@@ -245,14 +251,13 @@ const IndividualCheckout: React.FC = () => {
 
                                 {formData.has_organization && (
                                     <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Organization Name"
-                                            name="organization"
-                                            value={formData.organization || ""}
-                                            onChange={handleTextFieldChange}
-                                            helperText="Enter your organization name. Your enrollment will need to be verified by your organization's admin."
-                                        />
+                                        <Typography color="text.secondary">
+                                            Your enrollment will need to be
+                                            verified by your organization's
+                                            admin. You may register your
+                                            information now and you will not be
+                                            charged.
+                                        </Typography>
                                     </Grid>
                                 )}
                             </Grid>
