@@ -20,6 +20,7 @@ const OrganizationSchema = new Schema<IOrganization>(
         },
         plan_id: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
         owner: { type: Schema.Types.ObjectId, ref: "Organization" },
+
     },
     {
         timestamps: {

@@ -1,11 +1,13 @@
 import axios from "axios";
+import mongoose from "mongoose";
 
 export async function createUser(userData: any, password: string) {
     const response = await axios.post(
         `http://localhost:5001/api/v1/user/signup`,
         { user: userData, password }
     );
-    localStorage.setItem("token", response.data.token);
+    // move this to the login function
+    // localStorage.setItem("token", response.data.token);
     return response.data;
 }
 
@@ -16,5 +18,55 @@ export async function login(email: string, password: string) {
         { email, password }
     );
     localStorage.setItem("token", response.data.token);
+    return response.data;
+}
+
+export async function updateUser(userData: any) {
+    const response = await axios.put(
+        `http://localhost:5001/api/v1/user/update`,
+        userData
+    );
+    return response.data;
+}
+
+// used onBlur to check if email exists in users collection
+export async function checkUserExists(email: string) {
+    const response = await axios.get(
+        `http://localhost:5001/api/v1/user/check-exists/${email}`
+    );
+    return response.data;
+}
+
+// check if email & organization id exists in verified_users collection
+export async function checkOrganizationVerification(email: string) {
+    const response = await axios.get(
+        `http://localhost:5001/api/v1/user/check-verification/${email}`
+    );
+    return response.data;
+}
+
+// For registered organization users (immediate creation)
+export async function createOrganizationUser(userData: any, password: string) {
+    const response = await axios.post(
+        `http://localhost:5001/api/v1/user/signup/organization`,
+        { user: userData, password }
+    );
+    return response.data;
+}
+
+// For personal users (after payment)
+export async function createPersonalUser(
+    userData: any,
+    password: string,
+    paymentIntent: string
+) {
+    const response = await axios.post(
+        `http://localhost:5001/api/v1/user/signup/personal`,
+        {
+            user: userData,
+            password,
+            paymentIntent, // Stripe payment intent ID for verification
+        }
+    );
     return response.data;
 }
