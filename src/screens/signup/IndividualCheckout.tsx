@@ -45,6 +45,9 @@ const LICENSE_TYPES = [
     "Marriage & Family Therapist",
     "Licensed Drug and Alcohol Counselor (e.g., LADAC, LCDC)",
     "Nurse",
+    "Psychologist",
+    "MD, DO, NP, PA",
+    "Other",
     "Not Applicable",
 ] as const;
 
@@ -66,7 +69,9 @@ const IndividualCheckout: React.FC = () => {
     const [verificationMessage, setVerificationMessage] = useState<
         string | null
     >(null);
-    const [existingUserMessage, setExistingUserMessage] = useState<string | null>(null);
+    const [existingUserMessage, setExistingUserMessage] = useState<
+        string | null
+    >(null);
 
     const handleTextFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -106,11 +111,13 @@ const IndividualCheckout: React.FC = () => {
     const checkExistingUser = async (e: React.FocusEvent<HTMLInputElement>) => {
         const email = e.target.value;
         if (!email) return;
-        
+
         try {
             const result = await checkUserExists(email);
             if (result.exists) {
-                setExistingUserMessage("This email is already registered. Would you like to sign in?");
+                setExistingUserMessage(
+                    "This email is already registered. Would you like to sign in?"
+                );
             } else {
                 setExistingUserMessage(null);
             }
@@ -129,8 +136,10 @@ const IndividualCheckout: React.FC = () => {
                 return;
             }
 
-            const verificationResult = await checkOrganizationVerification(formData.email);
-            
+            const verificationResult = await checkOrganizationVerification(
+                formData.email
+            );
+
             if (verificationResult.exists) {
                 await createUser(formData, formData.password);
                 setActiveStep(2);
@@ -141,7 +150,9 @@ const IndividualCheckout: React.FC = () => {
             }
         } catch (error) {
             console.error("Error during signup:", error);
-            setVerificationMessage("An error occurred during signup. Please try again.");
+            setVerificationMessage(
+                "An error occurred during signup. Please try again."
+            );
         }
     };
 
@@ -151,7 +162,9 @@ const IndividualCheckout: React.FC = () => {
             setActiveStep(2);
         } catch (error) {
             console.error("Error creating user:", error);
-            setVerificationMessage("Payment successful but account creation failed. Please contact support.");
+            setVerificationMessage(
+                "Payment successful but account creation failed. Please contact support."
+            );
         }
     };
 

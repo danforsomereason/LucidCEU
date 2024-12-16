@@ -6,7 +6,7 @@ interface IOrganization extends Document {
 
     plan_id: mongoose.Types.ObjectId;
     admins: mongoose.Types.ObjectId[];
-    owner: mongoose.Types.ObjectId;
+    parent_org: mongoose.Types.ObjectId;
 }
 
 const OrganizationSchema = new Schema<IOrganization>(
@@ -19,8 +19,7 @@ const OrganizationSchema = new Schema<IOrganization>(
             required: true,
         },
         plan_id: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
-        owner: { type: Schema.Types.ObjectId, ref: "Organization" },
-
+        parent_org: { type: Schema.Types.ObjectId, ref: "Organization" },
     },
     {
         timestamps: {
