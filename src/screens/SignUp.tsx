@@ -4,11 +4,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import GroupsIcon from "@mui/icons-material/Groups";
 import BusinessIcon from "@mui/icons-material/Business";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
-import DownloadIcon from "@mui/icons-material/Download";
 import CreateIcon from "@mui/icons-material/Create";
-import SchoolIcon from "@mui/icons-material/School";
 import SupportIcon from "@mui/icons-material/Support";
 import { useNavigate } from "react-router-dom";
 
@@ -189,7 +186,9 @@ const PricingPlans: React.FC = () => {
                                     variant="contained"
                                     size="large"
                                     fullWidth
-                                    onClick={() => handlePlanSelection(plan.title)}
+                                    onClick={() =>
+                                        handlePlanSelection(plan.title)
+                                    }
                                     sx={{
                                         mt: 4,
                                         py: 1.5,
@@ -284,9 +283,7 @@ const PricingPlans: React.FC = () => {
                                         Discounted Pricing
                                     </Typography>
                                     <Box sx={{ mt: 1 }}>
-                                        <Typography>
-                                            • Custom Solutions
-                                        </Typography>
+                                        <Typography>• Payment Plans</Typography>
                                         <Typography>
                                             • Enterprise Dashboard
                                         </Typography>
@@ -318,8 +315,6 @@ const PricingPlans: React.FC = () => {
                             </Button>
                         </Box>
                     </Box>
-
-                    {/* Gradient overlay effects */}
                     <Box
                         sx={{
                             position: "absolute",

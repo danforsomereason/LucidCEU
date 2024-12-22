@@ -6,6 +6,7 @@ interface IPlan extends Document {
     userLimit: number;
     includedAdmins: number;
     additionalAdminPrice: number;
+    instructors: mongoose.Types.ObjectId[];
     instructorPrice: number;
     features: string[];
     storageLimit: number; // in GB
@@ -19,6 +20,7 @@ const PlanSchema = new Schema<IPlan>(
         basePrice: { type: Number, required: true },
         userLimit: { type: Number, required: true },
         includedAdmins: { type: Number, required: true, default: 1 },
+        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         additionalAdminPrice: { type: Number, required: true, default: 20 },
         instructorPrice: { type: Number, required: true, default: 100 },
         features: [{ type: String, required: true }],

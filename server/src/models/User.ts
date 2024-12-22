@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
-interface IUser extends Document {
+export interface IUser extends Document {
     first_name: string;
     last_name: string;
     email: string;

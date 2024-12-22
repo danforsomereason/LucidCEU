@@ -9,6 +9,8 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router-dom";
+import { globalContext } from "../context/globalContext";
+import { useContext } from "react";
 
 const NavBar: React.FC = () => {
     const navigate = useNavigate();
@@ -23,8 +25,6 @@ const NavBar: React.FC = () => {
     };
 
     const token = localStorage.getItem("token");
-
-
 
     return (
         <AppBar
@@ -104,7 +104,6 @@ const NavBar: React.FC = () => {
                         } else {
                             navigate("/signin");
                         }
-
                     }}
                     sx={{ display: { xs: "none", md: "block" } }}
                 >

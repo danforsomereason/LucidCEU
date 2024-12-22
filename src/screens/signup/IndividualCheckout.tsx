@@ -17,7 +17,15 @@ import {
     FormControl,
     InputLabel,
     SelectChangeEvent,
+    Link,
 } from "@mui/material";
+import { format, addYears } from "date-fns";
+import {
+    createUser,
+    checkOrganizationVerification,
+    updateUser,
+    checkUserExists,
+} from "../../requests/user";
 
 interface UserFormData {
     first_name: string;
@@ -27,7 +35,6 @@ interface UserFormData {
     confirm_password: string;
     license_type: string;
     has_organization: boolean;
-    organization?: string;
 }
 
 const steps = ["Account Details", "Payment Information", "Review"];
@@ -38,6 +45,9 @@ const LICENSE_TYPES = [
     "Marriage & Family Therapist",
     "Licensed Drug and Alcohol Counselor (e.g., LADAC, LCDC)",
     "Nurse",
+    "Psychologist",
+    "MD, DO, NP, PA",
+    "Other",
     "Not Applicable",
 ] as const;
 
@@ -52,6 +62,16 @@ const IndividualCheckout: React.FC = () => {
         license_type: "",
         has_organization: false,
     });
+
+    const [formErrors, setFormErrors] = useState<{ message: string } | null>(
+        null
+    );
+    const [verificationMessage, setVerificationMessage] = useState<
+        string | null
+    >(null);
+    const [existingUserMessage, setExistingUserMessage] = useState<
+        string | null
+    >(null);
 
     const handleTextFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -76,6 +96,76 @@ const IndividualCheckout: React.FC = () => {
             ...prev,
             has_organization: e.target.checked,
         }));
+    };
+
+    const validateConfirmPassword = (e: React.FocusEvent<HTMLInputElement>) => {
+        if (e.target.value !== formData.password) {
+            setFormErrors({
+                message: "Please ensure your fields are entered correctly",
+            });
+        } else {
+            setFormErrors(null);
+        }
+    };
+
+    const checkExistingUser = async (e: React.FocusEvent<HTMLInputElement>) => {
+        const email = e.target.value;
+        if (!email) return;
+
+        try {
+            const result = await checkUserExists(email);
+            if (result.exists) {
+                setExistingUserMessage(
+                    "This email is already registered. Would you like to sign in?"
+                );
+            } else {
+                setExistingUserMessage(null);
+            }
+        } catch (error) {
+            console.error("Error checking user:", error);
+        }
+    };
+
+    const handleNext = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (formErrors) return;
+
+        try {
+            if (!formData.has_organization) {
+                setActiveStep(1);
+                return;
+            }
+
+            const verificationResult = await checkOrganizationVerification(
+                formData.email
+            );
+
+            if (verificationResult.exists) {
+                await createUser(formData, formData.password);
+                setActiveStep(2);
+            } else {
+                setVerificationMessage(
+                    "Unable to verify organization membership. Please contact your organization administrator to be registered."
+                );
+            }
+        } catch (error) {
+            console.error("Error during signup:", error);
+            setVerificationMessage(
+                "An error occurred during signup. Please try again."
+            );
+        }
+    };
+
+    const handlePaymentSuccess = async () => {
+        try {
+            await createUser(formData, formData.password);
+            setActiveStep(2);
+        } catch (error) {
+            console.error("Error creating user:", error);
+            setVerificationMessage(
+                "Payment successful but account creation failed. Please contact support."
+            );
+        }
     };
 
     return (
@@ -114,7 +204,13 @@ const IndividualCheckout: React.FC = () => {
                                 <Typography color="text.secondary">
                                     Duration
                                 </Typography>
-                                <Typography>1 Year</Typography>
+                                <Typography>
+                                    {format(new Date(), "MM/dd/yyyy")} -{" "}
+                                    {format(
+                                        addYears(new Date(), 1),
+                                        "MM/dd/yyyy"
+                                    )}
+                                </Typography>
                             </Box>
                             <Box
                                 sx={{
@@ -180,6 +276,7 @@ const IndividualCheckout: React.FC = () => {
                                         type="email"
                                         value={formData.email}
                                         onChange={handleTextFieldChange}
+                                        onBlur={checkExistingUser}
                                         autoComplete="email"
                                     />
                                 </Grid>
@@ -204,6 +301,7 @@ const IndividualCheckout: React.FC = () => {
                                         type="password"
                                         value={formData.confirm_password}
                                         onChange={handleTextFieldChange}
+                                        onBlur={validateConfirmPassword}
                                         autoComplete="new-password"
                                     />
                                 </Grid>
@@ -245,15 +343,31 @@ const IndividualCheckout: React.FC = () => {
 
                                 {formData.has_organization && (
                                     <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Organization Name"
-                                            name="organization"
-                                            value={formData.organization || ""}
-                                            onChange={handleTextFieldChange}
-                                            helperText="Enter your organization name. Your enrollment will need to be verified by your organization's admin."
-                                        />
+                                        <Typography color="text.secondary">
+                                            Your enrollment will need to be
+                                            verified by your organization's
+                                            admin. You may register your
+                                            information now and you will not be
+                                            charged.
+                                        </Typography>
                                     </Grid>
+                                )}
+
+                                {verificationMessage && (
+                                    <Grid item xs={12}>
+                                        <Typography color="error">
+                                            {verificationMessage}
+                                        </Typography>
+                                    </Grid>
+                                )}
+
+                                {existingUserMessage && (
+                                    <Typography color="primary" sx={{ mt: 1 }}>
+                                        {existingUserMessage}
+                                        <Link href="/login" sx={{ ml: 1 }}>
+                                            Sign in
+                                        </Link>
+                                    </Typography>
                                 )}
                             </Grid>
 
@@ -266,7 +380,7 @@ const IndividualCheckout: React.FC = () => {
                             >
                                 <Button
                                     variant="contained"
-                                    onClick={() => setActiveStep(1)}
+                                    onClick={handleNext}
                                     sx={{
                                         bgcolor: "var(--secondary-color)",
                                         "&:hover": {
