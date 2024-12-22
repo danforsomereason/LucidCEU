@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import {
     Box,
     Typography,
-    Slider,
     Button,
     Container,
     Grid,
     Card,
     TextField,
-    FormControlLabel,
-    Radio,
-    RadioGroup,
     IconButton,
     Paper,
     List,
@@ -31,12 +27,12 @@ import GavelIcon from "@mui/icons-material/Gavel";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import WorkIcon from "@mui/icons-material/Work";
 import { format, addYears } from "date-fns";
-import DownloadIcon from '@mui/icons-material/Download';
-import CreateIcon from '@mui/icons-material/Create';
-import OnboardingIcon from '@mui/icons-material/Group';
-import PaymentIcon from '@mui/icons-material/Payment';
-import InfoIcon from '@mui/icons-material/Info';
-import Tooltip from '@mui/material/Tooltip';
+import DownloadIcon from "@mui/icons-material/Download";
+import CreateIcon from "@mui/icons-material/Create";
+import OnboardingIcon from "@mui/icons-material/Group";
+import PaymentIcon from "@mui/icons-material/Payment";
+import InfoIcon from "@mui/icons-material/Info";
+import Tooltip from "@mui/material/Tooltip";
 
 interface UserFormData {
     first_name: string;
@@ -75,16 +71,16 @@ const TeamOrgSignup: React.FC = () => {
     };
 
     const handleRemoveAdmin = () => {
-        if (adminCount <= 1) return; // Prevent going below 1 admin
+        if (adminCount <= 1) return;
         setAdminCount((prev) => prev - 1);
     };
 
-    // Generate marks for slider (every 10 users)
+    // Lines indicating 10-user increments
     const marks = Array.from({ length: 10 }, (_, i) => ({
         value: (i + 1) * 10,
         label: i === 9 ? "100" : "",
     }));
-    marks.unshift({ value: 2, label: "2" }); // Add starting point
+    marks.unshift({ value: 2, label: "2" });
 
     const teamFeatures = [
         {
@@ -215,27 +211,52 @@ const TeamOrgSignup: React.FC = () => {
 
                     {/* Upgrade button */}
                     <Box sx={{ mt: 4 }}>
-                        <Card sx={{ 
-                            background: 'linear-gradient(135deg, var(--secondary-color) 20%, var(--primary-color) 80%)',
-                            color: 'white',
-                            p: 3,
-                            mb: 2,
-                            position: 'relative',
-                            overflow: 'hidden'
-                        }}>
-                            <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                        <Card
+                            sx={{
+                                background:
+                                    "linear-gradient(135deg, var(--secondary-color) 20%, var(--primary-color) 80%)",
+                                color: "white",
+                                p: 3,
+                                mb: 2,
+                                position: "relative",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <Typography
+                                variant="h6"
+                                gutterBottom
+                                sx={{ mb: 3 }}
+                            >
                                 Need more enterprise features?
                             </Typography>
                             <Grid container spacing={2}>
                                 {[
-                                    { icon: <DownloadIcon />, text: 'Downloadable Reports' },
-                                    { icon: <CreateIcon />, text: 'Create Your Own Courses' },
-                                    { icon: <OnboardingIcon />, text: 'Onboarding Program' },
-                                    { icon: <PaymentIcon />, text: 'Payment Plans' },
+                                    {
+                                        icon: <DownloadIcon />,
+                                        text: "Downloadable Reports",
+                                    },
+                                    {
+                                        icon: <CreateIcon />,
+                                        text: "Create Your Own Courses",
+                                    },
+                                    {
+                                        icon: <OnboardingIcon />,
+                                        text: "Onboarding Program",
+                                    },
+                                    {
+                                        icon: <PaymentIcon />,
+                                        text: "Payment Plans",
+                                    },
                                 ].map((feature, index) => (
                                     <Grid item xs={6} key={index}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                            <Box sx={{ color: 'white', mr: 1 }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                mb: 2,
+                                            }}
+                                        >
+                                            <Box sx={{ color: "white", mr: 1 }}>
                                                 {feature.icon}
                                             </Box>
                                             <Typography variant="body2">
@@ -251,11 +272,11 @@ const TeamOrgSignup: React.FC = () => {
                                 onClick={() => navigate("/signup/enterprise")}
                                 sx={{
                                     mt: 2,
-                                    color: 'white',
-                                    borderColor: 'white',
-                                    '&:hover': {
-                                        borderColor: 'white',
-                                        bgcolor: 'rgba(255,255,255,0.1)',
+                                    color: "white",
+                                    borderColor: "white",
+                                    "&:hover": {
+                                        borderColor: "white",
+                                        bgcolor: "rgba(255,255,255,0.1)",
                                     },
                                 }}
                             >
@@ -417,44 +438,66 @@ const TeamOrgSignup: React.FC = () => {
 
                                 <Grid item xs={12}>
                                     <Box sx={{ mb: 3 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                mb: 2,
+                                            }}
+                                        >
                                             <Typography variant="subtitle1">
                                                 Number of Users
                                             </Typography>
-                                            <Tooltip 
+                                            <Tooltip
                                                 title="Don't worry about future changes. You can add or replace users at any time. Charges for new users will be pro-rated for the remainder of your subscription."
                                                 arrow
                                                 placement="right"
                                             >
-                                                <InfoIcon 
-                                                    sx={{ 
-                                                        ml: 1, 
-                                                        color: 'primary.main',
-                                                        cursor: 'pointer',
-                                                        fontSize: 20
-                                                    }} 
+                                                <InfoIcon
+                                                    sx={{
+                                                        ml: 1,
+                                                        color: "primary.main",
+                                                        cursor: "pointer",
+                                                        fontSize: 20,
+                                                    }}
                                                 />
                                             </Tooltip>
                                         </Box>
-                                        
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            alignItems: 'center',
-                                            gap: 4  // Add space between counter and button
-                                        }}>
+
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 4, // Add space between counter and button
+                                            }}
+                                        >
                                             {/* User Count Controls */}
-                                            <Box sx={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center',
-                                                maxWidth: 200,
-                                            }}>
-                                                <IconButton 
-                                                    onClick={() => setUserCount(prev => Math.max(2, prev - 1))}
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    maxWidth: 200,
+                                                }}
+                                            >
+                                                <IconButton
+                                                    onClick={() =>
+                                                        setUserCount((prev) =>
+                                                            Math.max(
+                                                                2,
+                                                                prev - 1
+                                                            )
+                                                        )
+                                                    }
                                                     sx={{
-                                                        bgcolor: 'primary.main',
-                                                        color: 'white',
-                                                        '&:hover': { bgcolor: 'primary.dark' },
-                                                        '&.Mui-disabled': { bgcolor: 'grey.300' },
+                                                        bgcolor: "primary.main",
+                                                        color: "white",
+                                                        "&:hover": {
+                                                            bgcolor:
+                                                                "primary.dark",
+                                                        },
+                                                        "&.Mui-disabled": {
+                                                            bgcolor: "grey.300",
+                                                        },
                                                     }}
                                                     disabled={userCount <= 2}
                                                 >
@@ -463,25 +506,48 @@ const TeamOrgSignup: React.FC = () => {
                                                 <TextField
                                                     value={userCount}
                                                     onChange={(e) => {
-                                                        const value = parseInt(e.target.value);
-                                                        if (!isNaN(value) && value >= 2 && value <= 100) {
+                                                        const value = parseInt(
+                                                            e.target.value
+                                                        );
+                                                        if (
+                                                            !isNaN(value) &&
+                                                            value >= 2 &&
+                                                            value <= 100
+                                                        ) {
                                                             setUserCount(value);
                                                         }
                                                     }}
-                                                    inputProps={{ 
+                                                    inputProps={{
                                                         min: 2,
                                                         max: 100,
-                                                        style: { textAlign: 'center' }
+                                                        style: {
+                                                            textAlign: "center",
+                                                        },
                                                     }}
-                                                    sx={{ mx: 2, width: '80px' }}
-                                                />
-                                                <IconButton 
-                                                    onClick={() => setUserCount(prev => Math.min(100, prev + 1))}
                                                     sx={{
-                                                        bgcolor: 'primary.main',
-                                                        color: 'white',
-                                                        '&:hover': { bgcolor: 'primary.dark' },
-                                                        '&.Mui-disabled': { bgcolor: 'grey.300' },
+                                                        mx: 2,
+                                                        width: "80px",
+                                                    }}
+                                                />
+                                                <IconButton
+                                                    onClick={() =>
+                                                        setUserCount((prev) =>
+                                                            Math.min(
+                                                                100,
+                                                                prev + 1
+                                                            )
+                                                        )
+                                                    }
+                                                    sx={{
+                                                        bgcolor: "primary.main",
+                                                        color: "white",
+                                                        "&:hover": {
+                                                            bgcolor:
+                                                                "primary.dark",
+                                                        },
+                                                        "&.Mui-disabled": {
+                                                            bgcolor: "grey.300",
+                                                        },
                                                     }}
                                                     disabled={userCount >= 100}
                                                 >
@@ -489,20 +555,19 @@ const TeamOrgSignup: React.FC = () => {
                                                 </IconButton>
                                             </Box>
 
-                                            {/* CTA Button */}
                                             <Button
                                                 variant="contained"
                                                 size="large"
                                                 // onClick={handleNext}
                                                 sx={{
-                                                    bgcolor: 'primary.main',
-                                                    color: 'white',
+                                                    bgcolor: "primary.main",
+                                                    color: "white",
                                                     px: 4,
                                                     py: 1.5,
-                                                    fontSize: '1.1rem',
+                                                    fontSize: "1.1rem",
                                                     fontWeight: 600,
-                                                    '&:hover': {
-                                                        bgcolor: 'primary.dark',
+                                                    "&:hover": {
+                                                        bgcolor: "primary.dark",
                                                     },
                                                 }}
                                             >
@@ -510,19 +575,24 @@ const TeamOrgSignup: React.FC = () => {
                                             </Button>
                                         </Box>
 
-                                        {/* Dynamic Text */}
-                                        <Typography 
-                                            variant="body2" 
+                                        {/* Policy for adding users */}
+                                        <Typography
+                                            variant="body2"
                                             color="text.secondary"
-                                            sx={{ 
+                                            sx={{
                                                 mt: 2,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                fontStyle: 'italic'
+                                                display: "flex",
+                                                alignItems: "center",
+                                                fontStyle: "italic",
                                             }}
                                         >
-                                            <InfoIcon sx={{ fontSize: 16, mr: 1 }} />
-                                            Need flexibility? Add or replace users as your team grows—pro-rated pricing ensures you only pay for what you use.
+                                            <InfoIcon
+                                                sx={{ fontSize: 16, mr: 1 }}
+                                            />
+                                            Need flexibility? Add or replace
+                                            users as your team grows —pro-rated
+                                            pricing ensures you only pay for
+                                            what you use.
                                         </Typography>
                                     </Box>
                                 </Grid>

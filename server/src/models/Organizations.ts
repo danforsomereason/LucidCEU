@@ -6,6 +6,8 @@ interface IOrganization extends Document {
 
     plan_id: mongoose.Types.ObjectId;
     admins: mongoose.Types.ObjectId[];
+    users: mongoose.Types.ObjectId[];
+    instructors: mongoose.Types.ObjectId[];
     parent_org: mongoose.Types.ObjectId;
 }
 
@@ -20,6 +22,9 @@ const OrganizationSchema = new Schema<IOrganization>(
         },
         plan_id: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
         parent_org: { type: Schema.Types.ObjectId, ref: "Organization" },
+        users: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        admins: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        instructors: [{ type: Schema.Types.ObjectId, ref: "User" }],
     },
     {
         timestamps: {

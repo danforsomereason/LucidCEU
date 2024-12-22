@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button, TextField, Typography, Box, Link } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { login } from "../requests/user";
+import { globalContext } from "../context/globalContext";
 
 interface SignUpFormData {
     email: string;
@@ -11,7 +12,7 @@ interface SignUpFormData {
 const SignIn: React.FC = () => {
     // navigate to the dashboard page after successful login
     const navigate = useNavigate();
-
+    const globalValue = useContext(globalContext);
     // Create a state to store the form data
     // SignUpFormData is an interface that defines the shape of the form data, so the angle brackets are used to create a state of that type
     // Iniitially, the form data is an empty object with empty strings for both fields
@@ -31,8 +32,10 @@ const SignIn: React.FC = () => {
             // Call the login function imported from requests/user.ts
             // This is an async operation that returns a Promise, so we use await
             // We pass the email and password from our form state as arguments
-            await login(formData.email, formData.password);
-
+            const response = await login(formData.email, formData.password);
+            // if there is a global value, call the setCurrentUser
+            console.log("response", response);
+            globalValue?.setCurrentUser(response.user);
             // After successful login, use the navigate function from react-router-dom
             // to programmatically redirect the user to the dashboard page
             // The navigate function accepts a path string as an argument

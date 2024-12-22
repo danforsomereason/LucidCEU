@@ -15,8 +15,14 @@ import IndividualCheckout from "./screens/signup/IndividualCheckout";
 import TeamOrgSignup from "./screens/signup/TeamOrgSignup";
 import EnterpriseSignup from "./screens/signup/EnterpriseSignup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { globalContext } from "./context/globalContext";
+import { IUser } from "../server/src/models/User";
 
 const App: React.FC = () => {
+    const [currentUser, setCurrentUser] = useState<IUser>();
+    const globalValue = { currentUser, setCurrentUser };
+    console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
         showNavbar: boolean = true,
@@ -30,46 +36,58 @@ const App: React.FC = () => {
     };
 
     return (
-        <ThemeProvider theme={theme}>
-            <Router>
-                <Routes>
-                    <Route path="/" element={route(<Home />)} />
-                    <Route path="/membership" element={route(<Membership />)} />
-                    <Route path="/signin" element={route(<SignIn />, false)} />
-                    <Route path="/courses" element={route(<Courses />)} />
-                    <Route path="/signup" element={route(<SignUp />)} />
-                    <Route
-                        path="/signup/individual"
-                        element={route(<IndividualCheckout />)}
-                    />
-                    <Route
-                        path="/signup/team-org"
-                        element={route(<TeamOrgSignup />)}
-                    />
-                    <Route
-                        path="/signup/enterprise"
-                        element={route(<EnterpriseSignup />)}
-                    />
-                    <Route
-                        path="/module"
-                        // Navbar is fixed for Module page
-                        element={route(<CourseModule />, true, "fixed")}
-                    />
-                    <Route
-                        path="/quiz-results"
-                        element={route(<QuizResults />)}
-                    />
-                    <Route
-                        path="/course/:courseId"
-                        element={route(<CourseDescription />, true, "fixed")}
-                    />
-                    <Route
-                        path="/dashboard"
-                        element={route(<Dashboard />, true, "fixed")}
-                    />
-                </Routes>
-            </Router>
-        </ThemeProvider>
+        <globalContext.Provider value={globalValue}>
+            <ThemeProvider theme={theme}>
+                <Router>
+                    <Routes>
+                        <Route path="/" element={route(<Home />)} />
+                        <Route
+                            path="/membership"
+                            element={route(<Membership />)}
+                        />
+                        <Route
+                            path="/signin"
+                            element={route(<SignIn />, false)}
+                        />
+                        <Route path="/courses" element={route(<Courses />)} />
+                        <Route path="/signup" element={route(<SignUp />)} />
+                        <Route
+                            path="/signup/individual"
+                            element={route(<IndividualCheckout />)}
+                        />
+                        <Route
+                            path="/signup/team-org"
+                            element={route(<TeamOrgSignup />)}
+                        />
+                        <Route
+                            path="/signup/enterprise"
+                            element={route(<EnterpriseSignup />)}
+                        />
+                        <Route
+                            path="/module"
+                            // Navbar is fixed for Module page
+                            element={route(<CourseModule />, true, "fixed")}
+                        />
+                        <Route
+                            path="/quiz-results"
+                            element={route(<QuizResults />)}
+                        />
+                        <Route
+                            path="/course/:courseId"
+                            element={route(
+                                <CourseDescription />,
+                                true,
+                                "fixed"
+                            )}
+                        />
+                        <Route
+                            path="/dashboard"
+                            element={route(<Dashboard />, true, "fixed")}
+                        />
+                    </Routes>
+                </Router>
+            </ThemeProvider>
+        </globalContext.Provider>
     );
 };
 
