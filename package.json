@@ -22,6 +22,7 @@
     "@nivo/pie": "^0.87.0",
     "@stripe/react-stripe-js": "^3.0.0",
     "@stripe/stripe-js": "^5.2.0",
+    "@toolpad/core": "^0.11.0",
     "@types/aws-sdk": "^0.0.42",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",

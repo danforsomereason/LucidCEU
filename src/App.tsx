@@ -20,8 +20,13 @@ import { globalContext } from "./context/globalContext";
 import { IUser } from "../server/src/models/User";
 
 const App: React.FC = () => {
-    const [currentUser, setCurrentUser] = useState<IUser>();
-    const globalValue = { currentUser, setCurrentUser };
+    const localToken = localStorage.getItem("token");
+    const localUser = localStorage.getItem("currentUser");
+    const parsedUser = JSON.parse(localUser ?? "");
+    const [currentUser, setCurrentUser] = useState<IUser>(parsedUser);
+    const [token, setToken] = useState(localToken ?? undefined);
+
+    const globalValue = { currentUser, setCurrentUser, token, setToken };
     console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
