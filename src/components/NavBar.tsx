@@ -15,6 +15,10 @@ import { useContext } from "react";
 const NavBar: React.FC = () => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const context = useContext(globalContext);
+    // need to get the token out of the context as opposed to the localStorage
+    const token = localStorage.getItem("token");
+    const userName = context?.currentUser?.first_name || "Welcome Back!";
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -24,7 +28,26 @@ const NavBar: React.FC = () => {
         setAnchorEl(null);
     };
 
-    const token = localStorage.getItem("token");
+    const handleLogout = () => {
+        // should also be reset in the context to be undefined
+        localStorage.removeItem("token");
+        handleMenuClose();
+        navigate("/");
+    };
+
+    const publicMenuItems = [
+        { label: "Home", path: "/" },
+        { label: "Membership", path: "/membership" },
+        { label: "Courses", path: "/courses" },
+    ];
+
+    const authenticatedMenuItems = [
+        { label: "Home", path: "/" },
+        { label: "Dashboard", path: "/dashboard" },
+        { label: "Courses", path: "/courses" },
+    ];
+
+    const menuItems = token ? authenticatedMenuItems : publicMenuItems;
 
     return (
         <AppBar
@@ -48,115 +71,106 @@ const NavBar: React.FC = () => {
                     LUCID
                 </Typography>
 
-                {/* Desktop Menu - visible only on medium and larger screens */}
-                <Box
-                    sx={{
-                        display: { xs: "none", md: "flex" },
-                        alignItems: "center",
-                        gap: "75px",
-                        color: "var(--white-color)",
-                        border: "1px solid hsl(0, 0%, 20%)",
-                        padding: "10px 20px",
-                        borderRadius: "5px",
-                        backgroundColor: "hsl(0, 0%, 12%)",
-                    }}
-                >
-                    <Typography variant="body1" onClick={() => navigate("/")}>
-                        <a
-                            href="#"
-                            style={{ textDecoration: "none", color: "inherit" }}
+                {!token ? (
+                    <>
+                        <Box
+                            sx={{
+                                display: { xs: "none", md: "flex" },
+                                alignItems: "center",
+                                gap: "75px",
+                                color: "var(--white-color)",
+                                border: "1px solid hsl(0, 0%, 20%)",
+                                padding: "10px 20px",
+                                borderRadius: "5px",
+                                backgroundColor: "hsl(0, 0%, 12%)",
+                            }}
                         >
-                            Home
-                        </a>
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        onClick={() => navigate("/membership")}
+                            {menuItems.map((item) => (
+                                <Typography
+                                    key={item.path}
+                                    variant="body1"
+                                    onClick={() => navigate(item.path)}
+                                    sx={{ cursor: "pointer" }}
+                                >
+                                    {item.label}
+                                </Typography>
+                            ))}
+                        </Box>
+                        {/* Sign in button for not-signed-in user */}
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => navigate("/signin")}
+                            sx={{ display: { xs: "none", md: "block" } }}
+                        >
+                            Sign In
+                        </Button>
+                    </>
+                ) : (
+                    // User info and menu button when logged in
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Typography sx={{ color: "var(--white-color)" }}>
+                            {userName}
+                        </Typography>
+                        <IconButton color="inherit" onClick={handleMenuOpen}>
+                            <MenuIcon />
+                        </IconButton>
+                    </Box>
+                )}
+
+                {/* Mobile menu button - Only show when not logged in */}
+                {!token && (
+                    <IconButton
+                        color="inherit"
+                        onClick={handleMenuOpen}
+                        sx={{ display: { xs: "block", md: "none" } }}
                     >
-                        <a
-                            href="#"
-                            style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                            Membership
-                        </a>
-                    </Typography>
-                    <Typography
-                        variant="body1"
-                        onClick={() => navigate("/courses")}
-                    >
-                        <a
-                            href="#"
-                            style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                            Courses
-                        </a>
-                    </Typography>
-                </Box>
+                        <MenuIcon />
+                    </IconButton>
+                )}
 
-                {/* Sign In Button - visible only on medium and larger screens */}
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => {
-                        if (token) {
-                            localStorage.removeItem("token");
-                            navigate("/");
-                        } else {
-                            navigate("/signin");
-                        }
-                    }}
-                    sx={{ display: { xs: "none", md: "block" } }}
-                >
-                    {token ? "Log Out" : "Sign In"}
-                </Button>
-
-                {/* Hamburger IconButton for mobile screen sizes */}
-                <IconButton
-                    color="inherit"
-                    onClick={handleMenuOpen}
-                    sx={{ display: { xs: "block", md: "none" } }}
-                >
-                    <MenuIcon />
-                </IconButton>
-
-                {/* Hamburger Menu */}
+                {/* Menu (for both mobile and logged-in users) */}
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
+                    MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                    }}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                '&[aria-hidden="true"]': {
+                                    visibility: "hidden",
+                                    display: "none",
+                                },
+                            },
+                        },
+                    }}
                 >
-                    <MenuItem
-                        onClick={() => {
-                            navigate("/");
-                            handleMenuClose();
-                        }}
-                    >
-                        Home
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            navigate("/membership");
-                            handleMenuClose();
-                        }}
-                    >
-                        Membership
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            navigate("/courses");
-                            handleMenuClose();
-                        }}
-                    >
-                        Courses
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            navigate("/signin");
-                            handleMenuClose();
-                        }}
-                    >
-                        Sign In
-                    </MenuItem>
+                    {menuItems.map((item) => (
+                        <MenuItem
+                            key={item.path}
+                            onClick={() => {
+                                navigate(item.path);
+                                handleMenuClose();
+                            }}
+                        >
+                            {item.label}
+                        </MenuItem>
+                    ))}
+                    {token ? (
+                        <MenuItem onClick={handleLogout}>Sign Out</MenuItem>
+                    ) : (
+                        <MenuItem
+                            onClick={() => {
+                                navigate("/signin");
+                                handleMenuClose();
+                            }}
+                        >
+                            Sign In
+                        </MenuItem>
+                    )}
                 </Menu>
             </Toolbar>
         </AppBar>
