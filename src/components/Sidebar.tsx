@@ -16,6 +16,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;
+const navbarHeight = 84;
 
 interface MainProps {
   open?: boolean;

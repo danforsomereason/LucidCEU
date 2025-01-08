@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import CategoryCard from "./CategoryCard";
 import { getCourseCategories } from "../requests/courseCategories";
 import { getCourses } from "../requests/courses";
-import { log } from "console";
+
 
 const Hero: React.FC = () => {
     const [categories, setCategories] = useState([]);

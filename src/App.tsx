@@ -23,7 +23,7 @@ const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
     const localUser = localStorage.getItem("currentUser");
     const parsedUser = JSON.parse(localUser ?? "");
-    const [currentUser, setCurrentUser] = useState<IUser>(parsedUser);
+    const [currentUser, setCurrentUser] = useState<IUser | undefined>(parsedUser || undefined);
     const [token, setToken] = useState(localToken ?? undefined);
 
     const globalValue = { currentUser, setCurrentUser, token, setToken };

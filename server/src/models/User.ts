@@ -13,6 +13,7 @@ export interface IUser extends Document {
     certificates: mongoose.Types.ObjectId[];
     survey_responses: mongoose.Types.ObjectId[];
     organization: mongoose.Types.ObjectId;
+    isAdmin: boolean;
     license_type: string;
 }
 
@@ -33,6 +34,7 @@ const UserSchema = new Schema<IUser>(
         ],
         organization: [{type: Schema.Types.ObjectId, ref: "Organization"}],
         license_type: { type: String, required: true },
+        isAdmin: { type: Boolean, required: true, default: false },
     },
     {
         timestamps: {
