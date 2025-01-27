@@ -6,7 +6,6 @@ import CategoryCard from "./CategoryCard";
 import { getCourseCategories } from "../requests/courseCategories";
 import { getCourses } from "../requests/courses";
 
-
 const Hero: React.FC = () => {
     const [categories, setCategories] = useState([]);
 
@@ -26,9 +25,13 @@ const Hero: React.FC = () => {
                 <Typography variant="h2" gutterBottom>
                     <span>Impact your client work, faster.</span>
                     <br />
-                    <span>Stay up-to-date and compliant.</span>
+                    Stay <span className='hero-accent'>up-to-date</span> and compliant.
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography
+                    variant="body1"
+                    className="hero-paragraph"
+                    gutterBottom
+                >
                     LUCID makes training your team simple. Easily register your
                     employees to start learning and accruing Continuing
                     Education Units toward their licensure requirements. LUCID

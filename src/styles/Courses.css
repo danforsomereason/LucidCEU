@@ -72,6 +72,12 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+.hero-accent {
+    border: 1px solid var(--secondary-color);
+    background-color: var(--secondary-color);
+    transform: translate(10px, 10px);
+}
+
 /* .course-card-icon {
     font-size: 2rem;
     color: var(--secondary-color);
