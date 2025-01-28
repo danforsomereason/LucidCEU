@@ -10,7 +10,7 @@ import SignUp from "./screens/SignUp";
 import CourseModule from "./screens/CourseModule";
 import QuizResults from "./screens/QuizResults";
 import CourseDescription from "./screens/CourseDescription";
-import Dashboard from "./screens/Dashboard";
+import Dashboard from "./screens/dashboard/Dashboard";
 import IndividualCheckout from "./screens/signup/IndividualCheckout";
 import TeamOrgSignup from "./screens/signup/TeamOrgSignup";
 import EnterpriseSignup from "./screens/signup/EnterpriseSignup";
@@ -23,7 +23,9 @@ const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
     const localUser = localStorage.getItem("currentUser");
     const parsedUser = JSON.parse(localUser ?? "");
-    const [currentUser, setCurrentUser] = useState<IUser>(parsedUser);
+    const [currentUser, setCurrentUser] = useState<IUser | undefined>(
+        parsedUser || undefined
+    );
     const [token, setToken] = useState(localToken ?? undefined);
 
     const globalValue = { currentUser, setCurrentUser, token, setToken };

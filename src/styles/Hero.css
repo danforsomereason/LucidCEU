@@ -33,7 +33,13 @@
     font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 30px;
-    width: 50%;
+    /* width: 50%; */
+}
+
+.hero-paragraph {
+    max-width: 40%;
+    text-wrap: balance;
+    -webkit-font-smoothing: antialised;
 }
 
 .hero-section button {
