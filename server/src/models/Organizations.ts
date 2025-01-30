@@ -9,6 +9,8 @@ interface IOrganization extends Document {
     users: mongoose.Types.ObjectId[];
     instructors: mongoose.Types.ObjectId[];
     parent_org: mongoose.Types.ObjectId;
+    // I created "roles" so that orgs could assign courses to a role. Not sure if this is correct.
+    roles: string[];
 }
 
 const OrganizationSchema = new Schema<IOrganization>(
@@ -25,6 +27,7 @@ const OrganizationSchema = new Schema<IOrganization>(
         users: [{ type: Schema.Types.ObjectId, ref: "User" }],
         admins: [{ type: Schema.Types.ObjectId, ref: "User" }],
         instructors: [{ type: Schema.Types.ObjectId, ref: "User" }],
+        roles: { type: [String], default: ["All"] }
     },
     {
         timestamps: {
