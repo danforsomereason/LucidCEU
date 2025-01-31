@@ -25,9 +25,9 @@ export default function BasicPie() {
         <PieChart
             slotProps={{
                 legend: {
-                direction: 'column',
-                position: { vertical: 'middle', horizontal: 'right' },
-                padding: -9,
+                    direction: "column",
+                    position: { vertical: "middle", horizontal: "right" },
+                    padding: 20,
                 },
             }}
             series={[
@@ -45,7 +45,7 @@ export default function BasicPie() {
                     cornerRadius: 5,
                     startAngle: -45,
                     endAngle: 225,
-                    cx: "40%",
+                    cx: "5%",
                     cy: "50%",
                 },
             ]}
