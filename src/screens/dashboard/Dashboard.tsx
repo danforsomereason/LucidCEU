@@ -6,7 +6,6 @@ import { Box, Typography, Paper } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import BasicPie from "../../components/dashboard/UserCompliance";
 
-
 // Pie chart will show completed course / required course * 100
 // If the user belongs to an organization, the org will determine required courses
 // The organization admin has to select the required courses
@@ -33,17 +32,29 @@ const Dashboard: React.FC = () => {
     return (
         <DashboardLayout>
             <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 9, md: 6 }}>
+                <Grid size={{ xs: 12, md: 9, lg: 6 }}>
                     <Paper
                         sx={{
                             p: 2,
                             height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
                         <Typography variant="h6" gutterBottom>
                             Required Courses
                         </Typography>
-                        <Box sx={{ flexGrow: 1, position: 'relative', minHeight: "300px", width: '100%' }}>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                position: "relative",
+                                minHeight: "300px",
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
                             <BasicPie />
                         </Box>
                     </Paper>
@@ -53,12 +64,24 @@ const Dashboard: React.FC = () => {
                         sx={{
                             p: 2,
                             height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
                         <Typography variant="h6" gutterBottom>
                             Required Courses
                         </Typography>
-                        <Box sx={{ flexGrow: 1, position: 'relative', minHeight: "300px" }}>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                position: "relative",
+                                minHeight: "300px",
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
                             <BasicPie />
                         </Box>
                     </Paper>
@@ -68,12 +91,24 @@ const Dashboard: React.FC = () => {
                         sx={{
                             p: 2,
                             height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
                         <Typography variant="h6" gutterBottom>
                             Required Courses
                         </Typography>
-                        <Box sx={{ flexGrow: 1, position: 'relative', minHeight: "300px" }}>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                position: "relative",
+                                minHeight: "300px",
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
                             <BasicPie />
                         </Box>
                     </Paper>
@@ -83,12 +118,24 @@ const Dashboard: React.FC = () => {
                         sx={{
                             p: 2,
                             height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                         }}
                     >
                         <Typography variant="h6" gutterBottom>
                             Required Courses
                         </Typography>
-                        <Box sx={{ flexGrow: 1, position: 'relative', minHeight: "300px" }}>
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                position: "relative",
+                                minHeight: "300px",
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
                             <BasicPie />
                         </Box>
                     </Paper>
