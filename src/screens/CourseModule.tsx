@@ -16,14 +16,14 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 // Constants
 const DRAWER_WIDTH = 280;
 const NAVBAR_HEIGHT = 84;
 
 // Types
-interface Module {
+export interface Module {
     _id: string;
     course_name: string;
     course_id: string;
@@ -99,6 +99,8 @@ const CourseModule: React.FC = () => {
     const location = useLocation();
     const { courseId } = location.state || {};
     const [modules, setModules] = useState<Module[]>([]);
+    //const modules = useStore((state) => state.modules);
+    //const updateModules = useStore((state) => state.updateModules);
     const [loading, setLoading] = useState(true);
     const [completedModules, setCompletedModules] = useState<string[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState<string>("");
@@ -170,12 +172,13 @@ const CourseModule: React.FC = () => {
                 setCurrentModuleId(sortedModules[0]?._id || "");
             } catch (error) {
                 console.error("Detailed fetch error:", error);
-                setModules([]); 
+                //updateCourses
+                setModules([]);
             } finally {
                 setLoading(false);
             }
         };
-        
+
         if (courseId) {
             fetchModules();
         }
@@ -201,10 +204,9 @@ const CourseModule: React.FC = () => {
 
     const currentModule = modules.find((m) => m._id === currentModuleId);
 
-
     const progress = (completedModules.length / modules.length) * 100;
 
-    // Helper function to check if a module is accessible
+    // Helper function to check if a module is should be locked or open depending on progress
     const isModuleAccessible = (moduleId: string) => {
         const moduleIndex = modules.findIndex((m) => m._id === moduleId);
         const lastCompletedIndex = Math.max(
@@ -327,12 +329,12 @@ const CourseModule: React.FC = () => {
                     onClick={() => {
                         alert(
                             "Course Instructions:\n\n" +
-                            "1. Read through each module carefully\n" +
-                            "2. Complete modules in order - they unlock sequentially\n" + 
-                            "3. Click 'NEXT' at the bottom of each section\n" +
-                            "4. After finishing all modules, take the course quiz\n" +
-                            "5. Pass the quiz to receive your certificate\n\n" +
-                            "Need more help? Contact support@lucidceu.com"
+                                "1. Read through each module carefully\n" +
+                                "2. Complete modules in order - they unlock sequentially\n" +
+                                "3. Click 'NEXT' at the bottom of each section\n" +
+                                "4. After finishing all modules, take the course quiz\n" +
+                                "5. Pass the quiz to receive your certificate\n\n" +
+                                "Need more help? Contact support@lucidceu.com"
                         );
                     }}
                 >

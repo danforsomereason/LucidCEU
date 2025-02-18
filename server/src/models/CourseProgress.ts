@@ -16,4 +16,5 @@ const CourseProgressSchema: Schema = new Schema({
     status: { type: String, enum: ['in_progress', 'completed', 'not_started'], default: 'not_started' },
 });
 
-export default mongoose.model<ICourseProgress>('CourseProgress', CourseProgressSchema);
+const CourseProgressModel = mongoose.model<ICourseProgress>('CourseProgress', CourseProgressSchema);
+export default CourseProgressModel;

@@ -8,7 +8,9 @@ import { PieChart } from "@mui/x-charts/PieChart";
 // 
 // Get the user's required course track by looking up user > organization_id > tracks > course_ids > courses
 
+// TODO: get the completed courses from the certificates collection
 const completedCourses = ["Test Course", "Sample Course", "Beginner Course"];
+// TODO: get the required courses from the tracks collection
 const requiredCourses = [
     "Test Course",
     "Sample Course",

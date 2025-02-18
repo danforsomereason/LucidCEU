@@ -30,3 +30,14 @@ export async function getCourseById(courseId: string) {
         throw error;
     }
 }
+
+
+// 
+export async function getRequiredCourses(organizationId: string) {
+    try{
+        const url = `http://localhost:5001/api/v1/tracks?organization_id=${organizationId}`;
+        const response = await axios.get(url);
+    } catch {
+
+    }
+}

@@ -22,7 +22,11 @@ import { IUser } from "../server/src/models/User";
 const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
     const localUser = localStorage.getItem("currentUser");
-    const parsedUser = JSON.parse(localUser ?? "");
+    console.log("localUser", localUser);
+
+    // ?? "" removed from parse
+    // changed from parseUser = JSON.parse(localUser);
+    const parsedUser = localUser ? JSON.parse(localUser) : null;
     const [currentUser, setCurrentUser] = useState<IUser | undefined>(
         parsedUser || undefined
     );
