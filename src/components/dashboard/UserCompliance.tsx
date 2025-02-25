@@ -1,11 +1,12 @@
 import * as React from "react";
 import { PieChart } from "@mui/x-charts/PieChart";
+import { getCourseProgress } from "../../requests/courses";
 
 // Use the user's id to look up their certificates
 // Get the user's course_ids from certificates collection
 // IF the certificate has an updated_at, then use that timestamp. IF the timestamp is < 365 days ago, then add to completed courses array
 // IF the certificate doesn't have an updated_at, then use the created_at timestamp. If the timestamp is < 365 days ago, then add to completed courses array
-// 
+//
 // Get the user's required course track by looking up user > organization_id > tracks > course_ids > courses
 
 // TODO: get the completed courses from the certificates collection
@@ -30,11 +31,14 @@ function calculateScore(completedCourses: string[], requiredCourses: string[]) {
 
 export default function BasicPie() {
     const score = calculateScore(completedCourses, requiredCourses);
-    console.log("Score", score);
+    // console.log("Score", score);
     if (!score) {
         return <div>Loading...</div>;
     }
-    console.log("loaded");
+    // console.log("loaded");
+    React.useEffect(() => {
+        getCourseProgress();
+    }, []);
 
     return (
         <PieChart

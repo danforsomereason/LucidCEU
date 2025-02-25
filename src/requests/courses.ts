@@ -31,13 +31,17 @@ export async function getCourseById(courseId: string) {
     }
 }
 
-
-// 
+//
 export async function getRequiredCourses(organizationId: string) {
-    try{
+    try {
         const url = `http://localhost:5001/api/v1/tracks?organization_id=${organizationId}`;
         const response = await axios.get(url);
-    } catch {
+    } catch {}
+}
 
-    }
+// get course progress
+export async function getCourseProgress() {
+    const url = `http://localhost:5001/api/v1/course_progress`;
+    const response = await axios.get(url);
+    console.log("Response.data", response.data);
 }

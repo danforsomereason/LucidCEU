@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
 
     useEffect(() => {
         getCourseCategories().then((data) => {
-            console.log(data);
+            // console.log(data);
             setCategories(data);
         });
     }, []);
@@ -25,7 +25,8 @@ const Hero: React.FC = () => {
                 <Typography variant="h2" gutterBottom>
                     <span>Impact your client work, faster.</span>
                     <br />
-                    Stay <span className='hero-accent'>up-to-date</span> and compliant.
+                    Stay <span className="hero-accent">up-to-date</span> and
+                    compliant.
                 </Typography>
                 <Typography
                     variant="body1"

@@ -1,20 +1,38 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
-interface ICourseProgress extends Document {
-    user_id: mongoose.Schema.Types.ObjectId;
+
+// Courses are entered into the ICourse array below when at least one module has been completed
+interface ICourse {
     course_id: mongoose.Schema.Types.ObjectId;
-    started_at: Date;
+    completed: boolean;
+    module_progress: string[];
     completed_at: Date;
-    status: 'in_progress' | 'completed' | 'not_started';
 }
 
-const CourseProgressSchema: Schema = new Schema({
-    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    course_id: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-    started_at: { type: Date, default: Date.now },
+// CourseProgress is a model that contains the progress of a user's courses
+// There are two top level properties:
+// - user_id: the user's id
+// - courses: an array of courses that the user has started which uses ICourse
+interface ICourseProgress extends Document {
+    user_id: mongoose.Schema.Types.ObjectId;
+    courses: ICourse[];
+}
+
+const CourseSchema: Schema = new Schema({
+    course_id: { type: Schema.Types.ObjectId, ref: "courses", required: true },
+    completed: { type: Boolean, default: false },
+    module_progress: [{ type: String }],
     completed_at: { type: Date },
-    status: { type: String, enum: ['in_progress', 'completed', 'not_started'], default: 'not_started' },
 });
 
-const CourseProgressModel = mongoose.model<ICourseProgress>('CourseProgress', CourseProgressSchema);
+const CourseProgressSchema: Schema = new Schema({
+    user_id: { type: Schema.Types.ObjectId, ref: "users", required: true },
+    courses: [CourseSchema],
+});
+
+const CourseProgressModel = mongoose.model<ICourseProgress>(
+    "CourseProgress",
+    CourseProgressSchema
+);
+
 export default CourseProgressModel;

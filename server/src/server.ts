@@ -9,6 +9,7 @@ import quizzesRouter from "./API/quizzes";
 import certificatesRouter from "./API/certificates";
 import organizationsRouter from "./API/organizations";
 import plansRouter from "./API/plans";
+import courseProgressRouter from "./API/course_progress";
 import cors from "cors";
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/course_categories", courseCategoriesRouter);
 app.use("/api/v1/courses", coursesRouter);
+app.use("/api/v1/course_progress", courseProgressRouter);
 app.use("/api/v1/modules", modulesRouter);
 app.use("/api/v1/quizzes", quizzesRouter);
 app.use("/api/v1/certificates", certificatesRouter);

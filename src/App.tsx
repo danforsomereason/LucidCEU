@@ -22,7 +22,7 @@ import { IUser } from "../server/src/models/User";
 const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
     const localUser = localStorage.getItem("currentUser");
-    console.log("localUser", localUser);
+    // console.log("localUser", localUser);
 
     // ?? "" removed from parse
     // changed from parseUser = JSON.parse(localUser);
@@ -33,7 +33,7 @@ const App: React.FC = () => {
     const [token, setToken] = useState(localToken ?? undefined);
 
     const globalValue = { currentUser, setCurrentUser, token, setToken };
-    console.log("current user", currentUser);
+    // console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
         showNavbar: boolean = true,
