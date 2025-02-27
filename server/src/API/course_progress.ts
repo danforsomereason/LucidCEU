@@ -14,8 +14,9 @@ const router = express.Router();
 router.get("/", async (req: Request, res: Response) => {
     try {
         const docs = await CourseProgress.find();
-        console.log("Docs", docs);
+
         res.send(docs);
+        console.log("Docs", docs);
     } catch (err) {
         console.error("Error in /api/course_progress", err);
         res.status(500).json({ message: "Internal Server Error" });

@@ -1,35 +1,37 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
-
-// Courses are entered into the ICourse array below when at least one module has been completed
+// Define the structure for course progress
 interface ICourse {
-    course_id: mongoose.Schema.Types.ObjectId;
+    course_id: Types.ObjectId; // Use Types.ObjectId for better compatibility
     completed: boolean;
-    module_progress: string[];
+    module_progress: Types.ObjectId[]; // Assuming these are ObjectIds referencing Modules
     completed_at: Date;
 }
 
-// CourseProgress is a model that contains the progress of a user's courses
-// There are two top level properties:
-// - user_id: the user's id
-// - courses: an array of courses that the user has started which uses ICourse
+// Define the main CourseProgress structure
 interface ICourseProgress extends Document {
-    user_id: mongoose.Schema.Types.ObjectId;
+    user_id: Types.ObjectId;
     courses: ICourse[];
 }
 
-const CourseSchema: Schema = new Schema({
-    course_id: { type: Schema.Types.ObjectId, ref: "courses", required: true },
+// Define the Schema for individual course progress
+const CourseSchema = new Schema<ICourse>({
+    course_id: { type: Schema.Types.ObjectId, ref: "Course", required: true }, // Ensure correct ref
     completed: { type: Boolean, default: false },
-    module_progress: [{ type: String }],
-    completed_at: { type: Date },
+    module_progress: [{ type: Schema.Types.ObjectId, ref: "Module" }], // Ensure correct ref
+    completed_at: { type: Date, default: null },
 });
 
-const CourseProgressSchema: Schema = new Schema({
-    user_id: { type: Schema.Types.ObjectId, ref: "users", required: true },
-    courses: [CourseSchema],
-});
+// Define the main CourseProgress schema
+const CourseProgressSchema = new Schema<ICourseProgress>(
+    {
+        user_id: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Ensure correct ref
+        courses: [CourseSchema],
+    },
+    { collection: "courseProgress" } // Explicitly set the collection name
+);
 
+// Create the model with the correct schema
 const CourseProgressModel = mongoose.model<ICourseProgress>(
     "CourseProgress",
     CourseProgressSchema
