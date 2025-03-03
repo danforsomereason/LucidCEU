@@ -11,6 +11,7 @@ import organizationsRouter from "./API/organizations";
 import plansRouter from "./API/plans";
 import courseProgressRouter from "./API/course_progress";
 import cors from "cors";
+import "./types/express";
 
 dotenv.config();
 
