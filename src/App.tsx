@@ -18,6 +18,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import { globalContext } from "./context/globalContext";
 import { IUser } from "../server/src/models/User";
+import Register from "./screens/signup/Register";
 
 const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
@@ -95,6 +96,7 @@ const App: React.FC = () => {
                             path="/dashboard"
                             element={route(<Dashboard />, true, "fixed")}
                         />
+                        <Route path="/register" element={<Register />} />
                     </Routes>
                 </Router>
             </ThemeProvider>

@@ -1,52 +1,91 @@
 import express from "express";
-import mongoose from "mongoose";
-import auth from "../middleware/auth";
 import User from "../models/User";
 import VerifiedUser from "../models/VerifiedUsers";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import authenticate from "../utils/authenticate";
+
 const router = express.Router();
-const { requireAuth, localLogin } = auth;
 
-router.post("/signup", async (req: any, res: any) => {
-    try {
-        const existingUser = await User.findOne({
-            email: req.body.user.email,
-            dt_deleted: null,
-        });
+router.post("/signup", async (req, res) => {
+    console.log(req.body);
 
-        if (existingUser) return res.sendStatus(403);
+    const existingUser = await User.findOne({
+        email: req.body.email,
+        dt_deleted: null,
+    });
 
-        const newUser = new User(req.body.user);
+    if (existingUser) return res.sendStatus(403);
 
-        (newUser as any).setPassword(req.body.password);
+    const hashedPassword = await bcryptjs.hash(req.body.password, 10);
+    const newUser = new User({
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        role: req.body.role,
+        license_type: req.body.license_type,
+        isAdmin: req.body.isAdmin,
+        email: req.body.email,
+        password_hash: hashedPassword,
+    });
+    const savedUser = await newUser.save();
 
-        const savedUser = await newUser.save();
-        res.json({
-            token: (newUser as any).generateJWT(),
-            user: savedUser,
-        });
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(500);
+    const token = jwt.sign(
+        { userId: savedUser._id },
+        "TEST_SECRET", // TODO move this to .env
+        { expiresIn: "1h" }
+    );
+
+    res.json({
+        token,
+        user: savedUser,
+    });
+});
+// http://localhost:4000/login
+router.post("/login", async (req, res) => {
+    const existingUser = await User.findOne({
+        email: req.body.email,
+        dt_deleted: null,
+    });
+    if (existingUser) {
+        const matchingPassword = await bcryptjs.compare(
+            req.body.password,
+            existingUser.password_hash
+        );
+        // "guard pattern" presumes you have a password and returns if not
+        if (!matchingPassword) {
+            return res.json({ message: "invalid" });
+        }
+        const decoded = { userId: existingUser._id };
+        const token = jwt.sign(
+            decoded,
+            "TEST_SECRET", // TODO move this to .env
+            { expiresIn: "1h" }
+        );
+        res.json({ token, user: existingUser });
+    } else {
+        res.json({ message: "invalid" });
     }
 });
 
-router.post("/login", localLogin, async (req: any, res: any) => {
-    const email = req.body.email;
-
-    const password = req.body.password;
-    try {
-        const existingUser = await User.findOne({
-            email,
-            dt_deleted: null,
-        });
-        if (existingUser) {
-            const token = (req.user as any).generateJWT();
-            res.json({ token, user: existingUser });
-        }
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(500);
+router.delete("/delete", async (req, res) => {
+    // authentication
+    const user = await authenticate(req.headers.authorization);
+    // authorization
+    if (user.role !== "admin") {
+        throw new Error("Only admins can delete users.");
     }
+    res.send("User Deleted");
+});
+
+router.post("/update-profile/:userId", async (req, res) => {
+    // authentication:
+    const user = await authenticate(req.headers.authorization);
+    // authorization:
+    if (user.id !== req.params.userId) {
+        throw new Error("You can only update your own profile.");
+    }
+    // Behavior: update user profile
+    res.send("Profile Updated");
 });
 
 router.get("/check-exists/:email", async (req: any, res: any) => {
@@ -114,6 +153,15 @@ router.post("/signup/organization", async (req: any, res: any) => {
         console.error(err);
         res.status(500).json({ message: "Error creating organization user" });
     }
+});
+
+router.get("/", async (req, res) => {
+    const user = await authenticate(req.headers.authorization);
+    if (user.role !== "admin") {
+        throw new Error("Only admins can view users");
+    }
+    const users = await User.find();
+    res.send({ users });
 });
 
 // Personal signup (requires payment verification)

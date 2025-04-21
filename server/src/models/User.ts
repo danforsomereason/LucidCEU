@@ -1,12 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
-import crypto from "crypto";
-import jwt from "jsonwebtoken";
 
 export interface IUser extends Document {
     first_name: string;
     last_name: string;
     email: string;
-    role: mongoose.Types.ObjectId;
+    role: string;
     password_hash: string;
     salt: string;
     course_progress: mongoose.Types.ObjectId[];
@@ -22,9 +20,13 @@ const UserSchema = new Schema<IUser>(
         first_name: { type: String, required: true },
         last_name: { type: String, required: true },
         email: { type: String, required: true },
-        role: { type: Schema.Types.ObjectId, required: true, default: "user" },
+        role: {
+            type: String,
+            required: true,
+            enum: ["admin", "instructor", "user"],
+            default: "user",
+        },
         password_hash: { type: String, required: true },
-        salt: { type: String, required: true },
         course_progress: [
             { type: Schema.Types.ObjectId, ref: "CourseProgress" },
         ],
@@ -32,7 +34,7 @@ const UserSchema = new Schema<IUser>(
         survey_responses: [
             { type: Schema.Types.ObjectId, ref: "SurveyResponse" },
         ],
-        organization: [{type: Schema.Types.ObjectId, ref: "Organization"}],
+        organization: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
         license_type: { type: String, required: true },
         isAdmin: { type: Boolean, required: true, default: false },
     },
@@ -43,30 +45,6 @@ const UserSchema = new Schema<IUser>(
         },
     }
 );
-
-UserSchema.method("setPassword", function (password) {
-    this.salt = crypto.randomBytes(16).toString("hex");
-    this.password_hash = crypto
-      .pbkdf2Sync(password, this.salt, 1000, 64, "sha1")
-      .toString("hex");
-  });
-
-  UserSchema.method("validatePassword", function (password) {
-    const hash = crypto
-      .pbkdf2Sync(password, this.salt, 1000, 64, "sha1")
-      .toString("hex");
-    return hash === this.password_hash;
-  });
-
-  UserSchema.method("generateJWT", function () {
-    return jwt.sign(
-      {
-        id: this._id,
-        email: this.email,
-      },
-      "lucid"
-    );
-  });
 
 const User = mongoose.model<IUser>("User", UserSchema);
 export default User;

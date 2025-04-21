@@ -37,9 +37,9 @@
 }
 
 .hero-paragraph {
-    max-width: 40%;
     text-wrap: balance;
     -webkit-font-smoothing: antialised;
+    max-width: 800px;
 }
 
 .hero-section button {
@@ -91,7 +91,9 @@
     color: var(--white-color);
     background-color: #383838;
     border-radius: 8px;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition:
+        transform 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out;
     display: grid;
 }
 
@@ -122,3 +124,10 @@
 .category-card:hover .category-card-icon {
     color: var(--primary-color);
 } */
+
+/* Add this new class to create a content wrapper */
+.hero-content {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}

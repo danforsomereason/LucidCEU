@@ -11,7 +11,6 @@ import organizationsRouter from "./API/organizations";
 import plansRouter from "./API/plans";
 import courseProgressRouter from "./API/course_progress";
 import cors from "cors";
-import "./types/express";
 
 dotenv.config();
 
@@ -28,7 +27,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1/user", userRouter);
+app.use("/api/v1/users", userRouter);
 app.use("/api/v1/course_categories", courseCategoriesRouter);
 app.use("/api/v1/courses", coursesRouter);
 app.use("/api/v1/course_progress", courseProgressRouter);

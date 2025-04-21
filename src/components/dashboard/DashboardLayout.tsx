@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { ReactNode, useState } from "react";
-import { AdminSidebar } from "./AdminSidebar";
+import { AdminSidebar } from "./Sidebar";
 
 const drawerWidth = 280;
 
