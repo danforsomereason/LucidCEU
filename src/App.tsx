@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import Layout from "./components/Layout";
@@ -15,25 +15,39 @@ import IndividualCheckout from "./screens/signup/IndividualCheckout";
 import TeamOrgSignup from "./screens/signup/TeamOrgSignup";
 import EnterpriseSignup from "./screens/signup/EnterpriseSignup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from "react";
-import { globalContext } from "./context/globalContext";
+import { globalContext, GlobalValue } from "./context/globalContext";
 import { IUser } from "../server/src/models/User";
 import Register from "./screens/signup/Register";
+import Login from "./screens/Login";
 
 const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
-    const localUser = localStorage.getItem("currentUser");
     // console.log("localUser", localUser);
 
     // ?? "" removed from parse
     // changed from parseUser = JSON.parse(localUser);
-    const parsedUser = localUser ? JSON.parse(localUser) : null;
-    const [currentUser, setCurrentUser] = useState<IUser | undefined>(
-        parsedUser || undefined
-    );
+    const [currentUser, setCurrentUser] = useState<IUser>();
+    const [currentUserLoading, setCurrentUserLoading] = useState(true);
     const [token, setToken] = useState(localToken ?? undefined);
+    useEffect(() => {
+        async function identify() {
+            if (!token) {
+                setCurrentUserLoading(false);
+                return;
+            }
+            const response = await fetch(
+                "http://localhost:5001/api/v1/users/identify",
+                { headers: { authorization: `Bearer ${token}` } }
+            );
+            const output = await response.json();
+            console.log(output);
+            setCurrentUser(output.user);
+            setCurrentUserLoading(false);
+        }
+        identify();
+    }, []);
 
-    const globalValue = { currentUser, setCurrentUser, token, setToken };
+    const globalValue: GlobalValue = { currentUser, setCurrentUser, token, setToken, currentUserLoading };
     // console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
@@ -97,6 +111,7 @@ const App: React.FC = () => {
                             element={route(<Dashboard />, true, "fixed")}
                         />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/login" element={<Login />} />
                     </Routes>
                 </Router>
             </ThemeProvider>

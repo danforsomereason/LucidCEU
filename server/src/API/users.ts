@@ -46,11 +46,16 @@ router.post("/login", async (req, res) => {
         email: req.body.email,
         dt_deleted: null,
     });
+    console.log("Existing user:", existingUser);
+
     if (existingUser) {
         const matchingPassword = await bcryptjs.compare(
             req.body.password,
             existingUser.password_hash
         );
+        console.log("Body password", req.body.password);
+
+        console.log("Matching password:", matchingPassword);
         // "guard pattern" presumes you have a password and returns if not
         if (!matchingPassword) {
             return res.json({ message: "invalid" });
@@ -65,6 +70,11 @@ router.post("/login", async (req, res) => {
     } else {
         res.json({ message: "invalid" });
     }
+});
+
+router.get("/identify", async (req, res) => {
+    const user = await authenticate(req.headers.authorization);
+    res.json({ user });
 });
 
 router.delete("/delete", async (req, res) => {

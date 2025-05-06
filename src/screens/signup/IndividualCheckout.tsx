@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Container,
     Typography,
@@ -26,6 +27,8 @@ import {
     updateUser,
     checkUserExists,
 } from "../../requests/user";
+import { globalContext } from "../../context/globalContext";
+import { Console, log } from "console";
 
 interface UserFormData {
     first_name: string;
@@ -34,7 +37,6 @@ interface UserFormData {
     password: string;
     confirm_password: string;
     license_type: string;
-    has_organization: boolean;
 }
 
 const steps = ["Account Details", "Payment Information", "Review"];
@@ -52,6 +54,7 @@ const LICENSE_TYPES = [
 ] as const;
 
 const IndividualCheckout: React.FC = () => {
+    const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState<UserFormData>({
         first_name: "",
@@ -60,7 +63,6 @@ const IndividualCheckout: React.FC = () => {
         password: "",
         confirm_password: "",
         license_type: "",
-        has_organization: false,
     });
 
     const [formErrors, setFormErrors] = useState<{ message: string } | null>(
@@ -69,9 +71,13 @@ const IndividualCheckout: React.FC = () => {
     const [verificationMessage, setVerificationMessage] = useState<
         string | null
     >(null);
+
     const [existingUserMessage, setExistingUserMessage] = useState<
         string | null
     >(null);
+
+    const globalValue = useContext(globalContext);
+    console.log("Global Value: ", globalValue);
 
     const handleTextFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -88,13 +94,6 @@ const IndividualCheckout: React.FC = () => {
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-        }));
-    };
-
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData((prev) => ({
-            ...prev,
-            has_organization: e.target.checked,
         }));
     };
 
@@ -126,44 +125,33 @@ const IndividualCheckout: React.FC = () => {
         }
     };
 
-    const handleNext = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleNext = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formErrors) return;
 
         try {
-            if (!formData.has_organization) {
-                setActiveStep(1);
-                return;
-            }
-
-            const verificationResult = await checkOrganizationVerification(
-                formData.email
+            const body = JSON.stringify(formData);
+            const headers = {
+                "Content-Type": "application/json",
+            };
+            const init = {
+                method: "POST",
+                body,
+                headers,
+            };
+            const response = await fetch(
+                "http://localhost:5001/api/v1/users/signup",
+                init
             );
-
-            if (verificationResult.exists) {
-                await createUser(formData, formData.password);
-                setActiveStep(2);
-            } else {
-                setVerificationMessage(
-                    "Unable to verify organization membership. Please contact your organization administrator to be registered."
-                );
-            }
+            const output = await response.json();
+            console.log(output);
+            localStorage.setItem("token", output.token);
+            globalValue?.setCurrentUser(output.user);
+            navigate("/dashboard");
         } catch (error) {
             console.error("Error during signup:", error);
             setVerificationMessage(
                 "An error occurred during signup. Please try again."
-            );
-        }
-    };
-
-    const handlePaymentSuccess = async () => {
-        try {
-            await createUser(formData, formData.password);
-            setActiveStep(2);
-        } catch (error) {
-            console.error("Error creating user:", error);
-            setVerificationMessage(
-                "Payment successful but account creation failed. Please contact support."
             );
         }
     };
@@ -231,6 +219,7 @@ const IndividualCheckout: React.FC = () => {
                 </Grid>
 
                 {/* Right side - Checkout Form */}
+
                 <Grid item xs={12} md={8}>
                     <Box sx={{ width: "100%", mb: 4 }}>
                         <Stepper activeStep={activeStep}>
@@ -243,7 +232,7 @@ const IndividualCheckout: React.FC = () => {
                     </Box>
 
                     {activeStep === 0 && (
-                        <Box component="form" noValidate>
+                        <Box component="form" noValidate onSubmit={handleNext}>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} sm={6}>
                                     <TextField
@@ -325,34 +314,6 @@ const IndividualCheckout: React.FC = () => {
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={
-                                                    formData.has_organization
-                                                }
-                                                onChange={handleCheckboxChange}
-                                                name="has_organization"
-                                                color="primary"
-                                            />
-                                        }
-                                        label="I belong to an organization registered with LucidCEU"
-                                    />
-                                </Grid>
-
-                                {formData.has_organization && (
-                                    <Grid item xs={12}>
-                                        <Typography color="text.secondary">
-                                            Your enrollment will need to be
-                                            verified by your organization's
-                                            admin. You may register your
-                                            information now and you will not be
-                                            charged.
-                                        </Typography>
-                                    </Grid>
-                                )}
-
                                 {verificationMessage && (
                                     <Grid item xs={12}>
                                         <Typography color="error">
@@ -360,7 +321,6 @@ const IndividualCheckout: React.FC = () => {
                                         </Typography>
                                     </Grid>
                                 )}
-
                                 {existingUserMessage && (
                                     <Typography color="primary" sx={{ mt: 1 }}>
                                         {existingUserMessage}
@@ -380,7 +340,7 @@ const IndividualCheckout: React.FC = () => {
                             >
                                 <Button
                                     variant="contained"
-                                    onClick={handleNext}
+                                    type="submit"
                                     sx={{
                                         bgcolor: "var(--secondary-color)",
                                         "&:hover": {
