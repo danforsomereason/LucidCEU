@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
     const userName = globalValue?.currentUser?.first_name;
 
     if (globalValue?.currentUserLoading) {
-        return <div>Loading...</div>;
+        return <div>Dashboard user loading...</div>;
     }
     if (!globalValue || !globalValue.currentUser) {
         return <Navigate to="/signin" />;

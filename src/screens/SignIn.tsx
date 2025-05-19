@@ -28,22 +28,19 @@ const SignIn: React.FC = () => {
     // Function to handle the sign in process
     const handleSignIn = async () => {
         // Attempting to login with the provided email and password
-        try {
-            // Call the login function imported from requests/user.ts
-            // This is an async operation that returns a Promise, so we use await
-            // We pass the email and password from our form state as arguments
-            const response = await login(formData.email, formData.password);
-            // if there is a global value, call the setCurrentUser
-            console.log("response", response);
-            globalValue?.setCurrentUser(response.user);
-            // After successful login, use the navigate function from react-router-dom
-            // to programmatically redirect the user to the dashboard page
-            // The navigate function accepts a path string as an argument
-            // In App.tsx, the dashboard path is defined as "/dashboard"
-            navigate("/dashboard");
-        } catch (err) {
-            setError("Invalid email or password");
-        }
+
+        // Call the login function imported from requests/user.ts
+        // This is an async operation that returns a Promise, so we use await
+        // We pass the email and password from our form state as arguments
+        const response = await login(formData.email, formData.password);
+        // if there is a global value, call the setCurrentUser
+        console.log("response", response);
+        globalValue?.setCurrentUser(response.user);
+        // After successful login, use the navigate function from react-router-dom
+        // to programmatically redirect the user to the dashboard page
+        // The navigate function accepts a path string as an argument
+        // In App.tsx, the dashboard path is defined as "/dashboard"
+        navigate("/dashboard");
     };
 
     // Function to handle the change in the form fields

@@ -17,6 +17,9 @@ export async function login(email: string, password: string) {
         `http://localhost:5001/api/v1/users/login`,
         { email, password }
     );
+    if (response.data.message) {
+        throw new Error(response.data.message);
+    }
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("currentUser", JSON.stringify(response.data.user));
     return response.data;

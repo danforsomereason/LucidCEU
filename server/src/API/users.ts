@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
         console.log("Matching password:", matchingPassword);
         // "guard pattern" presumes you have a password and returns if not
         if (!matchingPassword) {
-            return res.json({ message: "invalid" });
+            return res.json({ message: "wrong password" });
         }
         const decoded = { userId: existingUser._id };
         const token = jwt.sign(
@@ -81,7 +81,7 @@ router.delete("/delete", async (req, res) => {
     // authentication
     const user = await authenticate(req.headers.authorization);
     // authorization
-    if (user.role !== "admin") {
+    if (user?.role !== "admin") {
         throw new Error("Only admins can delete users.");
     }
     res.send("User Deleted");
@@ -91,7 +91,7 @@ router.post("/update-profile/:userId", async (req, res) => {
     // authentication:
     const user = await authenticate(req.headers.authorization);
     // authorization:
-    if (user.id !== req.params.userId) {
+    if (user?.id !== req.params.userId) {
         throw new Error("You can only update your own profile.");
     }
     // Behavior: update user profile
@@ -167,7 +167,7 @@ router.post("/signup/organization", async (req: any, res: any) => {
 
 router.get("/", async (req, res) => {
     const user = await authenticate(req.headers.authorization);
-    if (user.role !== "admin") {
+    if (user?.role !== "admin") {
         throw new Error("Only admins can view users");
     }
     const users = await User.find();

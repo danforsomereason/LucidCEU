@@ -28,6 +28,8 @@ const App: React.FC = () => {
     // changed from parseUser = JSON.parse(localUser);
     const [currentUser, setCurrentUser] = useState<IUser>();
     const [currentUserLoading, setCurrentUserLoading] = useState(true);
+    console.log("current user loading", currentUserLoading);
+
     const [token, setToken] = useState(localToken ?? undefined);
     useEffect(() => {
         async function identify() {
@@ -47,7 +49,13 @@ const App: React.FC = () => {
         identify();
     }, []);
 
-    const globalValue: GlobalValue = { currentUser, setCurrentUser, token, setToken, currentUserLoading };
+    const globalValue: GlobalValue = {
+        currentUser,
+        setCurrentUser,
+        token,
+        setToken,
+        currentUserLoading,
+    };
     // console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,

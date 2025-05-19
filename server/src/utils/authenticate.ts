@@ -1,22 +1,31 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 
-export default async function authenticate(authorization?: string) {
-    if (!authorization) {
-        throw new Error("No authorization header");
-    }
-    const token = authorization.split(" ")[1];
+function verify(token: string) {
     try {
         const decoded = jwt.verify(token, "TEST_SECRET");
-        if (typeof decoded !== "object") {
-            throw new Error("Decoded is not an object");
-        }
-        const user = await User.findById(decoded.userId);
-        if (!user) {
-            throw new Error("User not found");
-        }
-        return user;
+        return decoded;
     } catch (error) {
-        throw new Error("Invalid Token");
+        return undefined;
     }
+}
+
+export default async function authenticate(authorization?: string) {
+    if (!authorization) {
+        return undefined;
+    }
+    const token = authorization.split(" ")[1];
+    const decoded = verify(token);
+    if (!decoded) {
+        return undefined;
+    }
+
+    if (typeof decoded !== "object") {
+        throw new Error("Decoded is not an object");
+    }
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user;
 }
