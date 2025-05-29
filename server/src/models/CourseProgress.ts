@@ -32,9 +32,9 @@ const CourseProgressSchema = new Schema<ICourseProgress>(
 );
 
 // Create the model with the correct schema
-const CourseProgressModel = mongoose.model<ICourseProgress>(
+const CourseProgress = mongoose.model<ICourseProgress>(
     "CourseProgress",
     CourseProgressSchema
 );
 
-export default CourseProgressModel;
+export default CourseProgress;
