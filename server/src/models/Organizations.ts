@@ -1,44 +1,36 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IOrganization extends Document {
-    name: string;
-    point_of_contact?: mongoose.Types.ObjectId;
+type Plan = "basic" | "pro" | "enterprise";
+type ComplianceCycle = "annual" | "biennial" | "rolling";
 
-    plan_id: mongoose.Types.ObjectId;
-    admins: mongoose.Types.ObjectId[];
-    users: mongoose.Types.ObjectId[];
-    instructors: mongoose.Types.ObjectId[];
-    parent_org: mongoose.Types.ObjectId;
-    // I created "roles" so that orgs could assign courses to a role. Not sure if this is correct.
-    roles: string[];
+interface Organization extends Document {
+    name: string;
+    plan: Plan;
+    admin_ids: mongoose.Types.ObjectId[];
+    compliance_cycle: ComplianceCycle;
+    is_active: boolean;
+    created_at: Date;
 }
 
-const OrganizationSchema = new Schema<IOrganization>(
-    {
-        name: { type: String, required: true },
-        // the contact person will default to admin(s) UOS
-        point_of_contact: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
-        plan_id: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
-        parent_org: { type: Schema.Types.ObjectId, ref: "Organization" },
-        users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-        admins: [{ type: Schema.Types.ObjectId, ref: "User" }],
-        instructors: [{ type: Schema.Types.ObjectId, ref: "User" }],
-        roles: { type: [String], default: ["All"] }
+const OrganizationSchema = new Schema<Organization>({
+    name: { type: String, required: true },
+    plan: {
+        type: String,
+        required: true,
+        enum: ["basic", "pro", "enterprise"],
     },
-    {
-        timestamps: {
-            createdAt: "created_at",
-            updatedAt: "updated_at",
-        },
-    }
-);
+    admin_ids: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    compliance_cycle: {
+        type: String,
+        enum: ["annual", "biennial", "rolling"],
+        default: "annual",
+    },
+    is_active: { type: Boolean, required: true, default: true },
+    created_at: { type: Date, required: true, default: Date.now },
+});
 
-const Organization = mongoose.model<IOrganization>(
+const OrganizationModel = mongoose.model<Organization>(
     "Organization",
     OrganizationSchema
 );
-export default Organization;
+export default OrganizationModel;

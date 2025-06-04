@@ -16,7 +16,7 @@ import TeamOrgSignup from "./screens/signup/TeamOrgSignup";
 import EnterpriseSignup from "./screens/signup/EnterpriseSignup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { globalContext, GlobalValue } from "./context/globalContext";
-import { IUser } from "../server/src/models/User";
+import { User } from "../server/src/models/User";
 import Register from "./screens/signup/Register";
 import Login from "./screens/Login";
 
@@ -26,7 +26,7 @@ const App: React.FC = () => {
 
     // ?? "" removed from parse
     // changed from parseUser = JSON.parse(localUser);
-    const [currentUser, setCurrentUser] = useState<IUser>();
+    const [currentUser, setCurrentUser] = useState<User>();
     const [currentUserLoading, setCurrentUserLoading] = useState(true);
     console.log("current user loading", currentUserLoading);
 

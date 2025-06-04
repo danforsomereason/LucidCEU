@@ -30,7 +30,17 @@ const tags = [
     "Confidentiality",
 ];
 
-const licenseTypes = ["Counseling (NBCC) CEUs", "SW CEUs", "Nursing CEUs"];
+const licenseTypes = [
+    "Mental Health Counselor (e.g., LPC, LMHC)",
+    "Social Worker",
+    "Marriage & Family Therapist",
+    "Licensed Drug and Alcohol Counselor (e.g., LADAC, LCDC)",
+    "Nurse",
+    "Psychologist",
+    "Physician",
+    "Other",
+    "Not Applicable",
+];
 
 const Courses: React.FC = () => {
     const searchRef = useRef<HTMLDivElement | null>(null);
@@ -89,7 +99,9 @@ const Courses: React.FC = () => {
                 ? selectedTags.some((tag) => course.course_tags.includes(tag))
                 : true;
             const matchesLicense = selectedLicenseTypes.length
-                ? selectedLicenseTypes.some((type) => course.course_tags.includes(type))
+                ? selectedLicenseTypes.some((type) =>
+                      course.course_tags.includes(type)
+                  )
                 : true;
 
             return matchesSearch && matchesTag && matchesLicense;
@@ -144,7 +156,7 @@ const Courses: React.FC = () => {
                 prev.includes(tagFromUrl) ? prev : [...prev, tagFromUrl]
             );
         }
-    }, [searchParams]); 
+    }, [searchParams]);
 
     return (
         <>

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IQuizQuestion {
+interface QuizQuestion {
     order: number;
     question_text: string;
     question_type: string;
@@ -9,10 +9,10 @@ interface IQuizQuestion {
     explanation: string;
 }
 
-interface IQuiz extends Document {
+interface Quiz extends Document {
     course_id: string;
     quiz_title: string;
-    questions: IQuizQuestion[];
+    questions: QuizQuestion[];
     passing_score: number;
 }
 
@@ -39,5 +39,5 @@ const QuizSchema: Schema = new Schema({
     passing_score: { type: Number, required: true }
 });
 
-const Quiz = mongoose.model<IQuiz>("Quiz", QuizSchema);
+const Quiz = mongoose.model<Quiz>("Quiz", QuizSchema);
 export default Quiz; 

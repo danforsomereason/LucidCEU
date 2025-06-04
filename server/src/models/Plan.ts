@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IPlan extends Document {
+interface Plan extends Document {
     name: string;
     basePrice: number;
     userLimit: number;
@@ -14,13 +14,13 @@ interface IPlan extends Document {
     is_active: boolean;
 }
 
-const PlanSchema = new Schema<IPlan>(
+const PlanSchema = new Schema<Plan>(
     {
         name: { type: String, required: true },
         basePrice: { type: Number, required: true },
         userLimit: { type: Number, required: true },
         includedAdmins: { type: Number, required: true, default: 1 },
-        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        instructors: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
         additionalAdminPrice: { type: Number, required: true, default: 20 },
         instructorPrice: { type: Number, required: true, default: 100 },
         features: [{ type: String, required: true }],
@@ -36,5 +36,5 @@ const PlanSchema = new Schema<IPlan>(
     }
 );
 
-const Plan = mongoose.model<IPlan>("Plan", PlanSchema);
-export default Plan;
+const PlanModel = mongoose.model<Plan>("Plan", PlanSchema);
+export default PlanModel;
