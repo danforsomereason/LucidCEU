@@ -10,6 +10,7 @@ import certificatesRouter from "./API/certificates";
 import organizationsRouter from "./API/organizations";
 import plansRouter from "./API/plans";
 import courseProgressRouter from "./API/course_progress";
+import assignedCoursesRouter from "./API/assignedCourses";
 import cors from "cors";
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use("/api/v1/quizzes", quizzesRouter);
 app.use("/api/v1/certificates", certificatesRouter);
 app.use("/api/v1/organizations", organizationsRouter);
 app.use("/api/v1/plans", plansRouter);
+app.use("/api/v1/assigned_courses", assignedCoursesRouter);
 
 const connectToDatabase = async () => {
     try {

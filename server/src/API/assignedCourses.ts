@@ -19,7 +19,8 @@ router.post("/:courseId", async (req: Request, res: Response) => {
         assigned_date: new Date(),
     };
 
-    AssignedCourseModel.insertOne(assignment);
+    const assignedCourse = await AssignedCourseModel.insertOne(assignment);
+    res.send(assignedCourse);
 });
 
 router.get("/", async (req: Request, res: Response) => {
@@ -30,7 +31,9 @@ router.get("/", async (req: Request, res: Response) => {
         });
     }
 
-    const assignedCourses = await AssignedCourseModel.find({ user_id: user.id }).populate("Course");
+    const assignedCourses = await AssignedCourseModel.find({
+        user_id: user.id,
+    });
     res.send(assignedCourses);
     console.log("Assigned Courses", assignedCourses);
 });

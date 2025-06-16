@@ -26,5 +26,8 @@ const AssignedCourseSchema = new Schema<AssignedCourse>(
     }
 );
 
-const AssignedCourseModel = mongoose.model<AssignedCourse>("AssignedCourse", AssignedCourseSchema);
+const AssignedCourseModel = mongoose.model<AssignedCourse>(
+    "AssignedCourse",
+    AssignedCourseSchema
+);
 export default AssignedCourseModel;

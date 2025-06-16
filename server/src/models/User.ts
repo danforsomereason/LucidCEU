@@ -8,7 +8,7 @@ export interface User extends Document {
     email: string;
     password_hash: string;
     salt: string;
-    organization: mongoose.Types.ObjectId;
+    organization_id: mongoose.Types.ObjectId;
     license_type: string;
     role: Role;
 }
@@ -19,7 +19,7 @@ const UserSchema = new Schema<User>(
         last_name: { type: String, required: true },
         email: { type: String, required: true },
         password_hash: { type: String, required: true },
-        organization: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
+        organization_id: [{ type: Schema.Types.ObjectId, ref: "Organization" }],
         license_type: { type: String, required: true },
         role: {
             type: String,
