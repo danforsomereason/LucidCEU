@@ -23,12 +23,26 @@ const DRAWER_WIDTH = 280;
 const NAVBAR_HEIGHT = 84;
 
 // Types
+export interface TextItem {
+    type: "text";
+    content: string;
+}
+
+export interface VideoItem {
+    type: "video";
+    videoUrl: string;
+    videoTitle: string;
+}
+
+export type ContentItem = TextItem | VideoItem;
+
+
 export interface Module {
     _id: string;
     course_name: string;
     course_id: string;
     heading: string;
-    text_content: string[];
+    content: ContentItem[];
     estimated_time: number;
     order: number;
     completed?: boolean;
@@ -371,10 +385,43 @@ const CourseModule: React.FC = () => {
                             {currentModule?.heading || "Loading..."}
                         </Typography>
 
-                        {currentModule?.text_content.map((paragraph, index) => (
-                            <Typography key={index} variant="body1" paragraph>
-                                {paragraph}
-                            </Typography>
+                        {currentModule?.content.map((item, index) => (
+                            <Box key={index} sx={{ mb: 3 }}>
+                                {item.type === "text" ? (
+                                    <Typography variant="body1" paragraph>
+                                        {item.content}
+                                    </Typography>
+                                ) : (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom>
+                                            {item.videoTitle}
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                position: "relative",
+                                                paddingTop: "56.25%", // 16:9 aspect ratio
+                                                width: "100%",
+                                                mb: 2,
+                                            }}
+                                        >
+                                            <iframe
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    left: 0,
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    border: "none",
+                                                }}
+                                                src={item.videoUrl}
+                                                title={item.videoTitle}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </Box>
+                                    </Box>
+                                )}
+                            </Box>
                         ))}
 
                         <Box

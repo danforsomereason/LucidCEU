@@ -7,7 +7,7 @@ interface Course extends Document {
     course_tags: string[];
     learning_objectives: string[];
     course_description: string;
-    instructor: string;
+    instructor_id: string;
     course_modules: string[];
     premium: boolean;
     imageurl: string;
@@ -23,7 +23,7 @@ const CourseSchema: Schema = new Schema({
     course_state: { type: String, required: true },
     course_tags: { type: [String], required: true },
     learning_objectives: { type: [String], required: true },
-    instructor: { type: String, required: true },
+    instructor_id: { type: mongoose.Types.ObjectId, required: true },
     course_description: { type: String, required: true },
     course_modules: { type: [String], required: true },
     premium: { type: Boolean, required: true, default: false },
