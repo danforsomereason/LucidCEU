@@ -1,4 +1,21 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { string, z } from "zod";
+
+export const CourseNameZod = z.object({
+    _id: z.string(),
+    course_name: z.string(),
+});
+
+export const RelatedAssignedCourseZod = z.object({
+    _id: z.string(),
+    course_id: CourseNameZod,
+    user_id: z.string(),
+    assigned_date: z.string(),
+    created_at: z.string(),
+    updated_at: z.string(),
+});
+
+export type RelatedAssignedCourse = z.infer<typeof RelatedAssignedCourseZod>;
 
 export interface AssignedCourse extends Document {
     course_id: Schema.Types.ObjectId;

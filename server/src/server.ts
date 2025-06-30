@@ -46,10 +46,6 @@ const connectToDatabase = async () => {
 
         const db = mongoose.connection.db;
         const collections = await db?.listCollections().toArray();
-        if (collections) {
-            console.log("Available collections:");
-            collections.forEach((collection) => console.log(collection.name));
-        }
     } catch (err) {
         console.error(
             "Error connecting to MongoDB or listing collections",

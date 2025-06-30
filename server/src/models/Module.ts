@@ -2,35 +2,35 @@ import mongoose, { Schema, Document } from "mongoose";
 import { content } from "pdfkit/js/page";
 import { z } from "zod";
 
-export const textItemZod = z.object({
+export const TextItemZod = z.object({
     type: z.literal("text"),
     content: z.string(),
 });
 
-export type TextItem = z.infer<typeof textItemZod>;
+export type TextItem = z.infer<typeof TextItemZod>;
 
-export const videoItemZod = z.object({
+export const VideoItemZod = z.object({
     type: z.literal("video"),
     videoUrl: z.string(),
     videoTitle: z.string(),
 });
 
-export type VideoItem = z.infer<typeof videoItemZod>;
+export type VideoItem = z.infer<typeof VideoItemZod>;
 
-export const contentItemZod = textItemZod.or(videoItemZod);
+export const ContentItemZod = TextItemZod.or(VideoItemZod);
 
-export type ContentItem = z.infer<typeof contentItemZod>;
+export type ContentItem = z.infer<typeof ContentItemZod>;
 
-export const contentItemArrayZod = contentItemZod.array();
+export const ContentItemArrayZod = ContentItemZod.array();
 
-export type ContentItemArray = z.infer<typeof contentItemArrayZod>;
+export type ContentItemArray = z.infer<typeof ContentItemArrayZod>;
 
-export const moduleZod = z.object({
+export const ModuleZod = z.object({
     _id: z.string(),
     course_name: z.string(),
     course_id: z.string(),
-    content: contentItemZod.array()
-})
+    content: ContentItemZod.array(),
+});
 
 export interface Module {
     _id: string;

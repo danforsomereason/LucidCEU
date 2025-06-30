@@ -19,6 +19,7 @@ import { globalContext, GlobalValue } from "./context/globalContext";
 import { User } from "../server/src/models/User";
 import Register from "./screens/signup/Register";
 import Login from "./screens/Login";
+import MyAssignedCourses from "./screens/MyAssignedCourses";
 
 const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
@@ -120,6 +121,10 @@ const App: React.FC = () => {
                         />
                         <Route path="/register" element={<Register />} />
                         <Route path="/login" element={<Login />} />
+                        <Route
+                            path="/my-assigned-courses"
+                            element={<MyAssignedCourses />}
+                        />
                     </Routes>
                 </Router>
             </ThemeProvider>

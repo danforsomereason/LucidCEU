@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 const router = express.Router();
 
 router.post("/:courseId", async (req: Request, res: Response) => {
+    console.log("Course Id");
+
     const user = await authenticate(req.headers.authorization);
     if (!user) {
         return res.json({
@@ -24,6 +26,8 @@ router.post("/:courseId", async (req: Request, res: Response) => {
 });
 
 router.get("/", async (req: Request, res: Response) => {
+    console.log("Root");
+
     const user = await authenticate(req.headers.authorization);
     if (!user) {
         return res.json({
@@ -36,6 +40,28 @@ router.get("/", async (req: Request, res: Response) => {
     });
     res.send(assignedCourses);
     console.log("Assigned Courses", assignedCourses);
+});
+
+// With populated course titles
+router.get("/titles", async (req: Request, res: Response) => {
+    console.log("titles");
+
+    const user = await authenticate(req.headers.authorization);
+    if (!user) {
+        return res.status(401).json({
+            message: "You must be logged in to view assigned courses",
+        });
+    }
+    console.log("UserID", user.id);
+    try {
+        const assignedCourses = await AssignedCourseModel.find({
+            user_id: user.id,
+        }).populate("course_id", "course_name");
+        res.json(assignedCourses);
+    } catch (error) {
+        console.error("Error fetching populated assigned courses:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
 export default router;
