@@ -99,7 +99,7 @@ const App: React.FC = () => {
                             element={route(<EnterpriseSignup />)}
                         />
                         <Route
-                            path="/module"
+                            path="/module/:moduleId"
                             // Navbar is fixed for Module page
                             element={route(<CourseModule />, true, "fixed")}
                         />

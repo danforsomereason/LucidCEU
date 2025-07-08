@@ -30,7 +30,8 @@ export default function MyAssignedCourses() {
         <ol>
             {courses.map((course) => (
                 <li key={course.course_id._id}>
-                    {course.course_id.course_name}
+                    <p>{course.course_id.course_name}</p>
+                    <button>Continue</button>
                 </li>
             ))}
         </ol>

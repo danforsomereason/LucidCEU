@@ -16,7 +16,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -35,7 +35,6 @@ export interface VideoItem {
 }
 
 export type ContentItem = TextItem | VideoItem;
-
 
 export interface Module {
     _id: string;
@@ -110,8 +109,7 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
-    const location = useLocation();
-    const { courseId } = location.state || {};
+    const { moduleId } = useParams();
     const [modules, setModules] = useState<Module[]>([]);
     //const modules = useStore((state) => state.modules);
     //const updateModules = useStore((state) => state.updateModules);
