@@ -11,6 +11,7 @@ export const RelatedAssignedCourseZod = z.object({
     course_id: CourseNameZod,
     user_id: z.string(),
     assigned_date: z.string(),
+    organization_id: z.string(),
     created_at: z.string(),
     updated_at: z.string(),
 });
@@ -21,6 +22,7 @@ export interface AssignedCourse extends Document {
     course_id: Schema.Types.ObjectId;
     user_id: Schema.Types.ObjectId;
     assigned_date: Date;
+    organization_id: Schema.Types.ObjectId;
     completed_date: Date;
 }
 
@@ -31,8 +33,13 @@ const AssignedCourseSchema = new Schema<AssignedCourse>(
             ref: "Course",
             required: true,
         },
-        user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        user_id: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
         assigned_date: { type: Date, required: true },
+        organization_id: { type: Schema.Types.ObjectId, required: false },
         completed_date: { type: Date, required: false },
     },
     {

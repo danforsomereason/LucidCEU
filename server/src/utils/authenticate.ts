@@ -10,13 +10,31 @@ function verify(token: string) {
     }
 }
 
-export default async function authenticate(authorization?: string) {
+export default async function authenticate(
+    authorization?: string,
+    debug?: boolean
+) {
+    if (debug) {
+        console.debug("Authorization header:", authorization);
+    }
     if (!authorization) {
+        if (debug) {
+            console.debug("Authorization header missing");
+        }
         return undefined;
     }
     const token = authorization.split(" ")[1];
+    if (debug) {
+        console.debug("Token at authenticate fx:", token);
+    }
     const decoded = verify(token);
+    if (debug) {
+        console.debug("Decoded at authenticate fx:", decoded);
+    }
     if (!decoded) {
+        if (debug) {
+            console.debug("Decoded empty token");
+        }
         return undefined;
     }
 

@@ -72,7 +72,7 @@ const ContentItemSchema = new Schema({
 const ModuleSchema: Schema = new Schema({
     course_name: { type: String, required: true },
     course_id: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Course",
         required: true,
     },

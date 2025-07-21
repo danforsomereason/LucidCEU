@@ -15,14 +15,45 @@ router.post("/:courseId", async (req: Request, res: Response) => {
         });
     }
 
+    const existing = await AssignedCourseModel.findOne({
+        user_id: user.id,
+        course_id: req.params.courseId,
+    });
+
+    if (existing) {
+        return res.status(409).json({ message: "Course already assigned" });
+    }
+
     const assignment = {
         course_id: new mongoose.Types.ObjectId(req.params.courseId),
         user_id: new mongoose.Types.ObjectId(user.id),
         assigned_date: new Date(),
+        organization_id: null,
     };
 
-    const assignedCourse = await AssignedCourseModel.insertOne(assignment);
+    const assignedCourse = await AssignedCourseModel.create(assignment);
     res.send(assignedCourse);
+});
+
+router.get("/:courseId", async (req: Request, res: Response) => {
+    const user = await authenticate(req.headers.authorization);
+    if (!user) {
+        return res.status(401).json({
+            message: "You must be logged in to find assigned courses.",
+        });
+    }
+
+    console.log("AUTH user.id:", user.id);
+    console.log("REQ param course_id:", req.params.courseId);
+
+    const assignedCourses = await AssignedCourseModel.findOne({
+        course_id: new mongoose.Types.ObjectId(req.params.courseId),
+        user_id: new mongoose.Types.ObjectId(user.id),
+    });
+    if (!assignedCourses) {
+        return res.status(404).json({ message: "Course not assigned to user" });
+    }
+    res.status(200).json(assignedCourses);
 });
 
 router.get("/", async (req: Request, res: Response) => {
@@ -47,12 +78,15 @@ router.get("/titles", async (req: Request, res: Response) => {
     console.log("titles");
 
     const user = await authenticate(req.headers.authorization);
+    console.log("User in my assigned courses api", user);
+
     if (!user) {
         return res.status(401).json({
             message: "You must be logged in to view assigned courses",
         });
     }
     console.log("UserID", user.id);
+
     try {
         const assignedCourses = await AssignedCourseModel.find({
             user_id: user.id,

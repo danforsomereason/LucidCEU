@@ -1,5 +1,5 @@
 // src/screens/CourseModule.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Box,
     Typography,
@@ -17,6 +17,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
 import { useParams } from "react-router-dom";
+import { globalContext } from "../context/globalContext";
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -109,11 +110,13 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
-    const { moduleId } = useParams();
+    const global = useContext(globalContext);
+    const { courseId } = useParams();
     const [modules, setModules] = useState<Module[]>([]);
     //const modules = useStore((state) => state.modules);
     //const updateModules = useStore((state) => state.updateModules);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState();
     const [completedModules, setCompletedModules] = useState<string[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState<string>("");
     const [quizCompleted, setQuizCompleted] = useState(false);
@@ -121,60 +124,47 @@ const CourseModule: React.FC = () => {
 
     // Fetch modules data
     useEffect(() => {
+        setLoading(true);
+        // setError(null);
         const fetchModules = async () => {
             try {
-                const courseResponse = await fetch(
-                    `http://localhost:5001/api/v1/courses/${courseId}`,
+                const token = global?.token;
+
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                };
+                console.log("Before assigned token:", global?.token);
+                // confirm user is assigned to this course
+                const assignedRes = await fetch(
+                    `http://localhost:5001/api/v1/assigned_courses/${courseId}`,
                     {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
+                        method: "GET",
+                        headers,
+                    }
+                );
+                if (assignedRes.status === 404) {
+                    throw new Error("You are not assigned to this course.");
+                }
+                console.log("Before modules token:", global?.token);
+                // get the modules associated with this course
+                const modulesRes = await fetch(
+                    `http://localhost:5001/api/v1/modules/by-course/${courseId}`,
+                    {
+                        method: "GET",
+                        headers,
                     }
                 );
 
-                if (!courseResponse.ok) {
-                    throw new Error(
-                        `HTTP error! status: ${courseResponse.status}`
-                    );
+                if (!modulesRes.ok) {
+                    throw new Error(`HTTP error! status: ${modulesRes.status}`);
                 }
-
-                const courseData = await courseResponse.json();
-
-                if (
-                    !courseData.course_modules ||
-                    !Array.isArray(courseData.course_modules)
-                ) {
-                    throw new Error("Invalid course modules data structure");
-                }
-
-                // Only proceed if we have module IDs
-                if (courseData.course_modules.length === 0) {
-                    setModules([]);
-                    setLoading(false);
-                    return;
-                }
-
-                const modulesResponse = await fetch(
-                    `http://localhost:5001/api/v1/modules?ids=${courseData.course_modules.join(
-                        ","
-                    )}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-
-                if (!modulesResponse.ok) {
-                    throw new Error(
-                        `HTTP error! status: ${modulesResponse.status}`
-                    );
-                }
-
-                const modulesData = await modulesResponse.json();
+                const modulesData = await modulesRes.json();
 
                 if (!Array.isArray(modulesData)) {
-                    throw new Error("Modules data is not an array");
+                    throw new Error(
+                        "The module response didn't return an array of modules"
+                    );
                 }
 
                 const sortedModules = modulesData.sort(
@@ -185,6 +175,7 @@ const CourseModule: React.FC = () => {
             } catch (error) {
                 console.error("Detailed fetch error:", error);
                 //updateCourses
+
                 setModules([]);
             } finally {
                 setLoading(false);

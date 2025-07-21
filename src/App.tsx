@@ -29,7 +29,6 @@ const App: React.FC = () => {
     // changed from parseUser = JSON.parse(localUser);
     const [currentUser, setCurrentUser] = useState<User>();
     const [currentUserLoading, setCurrentUserLoading] = useState(true);
-    console.log("current user loading", currentUserLoading);
 
     const [token, setToken] = useState(localToken ?? undefined);
     useEffect(() => {
@@ -43,7 +42,6 @@ const App: React.FC = () => {
                 { headers: { authorization: `Bearer ${token}` } }
             );
             const output = await response.json();
-            console.log(output);
             setCurrentUser(output.user);
             setCurrentUserLoading(false);
         }
@@ -99,7 +97,7 @@ const App: React.FC = () => {
                             element={route(<EnterpriseSignup />)}
                         />
                         <Route
-                            path="/module/:moduleId"
+                            path="/course/:courseId/modules"
                             // Navbar is fixed for Module page
                             element={route(<CourseModule />, true, "fixed")}
                         />

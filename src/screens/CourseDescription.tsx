@@ -43,6 +43,7 @@ const CourseDescription: React.FC = () => {
                 const response = await fetch(
                     `http://localhost:5001/api/v1/courses/${courseId}`
                 );
+
                 if (!response.ok) throw new Error("Course not found");
                 const data = await response.json();
                 setCourse(data);
@@ -57,21 +58,25 @@ const CourseDescription: React.FC = () => {
     const handleBeginCourse = async () => {
         const authorization = `Bearer ${global?.token}`;
         const headers = { authorization };
+
         const init = { method: "POST", headers };
         const response = await fetch(
             `http://localhost:5001/api/v1/assigned_courses/${courseId}`,
             init
         );
-        if (!response.ok) throw new Error("Course not found");
+        if (response.status === 409) {
+            console.log("Course already assigned. Proceeding to modules.");
+        } else if (!response.ok) throw new Error("Course not found");
+
         const data = await response.json();
         console.log("Data - Assigned Course Response", data);
 
-        // navigate('/module', {
-        //     state: {
-        //         courseId: course?._id,
-        //         courseName: course?.course_name
-        //     }
-        // });
+        navigate(`/course/${courseId}/modules`, {
+            state: {
+                courseId: course?._id,
+                courseName: course?.course_name,
+            },
+        });
     };
 
     if (!course) {

@@ -17,7 +17,7 @@ export default function MyAssignedCourses() {
                     headers: { authorization: `Bearer ${global?.token}` },
                 }
             );
-            // unknown is like any - anything can be assigned to it
+            // unknown is like any - anything can b e assigned to it
             // but nothing can be done with it
             const data: unknown = await response.json();
             const myCourses = RelatedAssignedCourseZod.array().parse(data);

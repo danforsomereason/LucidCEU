@@ -18,7 +18,8 @@ const NavBar: React.FC = () => {
     const context = useContext(globalContext);
     // need to get the token out of the context as opposed to the localStorage
     const token = localStorage.getItem("token");
-    const userName = context?.currentUser?.first_name || "Welcome Back!";
+    const userName =
+        context?.currentUser?.first_name || "You are not logged in.";
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);

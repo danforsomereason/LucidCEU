@@ -55,7 +55,7 @@ router.get("/:id", async (req: any, res: any) => {
     }
 });
 
-//
+//get a single course by a moduleId
 router.get("/by-module/:moduleId", async (req: Request, res: Response) => {
     try {
         const user = await authenticate(req.headers.authorization);
@@ -84,7 +84,7 @@ router.get("/by-module/:moduleId", async (req: Request, res: Response) => {
 
     } catch (err) {
         console.error("Error getting course by moduleId:", err);
-        res.status(500).json({ message: "Internal Server ERror" });
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 

@@ -1,8 +1,9 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import Module, { ContentItemArrayZod, ModuleZod } from "../models/Module";
 import authenticate from "../utils/authenticate";
 import CourseProgress from "../models/CourseProgress";
 import CourseModel from "../models/Course";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -11,7 +12,9 @@ router.get("/", async (req: any, res: any) => {
         const user = await authenticate(req.headers.authorization);
 
         if (!user) {
-            return res.status(400).json({ message: "You are not logged in." });
+            return res
+                .status(400)
+                .json({ message: "You are not logged in to get the modules." });
         }
 
         const courseProgress = await CourseProgress.findOne({});
@@ -70,6 +73,70 @@ router.post("/", async (req: any, res: any) => {
     } catch (err) {
         console.error("Error creating module:", err);
         res.status(500).json({ message: "Error creating module" });
+    }
+});
+
+// given a course id, return all modules for that course
+// router.get("/by-course/:courseId", async (req: Request, res: Response) => {
+//     console.log("req.params.courseId", req.params.courseId);
+//     try {
+//         const user = await authenticate(req.headers.authorization);
+//         if (!user) {
+//             return res.status(401).json({ message: "You are not logged in." });
+//         }
+
+//         const course = await CourseModel.findById(req.params.courseId);
+
+//         if (!course) {
+//             return res.status(404).json({ message: "Course not found." });
+//         }
+//         const courseId = new mongoose.Types.ObjectId(req.params.courseId);
+//         console.log("Course Id ", courseId);
+//         const allModules = await Module.find();
+//         const filterModules = allModules.filter((module) => {
+//             const moduleCourseId = module.course_id.toString();
+
+//             const match = moduleCourseId === req.params.courseId;
+//             return match;
+//         });
+//         console.log("Filtered Modules length", filterModules.length);
+
+//         const modules = await Module.find({
+//             course_id: courseId,
+//         });
+//         console.log("Modules.length", modules.length);
+//         res.json(filterModules);
+//     } catch (err) {
+//         console.error("Error in /api/modules:", err);
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// });
+
+router.get("/by-course/:courseId", async (req: Request, res: Response) => {
+    console.log("auth header", req.headers.authorization);
+    try {
+        const user = await authenticate(req.headers.authorization, true);
+        console.log("Authenticated user:", user ? "SUCCESS" : "FAILED");
+
+        if (!user) {
+            return res.status(401).json({ message: "You are not logged in." });
+        }
+
+        const course = await CourseModel.findById(req.params.courseId);
+        if (!course) {
+            return res.status(404).json({ message: "Course not found." });
+        }
+
+        // Convert to ObjectId and find modules
+        const courseId = new mongoose.Types.ObjectId(req.params.courseId);
+        const modules = await Module.find({ course_id: courseId }).sort({
+            order: 1,
+        });
+
+        res.json(modules);
+    } catch (error) {
+        console.error("Error in /api/modules:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 });
 
