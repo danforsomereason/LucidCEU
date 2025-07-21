@@ -77,67 +77,32 @@ router.post("/", async (req: any, res: any) => {
 });
 
 // given a course id, return all modules for that course
-// router.get("/by-course/:courseId", async (req: Request, res: Response) => {
-//     console.log("req.params.courseId", req.params.courseId);
-//     try {
-//         const user = await authenticate(req.headers.authorization);
-//         if (!user) {
-//             return res.status(401).json({ message: "You are not logged in." });
-//         }
-
-//         const course = await CourseModel.findById(req.params.courseId);
-
-//         if (!course) {
-//             return res.status(404).json({ message: "Course not found." });
-//         }
-//         const courseId = new mongoose.Types.ObjectId(req.params.courseId);
-//         console.log("Course Id ", courseId);
-//         const allModules = await Module.find();
-//         const filterModules = allModules.filter((module) => {
-//             const moduleCourseId = module.course_id.toString();
-
-//             const match = moduleCourseId === req.params.courseId;
-//             return match;
-//         });
-//         console.log("Filtered Modules length", filterModules.length);
-
-//         const modules = await Module.find({
-//             course_id: courseId,
-//         });
-//         console.log("Modules.length", modules.length);
-//         res.json(filterModules);
-//     } catch (err) {
-//         console.error("Error in /api/modules:", err);
-//         res.status(500).json({ message: "Internal Server Error" });
-//     }
-// });
-
 router.get("/by-course/:courseId", async (req: Request, res: Response) => {
-    console.log("auth header", req.headers.authorization);
     try {
-        const user = await authenticate(req.headers.authorization, true);
-        console.log("Authenticated user:", user ? "SUCCESS" : "FAILED");
-
+        const user = await authenticate(req.headers.authorization);
         if (!user) {
             return res.status(401).json({ message: "You are not logged in." });
         }
 
         const course = await CourseModel.findById(req.params.courseId);
+
         if (!course) {
             return res.status(404).json({ message: "Course not found." });
         }
+        const allModules = await Module.find();
+        const filterModules = allModules.filter((module) => {
+            const moduleCourseId = module.course_id.toString();
 
-        // Convert to ObjectId and find modules
-        const courseId = new mongoose.Types.ObjectId(req.params.courseId);
-        const modules = await Module.find({ course_id: courseId }).sort({
-            order: 1,
+            const match = moduleCourseId === req.params.courseId;
+            return match;
         });
 
-        res.json(modules);
-    } catch (error) {
-        console.error("Error in /api/modules:", error);
-        res.status(500).json({ message: "Internal server error." });
+        res.json(filterModules);
+    } catch (err) {
+        console.error("Error in /api/modules:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
+
 
 export default router;

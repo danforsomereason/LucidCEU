@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import AssignedCourseModel, { AssignedCourse } from "../models/AssignedCourse";
 import authenticate from "../utils/authenticate";
 import mongoose from "mongoose";
+import { ModuleProgress } from "../models/ModuleProgress";
 
 const router = express.Router();
 
@@ -32,6 +33,12 @@ router.post("/:courseId", async (req: Request, res: Response) => {
     };
 
     const assignedCourse = await AssignedCourseModel.create(assignment);
+    // Todo: make a check here so that I don't duplicate
+    await ModuleProgress.create({
+        course_id: new mongoose.Types.ObjectId(req.params.courseId),
+        user_id: new mongoose.Types.ObjectId(user.id),
+        start_module: new Date(),
+    });
     res.send(assignedCourse);
 });
 
