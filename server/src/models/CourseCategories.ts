@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 // Define the interface for the CourseCategory document
-interface ICourseCategory extends Document {
+interface CourseCategory extends Document {
     category_name: string;
     category_description: string;
 }
@@ -11,8 +11,8 @@ const CourseCategorySchema: Schema = new Schema({
     category_description: { type: String, required: true },
 });
 // Create the CourseCategory model
-const CourseCategory = mongoose.model<ICourseCategory>(
+const CourseCategoryModel = mongoose.model<CourseCategory>(
     "CourseCategory",
     CourseCategorySchema
 );
-export default CourseCategory;
+export default CourseCategoryModel;

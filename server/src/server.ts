@@ -9,10 +9,11 @@ import quizzesRouter from "./API/quizzes";
 import certificatesRouter from "./API/certificates";
 import organizationsRouter from "./API/organizations";
 import plansRouter from "./API/plans";
+import courseProgressRouter from "./API/course_progress";
+import assignedCoursesRouter from "./API/assignedCourses";
 import cors from "cors";
 
 dotenv.config();
-
 const app = express();
 
 app.use(
@@ -26,14 +27,16 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1/user", userRouter);
+app.use("/api/v1/users", userRouter);
 app.use("/api/v1/course_categories", courseCategoriesRouter);
 app.use("/api/v1/courses", coursesRouter);
+app.use("/api/v1/course_progress", courseProgressRouter);
 app.use("/api/v1/modules", modulesRouter);
 app.use("/api/v1/quizzes", quizzesRouter);
 app.use("/api/v1/certificates", certificatesRouter);
 app.use("/api/v1/organizations", organizationsRouter);
 app.use("/api/v1/plans", plansRouter);
+app.use("/api/v1/assigned_courses", assignedCoursesRouter);
 
 const connectToDatabase = async () => {
     try {
@@ -42,10 +45,6 @@ const connectToDatabase = async () => {
 
         const db = mongoose.connection.db;
         const collections = await db?.listCollections().toArray();
-        if (collections) {
-            console.log("Available collections:");
-            collections.forEach((collection) => console.log(collection.name));
-        }
     } catch (err) {
         console.error(
             "Error connecting to MongoDB or listing collections",

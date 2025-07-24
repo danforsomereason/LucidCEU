@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
 
     useEffect(() => {
         getCourseCategories().then((data) => {
-            console.log(data);
+            // console.log(data);
             setCategories(data);
         });
     }, []);
@@ -19,29 +19,33 @@ const Hero: React.FC = () => {
     return (
         <>
             <section className="hero-section">
-                <Typography variant="h1" gutterBottom>
-                    LEARN, GROW, IMPACT
-                </Typography>
-                <Typography variant="h2" gutterBottom>
-                    <span>Impact your client work, faster.</span>
-                    <br />
-                    Stay <span className='hero-accent'>up-to-date</span> and compliant.
-                </Typography>
-                <Typography
-                    variant="body1"
-                    className="hero-paragraph"
-                    gutterBottom
-                >
-                    LUCID makes training your team simple. Easily register your
-                    employees to start learning and accruing Continuing
-                    Education Units toward their licensure requirements. LUCID
-                    stays up to date on leading research, state guidelines, and
-                    accreditation standards so that you can focus on what you do
-                    best: providing exceptional client care!
-                </Typography>
-                <Button variant="contained" color="secondary">
-                    Get Started
-                </Button>
+                <div className="hero-content">
+                    <Typography variant="h1" gutterBottom>
+                        LEARN, GROW, IMPACT
+                    </Typography>
+                    <Typography variant="h2" gutterBottom>
+                        <span>Impact your client work, faster.</span>
+                        <br />
+                        Stay <span className="hero-accent">up-to-date</span> and
+                        compliant.
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        className="hero-paragraph"
+                        gutterBottom
+                    >
+                        LUCID makes training your team simple. Easily register
+                        your employees to start learning and accruing Continuing
+                        Education Units toward their licensure requirements.
+                        LUCID stays up to date on leading research, state
+                        guidelines, and accreditation standards so that you can
+                        focus on what you do best: providing exceptional client
+                        care!
+                    </Typography>
+                    <Button variant="contained" color="secondary">
+                        Get Started
+                    </Button>
+                </div>
             </section>
             <section className="hero-category-gallery">
                 <Typography variant="h2">

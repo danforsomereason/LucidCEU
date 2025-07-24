@@ -22,10 +22,14 @@ import BasicPie from "../../components/dashboard/UserCompliance";
 // List of certificates - for course that have been completed
 
 const Dashboard: React.FC = () => {
-    const context = useContext(globalContext);
-    const userName = context?.currentUser?.first_name;
+    const globalValue = useContext(globalContext);
+    console.log("Global value: ", globalValue);
+    const userName = globalValue?.currentUser?.first_name;
 
-    if (!context || !context.currentUser) {
+    if (globalValue?.currentUserLoading) {
+        return <div>Dashboard user loading...</div>;
+    }
+    if (!globalValue || !globalValue.currentUser) {
         return <Navigate to="/signin" />;
     }
 

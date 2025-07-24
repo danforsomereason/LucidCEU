@@ -1,11 +1,12 @@
 import { createContext, Dispatch, SetStateAction } from "react";
-import { IUser } from "../../server/src/models/User";
+import { User } from "../../server/src/models/User";
 
-interface GlobalValue {
-    currentUser?: IUser;
+export interface GlobalValue {
+    currentUser?: User;
     token?: string;
-    setCurrentUser: Dispatch<SetStateAction<IUser | undefined>>;
+    setCurrentUser: Dispatch<SetStateAction<User | undefined>>;
     setToken: Dispatch<SetStateAction<string | undefined>>;
+    currentUserLoading: boolean;
 }
 
 export const globalContext = createContext<GlobalValue | undefined>(undefined);

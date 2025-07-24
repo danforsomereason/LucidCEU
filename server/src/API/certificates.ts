@@ -56,7 +56,7 @@ router.post("/", async (req: any, res: any) => {
         // Generate certificate PDF
         const certificateData = {
             userName: `${user.first_name} ${user.last_name}`,
-            courseName: course.course_name,
+            courseName: course.name,
             ceHours: course.ce_hours,
             completionDate: new Date(),
             score

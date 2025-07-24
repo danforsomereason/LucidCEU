@@ -1,19 +1,40 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from "mongoose";
 
-interface ICourseProgress extends Document {
-    user_id: mongoose.Schema.Types.ObjectId;
-    course_id: mongoose.Schema.Types.ObjectId;
-    started_at: Date;
+// Define the structure for course progress
+interface ICourse {
+    course_id: Types.ObjectId; // Use Types.ObjectId for better compatibility
+    completed: boolean;
+    module_progress: Types.ObjectId[]; // Assuming these are ObjectIds referencing Modules
     completed_at: Date;
-    status: 'in_progress' | 'completed' | 'not_started';
 }
 
-const CourseProgressSchema: Schema = new Schema({
-    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    course_id: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-    started_at: { type: Date, default: Date.now },
-    completed_at: { type: Date },
-    status: { type: String, enum: ['in_progress', 'completed', 'not_started'], default: 'not_started' },
+// Define the main CourseProgress structure
+interface ICourseProgress extends Document {
+    user_id: Types.ObjectId;
+    courses: ICourse[];
+}
+
+// Define the Schema for individual course progress
+const CourseSchema = new Schema<ICourse>({
+    course_id: { type: Schema.Types.ObjectId, ref: "Course", required: true }, // Ensure correct ref
+    completed: { type: Boolean, default: false },
+    module_progress: [{ type: Schema.Types.ObjectId, ref: "Module" }], // Ensure correct ref
+    completed_at: { type: Date, default: null },
 });
 
-export default mongoose.model<ICourseProgress>('CourseProgress', CourseProgressSchema);
+// Define the main CourseProgress schema
+const CourseProgressSchema = new Schema<ICourseProgress>(
+    {
+        user_id: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Ensure correct ref
+        courses: [CourseSchema],
+    },
+    { collection: "courseProgress" } // Explicitly set the collection name
+);
+
+// Create the model with the correct schema
+const CourseProgress = mongoose.model<ICourseProgress>(
+    "CourseProgress",
+    CourseProgressSchema
+);
+
+export default CourseProgress;

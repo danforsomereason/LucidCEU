@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import Layout from "./components/Layout";
@@ -15,21 +15,47 @@ import IndividualCheckout from "./screens/signup/IndividualCheckout";
 import TeamOrgSignup from "./screens/signup/TeamOrgSignup";
 import EnterpriseSignup from "./screens/signup/EnterpriseSignup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from "react";
-import { globalContext } from "./context/globalContext";
-import { IUser } from "../server/src/models/User";
+import { globalContext, GlobalValue } from "./context/globalContext";
+import { User } from "../server/src/models/User";
+import Register from "./screens/signup/Register";
+import Login from "./screens/Login";
+import MyAssignedCourses from "./screens/MyAssignedCourses";
 
 const App: React.FC = () => {
     const localToken = localStorage.getItem("token");
-    const localUser = localStorage.getItem("currentUser");
-    const parsedUser = JSON.parse(localUser ?? "");
-    const [currentUser, setCurrentUser] = useState<IUser | undefined>(
-        parsedUser || undefined
-    );
-    const [token, setToken] = useState(localToken ?? undefined);
+    // console.log("localUser", localUser);
 
-    const globalValue = { currentUser, setCurrentUser, token, setToken };
-    console.log("current user", currentUser);
+    // ?? "" removed from parse
+    // changed from parseUser = JSON.parse(localUser);
+    const [currentUser, setCurrentUser] = useState<User>();
+    const [currentUserLoading, setCurrentUserLoading] = useState(true);
+
+    const [token, setToken] = useState(localToken ?? undefined);
+    useEffect(() => {
+        async function identify() {
+            if (!token) {
+                setCurrentUserLoading(false);
+                return;
+            }
+            const response = await fetch(
+                "http://localhost:5001/api/v1/users/identify",
+                { headers: { authorization: `Bearer ${token}` } }
+            );
+            const output = await response.json();
+            setCurrentUser(output.user);
+            setCurrentUserLoading(false);
+        }
+        identify();
+    }, []);
+
+    const globalValue: GlobalValue = {
+        currentUser,
+        setCurrentUser,
+        token,
+        setToken,
+        currentUserLoading,
+    };
+    // console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
         showNavbar: boolean = true,
@@ -71,7 +97,7 @@ const App: React.FC = () => {
                             element={route(<EnterpriseSignup />)}
                         />
                         <Route
-                            path="/module"
+                            path="/course/:courseId/modules"
                             // Navbar is fixed for Module page
                             element={route(<CourseModule />, true, "fixed")}
                         />
@@ -90,6 +116,12 @@ const App: React.FC = () => {
                         <Route
                             path="/dashboard"
                             element={route(<Dashboard />, true, "fixed")}
+                        />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route
+                            path="/my-assigned-courses"
+                            element={<MyAssignedCourses />}
                         />
                     </Routes>
                 </Router>

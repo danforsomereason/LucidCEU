@@ -1,16 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface ICourse extends Document {
-    course_name: string;
+interface Course extends Document {
+    name: string;
     ce_hours: number;
     course_state: string;
     course_tags: string[];
     learning_objectives: string[];
     course_description: string;
-    course_instructor: string;
-    course_price: number;
+    instructor_id: string;
     course_modules: string[];
-    url: string;
+    premium: boolean;
+    imageurl: string;
     approved_by?: Array<{
         board: "NBCC" | "APA" | "ASWB" | "NAADAC" | "CAMFT" | "Nursing";
         logo_url: string;
@@ -18,16 +18,16 @@ interface ICourse extends Document {
 }
 // Define the schema for the Course model
 const CourseSchema: Schema = new Schema({
-    course_name: { type: String, required: true },
+    name: { type: String, required: true },
     ce_hours: { type: Number, required: true },
     course_state: { type: String, required: true },
     course_tags: { type: [String], required: true },
     learning_objectives: { type: [String], required: true },
-    course_instructor: { type: String, required: true },
-    course_price: { type: Number, required: true },
+    instructor_id: { type: mongoose.Types.ObjectId, required: true },
     course_description: { type: String, required: true },
     course_modules: { type: [String], required: true },
-    url: { type: String, required: true },
+    premium: { type: Boolean, required: true, default: false },
+    imageurl: { type: String, required: false },
     approved_by: [
         {
             board: {
@@ -40,5 +40,5 @@ const CourseSchema: Schema = new Schema({
     ],
 });
 
-const Course = mongoose.model<ICourse>("Course", CourseSchema);
-export default Course;
+const CourseModel = mongoose.model<Course>("Course", CourseSchema);
+export default CourseModel;

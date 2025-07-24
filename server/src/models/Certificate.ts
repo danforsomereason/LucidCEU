@@ -7,7 +7,7 @@ interface IssueHistory {
     certificate_url?: string;
 }
 
-interface ICertificate extends Document {
+interface Certificate extends Document {
     user_id: mongoose.Schema.Types.ObjectId;
     course_id: mongoose.Schema.Types.ObjectId;
     // Include all instance so that you can later track annual compliance
@@ -55,4 +55,8 @@ CertificateSchema.methods.getMostRecentIssue = function () {
     )[0];
 };
 
-export default mongoose.model<ICertificate>("Certificate", CertificateSchema);
+const CertificateModel = mongoose.model<Certificate>(
+    "Certificate",
+    CertificateSchema
+);
+export default CertificateModel;

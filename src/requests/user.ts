@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export async function createUser(userData: any, password: string) {
     const response = await axios.post(
-        `http://localhost:5001/api/v1/user/signup`,
+        `http://localhost:5001/api/v1/users/signup`,
         { user: userData, password }
     );
     // move this to the login function
@@ -14,9 +14,12 @@ export async function createUser(userData: any, password: string) {
 export async function login(email: string, password: string) {
     // Make a POST request to the login endpoint
     const response = await axios.post(
-        `http://localhost:5001/api/v1/user/login`,
+        `http://localhost:5001/api/v1/users/login`,
         { email, password }
     );
+    if (response.data.message) {
+        throw new Error(response.data.message);
+    }
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("currentUser", JSON.stringify(response.data.user));
     return response.data;
@@ -24,7 +27,7 @@ export async function login(email: string, password: string) {
 
 export async function updateUser(userData: any) {
     const response = await axios.put(
-        `http://localhost:5001/api/v1/user/update`,
+        `http://localhost:5001/api/v1/users/update`,
         userData
     );
     return response.data;
@@ -33,7 +36,7 @@ export async function updateUser(userData: any) {
 // used onBlur to check if email exists in users collection
 export async function checkUserExists(email: string) {
     const response = await axios.get(
-        `http://localhost:5001/api/v1/user/check-exists/${email}`
+        `http://localhost:5001/api/v1/users/check-exists/${email}`
     );
     return response.data;
 }
@@ -41,7 +44,7 @@ export async function checkUserExists(email: string) {
 // check if email & organization id exists in verified_users collection
 export async function checkOrganizationVerification(email: string) {
     const response = await axios.get(
-        `http://localhost:5001/api/v1/user/check-verification/${email}`
+        `http://localhost:5001/api/v1/users/check-verification/${email}`
     );
     return response.data;
 }
@@ -49,7 +52,7 @@ export async function checkOrganizationVerification(email: string) {
 // For registered organization users (immediate creation)
 export async function createOrganizationUser(userData: any, password: string) {
     const response = await axios.post(
-        `http://localhost:5001/api/v1/user/signup/organization`,
+        `http://localhost:5001/api/v1/users/signup/organization`,
         { user: userData, password }
     );
     return response.data;
@@ -62,7 +65,7 @@ export async function createPersonalUser(
     paymentIntent: string
 ) {
     const response = await axios.post(
-        `http://localhost:5001/api/v1/user/signup/personal`,
+        `http://localhost:5001/api/v1/users/signup/personal`,
         {
             user: userData,
             password,

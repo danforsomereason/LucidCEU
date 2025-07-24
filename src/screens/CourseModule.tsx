@@ -1,5 +1,5 @@
 // src/screens/CourseModule.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     Box,
     Typography,
@@ -16,19 +16,33 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
-import { useLocation } from 'react-router-dom';
+import { useParams } from "react-router-dom";
+import { globalContext } from "../context/globalContext";
 
 // Constants
 const DRAWER_WIDTH = 280;
 const NAVBAR_HEIGHT = 84;
 
 // Types
-interface Module {
+export interface TextItem {
+    type: "text";
+    content: string;
+}
+
+export interface VideoItem {
+    type: "video";
+    videoUrl: string;
+    videoTitle: string;
+}
+
+export type ContentItem = TextItem | VideoItem;
+
+export interface Module {
     _id: string;
     course_name: string;
     course_id: string;
     heading: string;
-    text_content: string[];
+    content: ContentItem[];
     estimated_time: number;
     order: number;
     completed?: boolean;
@@ -96,10 +110,13 @@ const HelpButton = styled(Button)(({ theme }) => ({
 }));
 
 const CourseModule: React.FC = () => {
-    const location = useLocation();
-    const { courseId } = location.state || {};
+    const global = useContext(globalContext);
+    const { courseId } = useParams();
     const [modules, setModules] = useState<Module[]>([]);
+    //const modules = useStore((state) => state.modules);
+    //const updateModules = useStore((state) => state.updateModules);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState();
     const [completedModules, setCompletedModules] = useState<string[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState<string>("");
     const [quizCompleted, setQuizCompleted] = useState(false);
@@ -107,60 +124,47 @@ const CourseModule: React.FC = () => {
 
     // Fetch modules data
     useEffect(() => {
+        setLoading(true);
+        // setError(null);
         const fetchModules = async () => {
             try {
-                const courseResponse = await fetch(
-                    `http://localhost:5001/api/v1/courses/${courseId}`,
+                const token = global?.token;
+
+                const headers = {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                };
+                console.log("Before assigned token:", global?.token);
+                // confirm user is assigned to this course
+                const assignedRes = await fetch(
+                    `http://localhost:5001/api/v1/assigned_courses/${courseId}`,
                     {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
+                        method: "GET",
+                        headers,
+                    }
+                );
+                if (assignedRes.status === 404) {
+                    throw new Error("You are not assigned to this course.");
+                }
+                console.log("Before modules token:", global?.token);
+                // get the modules associated with this course
+                const modulesRes = await fetch(
+                    `http://localhost:5001/api/v1/modules/by-course/${courseId}`,
+                    {
+                        method: "GET",
+                        headers,
                     }
                 );
 
-                if (!courseResponse.ok) {
-                    throw new Error(
-                        `HTTP error! status: ${courseResponse.status}`
-                    );
+                if (!modulesRes.ok) {
+                    throw new Error(`HTTP error! status: ${modulesRes.status}`);
                 }
-
-                const courseData = await courseResponse.json();
-
-                if (
-                    !courseData.course_modules ||
-                    !Array.isArray(courseData.course_modules)
-                ) {
-                    throw new Error("Invalid course modules data structure");
-                }
-
-                // Only proceed if we have module IDs
-                if (courseData.course_modules.length === 0) {
-                    setModules([]);
-                    setLoading(false);
-                    return;
-                }
-
-                const modulesResponse = await fetch(
-                    `http://localhost:5001/api/v1/modules?ids=${courseData.course_modules.join(
-                        ","
-                    )}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-
-                if (!modulesResponse.ok) {
-                    throw new Error(
-                        `HTTP error! status: ${modulesResponse.status}`
-                    );
-                }
-
-                const modulesData = await modulesResponse.json();
+                const modulesData = await modulesRes.json();
 
                 if (!Array.isArray(modulesData)) {
-                    throw new Error("Modules data is not an array");
+                    throw new Error(
+                        "The module response didn't return an array of modules"
+                    );
                 }
 
                 const sortedModules = modulesData.sort(
@@ -170,12 +174,14 @@ const CourseModule: React.FC = () => {
                 setCurrentModuleId(sortedModules[0]?._id || "");
             } catch (error) {
                 console.error("Detailed fetch error:", error);
-                setModules([]); 
+                //updateCourses
+
+                setModules([]);
             } finally {
                 setLoading(false);
             }
         };
-        
+
         if (courseId) {
             fetchModules();
         }
@@ -201,10 +207,9 @@ const CourseModule: React.FC = () => {
 
     const currentModule = modules.find((m) => m._id === currentModuleId);
 
-
     const progress = (completedModules.length / modules.length) * 100;
 
-    // Helper function to check if a module is accessible
+    // Helper function to check if a module is should be locked or open depending on progress
     const isModuleAccessible = (moduleId: string) => {
         const moduleIndex = modules.findIndex((m) => m._id === moduleId);
         const lastCompletedIndex = Math.max(
@@ -327,12 +332,12 @@ const CourseModule: React.FC = () => {
                     onClick={() => {
                         alert(
                             "Course Instructions:\n\n" +
-                            "1. Read through each module carefully\n" +
-                            "2. Complete modules in order - they unlock sequentially\n" + 
-                            "3. Click 'NEXT' at the bottom of each section\n" +
-                            "4. After finishing all modules, take the course quiz\n" +
-                            "5. Pass the quiz to receive your certificate\n\n" +
-                            "Need more help? Contact support@lucidceu.com"
+                                "1. Read through each module carefully\n" +
+                                "2. Complete modules in order - they unlock sequentially\n" +
+                                "3. Click 'NEXT' at the bottom of each section\n" +
+                                "4. After finishing all modules, take the course quiz\n" +
+                                "5. Pass the quiz to receive your certificate\n\n" +
+                                "Need more help? Contact support@lucidceu.com"
                         );
                     }}
                 >
@@ -369,10 +374,43 @@ const CourseModule: React.FC = () => {
                             {currentModule?.heading || "Loading..."}
                         </Typography>
 
-                        {currentModule?.text_content.map((paragraph, index) => (
-                            <Typography key={index} variant="body1" paragraph>
-                                {paragraph}
-                            </Typography>
+                        {currentModule?.content.map((item, index) => (
+                            <Box key={index} sx={{ mb: 3 }}>
+                                {item.type === "text" ? (
+                                    <Typography variant="body1" paragraph>
+                                        {item.content}
+                                    </Typography>
+                                ) : (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom>
+                                            {item.videoTitle}
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                position: "relative",
+                                                paddingTop: "56.25%", // 16:9 aspect ratio
+                                                width: "100%",
+                                                mb: 2,
+                                            }}
+                                        >
+                                            <iframe
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    left: 0,
+                                                    width: "100%",
+                                                    height: "100%",
+                                                    border: "none",
+                                                }}
+                                                src={item.videoUrl}
+                                                title={item.videoTitle}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </Box>
+                                    </Box>
+                                )}
+                            </Box>
                         ))}
 
                         <Box
