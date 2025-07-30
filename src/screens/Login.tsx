@@ -9,6 +9,7 @@ export default function Login() {
             <form
                 onSubmit={async (e) => {
                     e.preventDefault();
+
                     const input = {
                         email,
                         password,
@@ -40,6 +41,7 @@ export default function Login() {
                     }}
                 />
                 <input
+                    type="password"
                     placeholder="password"
                     value={password}
                     onChange={(e) => {

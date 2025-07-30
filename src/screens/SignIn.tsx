@@ -97,72 +97,78 @@ const SignIn: React.FC = () => {
                 >
                     LUCID
                 </Link>
-
-                <TextField
-                    label="Email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    variant="outlined"
-                    fullWidth
-                    sx={{
-                        marginBottom: "20px",
-                        backgroundColor: "hsl(0, 0%, 95%)",
-                        input: { color: "var(--black-color)" },
-                        label: { color: "var(--black-color)" },
-                        "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                                borderColor: "var(--primary-color)",
-                            },
-                            "&:hover fieldset": {
-                                borderColor: "var(--secondary-color)",
-                            },
-                        },
-                    }}
-                />
-
-                <TextField
-                    label="Password"
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    variant="outlined"
-                    fullWidth
-                    sx={{
-                        marginBottom: "20px",
-                        backgroundColor: "hsl(0, 0%, 95%)",
-                        input: { color: "var(--black-color)" },
-                        label: { color: "var(--black-color)" },
-                        "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                                borderColor: "var(--primary-color)",
-                            },
-                            "&:hover fieldset": {
-                                borderColor: "var(--secondary-color)",
-                            },
-                        },
-                    }}
-                />
-                {error && (
-                    <Typography sx={{ color: "red" }}>{error}</Typography>
-                )}
-                <Button
-                    onClick={handleSignIn}
-                    variant="contained"
-                    fullWidth
-                    sx={{
-                        padding: "15px 30px",
-                        backgroundColor: "var(--secondary-color)",
-                        color: "var(--white-color)",
-                        "&:hover": {
-                            backgroundColor: "var(--primary-color)",
-                        },
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSignIn();
                     }}
                 >
-                    Sign In
-                </Button>
+                    <TextField
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
+                        sx={{
+                            marginBottom: "20px",
+                            backgroundColor: "hsl(0, 0%, 95%)",
+                            input: { color: "var(--black-color)" },
+                            label: { color: "var(--black-color)" },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "var(--primary-color)",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "var(--secondary-color)",
+                                },
+                            },
+                        }}
+                    />
+
+                    <TextField
+                        label="Password"
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
+                        sx={{
+                            marginBottom: "20px",
+                            backgroundColor: "hsl(0, 0%, 95%)",
+                            input: { color: "var(--black-color)" },
+                            label: { color: "var(--black-color)" },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "var(--primary-color)",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "var(--secondary-color)",
+                                },
+                            },
+                        }}
+                    />
+                    {error && (
+                        <Typography sx={{ color: "red" }}>{error}</Typography>
+                    )}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{
+                            padding: "15px 30px",
+                            backgroundColor: "var(--secondary-color)",
+                            color: "var(--white-color)",
+                            "&:hover": {
+                                backgroundColor: "var(--primary-color)",
+                            },
+                        }}
+                    >
+                        Sign In
+                    </Button>
+                </form>
 
                 <Typography
                     variant="body1"

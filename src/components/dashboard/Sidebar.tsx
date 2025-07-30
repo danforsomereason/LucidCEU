@@ -14,6 +14,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useContext } from "react";
 import { globalContext } from "../../context/globalContext";
+import { Link } from "react-router-dom";
 
 const drawerWidth = 280;
 
@@ -27,26 +28,27 @@ export const AdminSidebar = ({
     handleDrawerToggle,
 }: SidebarProps) => {
     const context = useContext(globalContext);
-    const isAdmin = context?.currentUser?.isAdmin ?? false;
+    const userRole = context?.currentUser?.role || "";
+    const isAdmin = ["admin", "instructor", "super_admin"].includes(userRole);
 
     const userMenuItems = [
         { text: "Dashboard", icon: <HomeIcon />, path: "/dashboard" },
         {
             text: "My Courses",
             icon: <SchoolIcon />,
-            path: "/dashboard/courses",
+            path: "/my-assigned-courses",
         },
         {
             text: "Progress",
             icon: <BarChartIcon />,
-            path: "/dashboard/progress",
+            path: "/my-progress",
         },
-        { text: "Profile", icon: <PersonIcon />, path: "/dashboard/profile" },
+        { text: "Profile", icon: <PersonIcon />, path: "/profile" },
     ];
 
     const adminMenuItems = [
         ...userMenuItems,
-        { text: "Users", icon: <PeopleIcon />, path: "/dashboard/users" },
+        { text: "Users", icon: <PeopleIcon />, path: "/users" },
         {
             text: "Settings",
             icon: <SettingsIcon />,
@@ -61,7 +63,7 @@ export const AdminSidebar = ({
             <List>
                 {menuItems.map((item) => (
                     <ListItem key={item.text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton component={Link} to={item.path}>
                             <ListItemIcon>{item.icon}</ListItemIcon>
                             <ListItemText primary={item.text} />
                         </ListItemButton>
