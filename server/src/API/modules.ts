@@ -4,6 +4,7 @@ import authenticate from "../utils/authenticate";
 import CourseProgress from "../models/CourseProgress";
 import CourseModel from "../models/Course";
 import mongoose from "mongoose";
+import getModulesByCourseId from "../utils/functions";
 
 const router = express.Router();
 
@@ -89,20 +90,13 @@ router.get("/by-course/:courseId", async (req: Request, res: Response) => {
         if (!course) {
             return res.status(404).json({ message: "Course not found." });
         }
-        const allModules = await Module.find();
-        const filterModules = allModules.filter((module) => {
-            const moduleCourseId = module.course_id.toString();
+        const modules = await getModulesByCourseId(req.params.courseId);
 
-            const match = moduleCourseId === req.params.courseId;
-            return match;
-        });
-
-        res.json(filterModules);
+        res.json(modules);
     } catch (err) {
         console.error("Error in /api/modules:", err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
-
 
 export default router;

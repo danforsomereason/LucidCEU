@@ -11,7 +11,7 @@ export const RelatedAssignedCourseZod = z.object({
     course_id: CourseNameZod,
     user_id: z.string(),
     assigned_date: z.string(),
-    organization_id: z.string(),
+    organization_id: z.string().optional(),
     created_at: z.string(),
     updated_at: z.string(),
 });

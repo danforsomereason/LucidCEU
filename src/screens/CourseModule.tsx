@@ -18,6 +18,7 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
 import { useParams } from "react-router-dom";
 import { globalContext } from "../context/globalContext";
+import { z } from "zod";
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -47,6 +48,16 @@ export interface Module {
     order: number;
     completed?: boolean;
 }
+
+export const ModuleProgressZod = z.object({
+    _id: z.string(),
+    module_id: z.string(),
+    user_id: z.string(),
+    start_module: z.date(),
+    end_module: z.date().optional(),
+});
+
+export type ModuleProgress = z.infer<typeof ModuleProgressZod>;
 
 interface SectionItemProps extends BoxProps {
     isLocked?: boolean;
@@ -122,6 +133,8 @@ const CourseModule: React.FC = () => {
     const [quizCompleted, setQuizCompleted] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
 
+    console.log("Current Module ID:", currentModuleId);
+
     // Fetch modules data
     useEffect(() => {
         setLoading(true);
@@ -136,42 +149,29 @@ const CourseModule: React.FC = () => {
                 };
                 console.log("Before assigned token:", global?.token);
                 // confirm user is assigned to this course
-                const assignedRes = await fetch(
-                    `http://localhost:5001/api/v1/assigned_courses/${courseId}`,
-                    {
-                        method: "GET",
-                        headers,
-                    }
+                const relatedRes = await fetch(
+                    `http://localhost:5001/api/v1/courses/related/${courseId}`,
+                    { headers }
                 );
-                if (assignedRes.status === 404) {
-                    throw new Error("You are not assigned to this course.");
-                }
-                console.log("Before modules token:", global?.token);
+                const relatedData = await relatedRes.json();
+                console.log("Related Data:", relatedData);
+
                 // get the modules associated with this course
-                const modulesRes = await fetch(
-                    `http://localhost:5001/api/v1/modules/by-course/${courseId}`,
-                    {
-                        method: "GET",
-                        headers,
-                    }
-                );
 
-                if (!modulesRes.ok) {
-                    throw new Error(`HTTP error! status: ${modulesRes.status}`);
-                }
-                const modulesData = await modulesRes.json();
-
-                if (!Array.isArray(modulesData)) {
-                    throw new Error(
-                        "The module response didn't return an array of modules"
-                    );
-                }
-
-                const sortedModules = modulesData.sort(
+                const sortedModules = relatedData.modules.sort(
                     (a: Module, b: Module) => a.order - b.order
                 );
                 setModules(sortedModules);
-                setCurrentModuleId(sortedModules[0]?._id || "");
+                const nextModule = sortedModules.find((module: Module) => {
+                    const moduleProgress = relatedData.moduleProgresses.find(
+                        (moduleProgress: ModuleProgress) => {
+                            return moduleProgress.module_id === module._id;
+                        }
+                    );
+                    return !moduleProgress.end_module;
+                });
+
+                setCurrentModuleId(nextModule?._id || "");
             } catch (error) {
                 console.error("Detailed fetch error:", error);
                 //updateCourses

@@ -5,6 +5,8 @@ import authenticate from "../utils/authenticate";
 import AssignedCourseModel, { AssignedCourse } from "../models/AssignedCourse";
 import ModuleModel from "../models/Module";
 import CourseModel from "../models/Course";
+import getModulesByCourseId from "../utils/functions";
+import { ModuleProgressModel } from "../models/ModuleProgress";
 
 const router = express.Router();
 
@@ -47,8 +49,68 @@ router.get("/:id", async (req: any, res: any) => {
             console.log("No course found with ID:", id);
             return res.status(404).json({ message: "Course not found" });
         }
-
         res.json(course);
+    } catch (err) {
+        console.error("Error fetching course by ID:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get("/related/:id", async (req: any, res: any) => {
+    try {
+        const user = await authenticate(req.headers.authorization);
+        if (!user) {
+            return res.status(401).json({
+                message: "You must be logged in to find assigned courses.",
+            });
+        }
+
+        const { id } = req.params;
+        console.log("Received ID:", id);
+
+        // Validate and convert to ObjectId
+        if (!Types.ObjectId.isValid(id)) {
+            console.log("Invalid MongoDB ObjectId format");
+            return res
+                .status(400)
+                .json({ message: "Invalid course ID format" });
+        }
+
+        const objectId = new Types.ObjectId(id);
+
+        const course = await Course.findById(objectId);
+
+        if (!course) {
+            console.log("No course found with ID:", id);
+            return res.status(404).json({ message: "Course not found" });
+        }
+        // assigned course
+        const assignedCourse = await AssignedCourseModel.findOne({
+            course_id: new mongoose.Types.ObjectId(req.params.id),
+            user_id: new mongoose.Types.ObjectId(user.id),
+        });
+        if (!assignedCourse) {
+            return res
+                .status(404)
+                .json({ message: "Course not assigned to user" });
+        }
+        // modules
+        const modules = await getModulesByCourseId(req.params.id);
+
+        // > module progress
+        const moduleIds = modules.map((each) => each.id);
+        const moduleProgresses = await ModuleProgressModel.find({
+            module_id: { $in: moduleIds },
+        });
+
+        const relatedCourse = {
+            ...course,
+            assignedCourse,
+            modules,
+            moduleProgresses,
+        };
+
+        res.json(relatedCourse);
     } catch (err) {
         console.error("Error fetching course by ID:", err);
         res.status(500).json({ message: "Internal Server Error" });
@@ -73,15 +135,14 @@ router.get("/by-module/:moduleId", async (req: Request, res: Response) => {
         const assignedCourse = await AssignedCourseModel.findOne({
             user_id: user.id,
             course_id: module.course_id,
-        })
-        if(!assignedCourse){
+        });
+        if (!assignedCourse) {
             return res.status(404).json({
-                message: "You aren't assigned to this course"
-            })
+                message: "You aren't assigned to this course",
+            });
         }
         const course = await CourseModel.findById(module.course_id);
         res.send(course);
-
     } catch (err) {
         console.error("Error getting course by moduleId:", err);
         res.status(500).json({ message: "Internal Server Error" });

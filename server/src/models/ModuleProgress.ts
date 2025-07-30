@@ -6,7 +6,7 @@ export const ModuleProgressZod = z.object({
     module_id: z.string(),
     user_id: z.string(),
     start_module: z.date(),
-    end_module: z.date(),
+    end_module: z.date().optional(),
 });
 
 export type ModuleProgress = z.infer<typeof ModuleProgressZod>;
@@ -15,10 +15,10 @@ const ModuleProgressSchema = new Schema({
     module_id: { type: Schema.Types.ObjectId, ref: "Module", required: true },
     user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
     start_module: { type: Date, required: true },
-    end_module: { type: Date, required: true },
+    end_module: { type: Date, required: false },
 });
 
-export const ModuleProgress = mongoose.model<ModuleProgress>(
+export const ModuleProgressModel = mongoose.model<ModuleProgress>(
     "ModuleProgress",
     ModuleProgressSchema
 );
