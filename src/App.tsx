@@ -121,7 +121,11 @@ const App: React.FC = () => {
                         <Route path="/login" element={<Login />} />
                         <Route
                             path="/my-assigned-courses"
-                            element={<MyAssignedCourses />}
+                            element={route(
+                                <MyAssignedCourses />,
+                                true,
+                                "fixed"
+                            )}
                         />
                     </Routes>
                 </Router>

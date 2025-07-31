@@ -29,7 +29,9 @@ export const AdminSidebar = ({
 }: SidebarProps) => {
     const context = useContext(globalContext);
     const userRole = context?.currentUser?.role || "";
-    const isAdmin = ["admin", "instructor", "super_admin"].includes(userRole);
+    const isAdmin = ["admin", "instructor", "super_admin", "user"].includes(
+        userRole
+    );
 
     const userMenuItems = [
         { text: "Dashboard", icon: <HomeIcon />, path: "/dashboard" },

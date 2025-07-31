@@ -5,6 +5,7 @@ import {
 } from "../../server/src/models/AssignedCourse";
 import { globalContext } from "../context/globalContext";
 import { Box, CircularProgress, styled } from "@mui/material";
+import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 
 export default function MyAssignedCourses() {
     const [courses, setCourses] = useState<RelatedAssignedCourse[]>([]);
@@ -55,29 +56,33 @@ export default function MyAssignedCourses() {
 
     if (loading) {
         return (
-            <ModuleContainer>
-                <Box
-                    sx={{
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <CircularProgress />
-                </Box>
-            </ModuleContainer>
+            <DashboardLayout>
+                <ModuleContainer>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <CircularProgress />
+                    </Box>
+                </ModuleContainer>
+            </DashboardLayout>
         );
     }
 
     return (
-        <ol>
-            {courses.map((course) => (
-                <li key={course.course_id._id}>
-                    <p>{course.course_id.course_name}</p>
-                    <button>Continue</button>
-                </li>
-            ))}
-        </ol>
+        <DashboardLayout>
+            <ol>
+                {courses.map((course) => (
+                    <li key={course.course_id._id}>
+                        <p>{course.course_id.course_name}</p>
+                        <button>Continue</button>
+                    </li>
+                ))}
+            </ol>
+        </DashboardLayout>
     );
 }
