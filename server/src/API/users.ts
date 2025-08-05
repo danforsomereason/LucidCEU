@@ -73,7 +73,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/identify", async (req, res) => {
-    const user = await authenticate(req.headers.authorization);
+    const user = await authenticate(req.headers.authorization, true);
     res.json({ user });
 });
 

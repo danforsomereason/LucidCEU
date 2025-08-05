@@ -4,8 +4,9 @@ import {
     RelatedAssignedCourseZod,
 } from "../../server/src/models/AssignedCourse";
 import { globalContext } from "../context/globalContext";
-import { Box, CircularProgress, styled } from "@mui/material";
+import { Box, CircularProgress, styled, Typography } from "@mui/material";
 import { DashboardLayout } from "../components/dashboard/DashboardLayout";
+import VirtualList, { VirtualListItem } from "../components/VirtualList";
 
 export default function MyAssignedCourses() {
     const [courses, setCourses] = useState<RelatedAssignedCourse[]>([]);
@@ -47,12 +48,33 @@ export default function MyAssignedCourses() {
         download();
     }, []);
 
+    const virtualListItems: VirtualListItem[] = courses.map((course) => ({
+        id: course.course_id._id,
+        title: course.course_id.course_name,
+        originalCourse: course, // Keep reference to original data
+    }));
+
     // Styled Components
     const ModuleContainer = styled(Box)({
         display: "flex",
+        flexDirection: "column",
         minHeight: "100vh",
         backgroundColor: "#f5f5f5",
     });
+
+    const VirtualListContainer = styled(Box)({
+        width: "100%",
+        maxWidth: 800,
+        margin: "0 auto",
+        backgroundColor: "white",
+        borderRadius: 8,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        overflow: "hidden",
+    });
+
+    const handleCourseClick = (item: VirtualListItem) => {
+        console.log("Starting course:", item.title);
+    };
 
     if (loading) {
         return (
@@ -73,16 +95,38 @@ export default function MyAssignedCourses() {
         );
     }
 
+    if (courses.length === 0) {
+        return (
+            <DashboardLayout>
+                <ModuleContainer>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Typography variant="h6" color="text.secondary">
+                            No assigned courses found
+                        </Typography>
+                    </Box>
+                </ModuleContainer>
+            </DashboardLayout>
+        );
+    }
+
     return (
         <DashboardLayout>
-            <ol>
-                {courses.map((course) => (
-                    <li key={course.course_id._id}>
-                        <p>{course.course_id.course_name}</p>
-                        <button>Continue</button>
-                    </li>
-                ))}
-            </ol>
+            <h2>My Assigned Courses:</h2>
+            <VirtualList
+                items={virtualListItems}
+                height={600}
+                itemSize={70}
+                buttonText="Start"
+                onItemClick={handleCourseClick}
+                maxWidth={800}
+            />
         </DashboardLayout>
     );
 }

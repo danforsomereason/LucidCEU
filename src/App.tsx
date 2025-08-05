@@ -20,41 +20,10 @@ import { User } from "../server/src/models/User";
 import Register from "./screens/signup/Register";
 import Login from "./screens/Login";
 import MyAssignedCourses from "./screens/MyAssignedCourses";
+import GlobalProvider from "./context/GlobalProvider";
 
 const App: React.FC = () => {
-    const localToken = localStorage.getItem("token");
-    // console.log("localUser", localUser);
-
-    // ?? "" removed from parse
-    // changed from parseUser = JSON.parse(localUser);
-    const [currentUser, setCurrentUser] = useState<User>();
-    const [currentUserLoading, setCurrentUserLoading] = useState(true);
-
-    const [token, setToken] = useState(localToken ?? undefined);
-    useEffect(() => {
-        async function identify() {
-            if (!token) {
-                setCurrentUserLoading(false);
-                return;
-            }
-            const response = await fetch(
-                "http://localhost:5001/api/v1/users/identify",
-                { headers: { authorization: `Bearer ${token}` } }
-            );
-            const output = await response.json();
-            setCurrentUser(output.user);
-            setCurrentUserLoading(false);
-        }
-        identify();
-    }, []);
-
-    const globalValue: GlobalValue = {
-        currentUser,
-        setCurrentUser,
-        token,
-        setToken,
-        currentUserLoading,
-    };
+    
     // console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
@@ -69,7 +38,7 @@ const App: React.FC = () => {
     };
 
     return (
-        <globalContext.Provider value={globalValue}>
+        <GlobalProvider>
             <ThemeProvider theme={theme}>
                 <Router>
                     <Routes>
@@ -130,7 +99,7 @@ const App: React.FC = () => {
                     </Routes>
                 </Router>
             </ThemeProvider>
-        </globalContext.Provider>
+        </GlobalProvider>
     );
 };
 

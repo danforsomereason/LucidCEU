@@ -21,7 +21,6 @@ export async function login(email: string, password: string) {
         throw new Error(response.data.message);
     }
     localStorage.setItem("token", response.data.token);
-    localStorage.setItem("currentUser", JSON.stringify(response.data.user));
     return response.data;
 }
 

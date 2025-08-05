@@ -84,7 +84,7 @@ router.post("/:courseId", async (req: Request, res: Response) => {
             user_id: new mongoose.Types.ObjectId(user.id),
             module_id: firstModule._id,
             start_module: new Date(),
-            completed_at: null,
+            end_module: null,
         });
     }
 

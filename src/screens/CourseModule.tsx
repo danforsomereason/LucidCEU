@@ -229,7 +229,11 @@ const CourseModule: React.FC = () => {
         }
     };
 
-    const handleNextModule = () => {
+    const handleNextModule = async () => {
+        await fetch("http://localhost:5001/api/v1/module_progresses", {
+            headers: { authorization: `Bearer ${global?.token}` },
+            method: "POST",
+        });
         // Mark current module as completed if it's not already
         if (currentModuleId && !completedModules.includes(currentModuleId)) {
             setCompletedModules([...completedModules, currentModuleId]);
