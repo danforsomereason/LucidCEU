@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import Layout from "./components/Layout";
@@ -18,12 +18,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { globalContext, GlobalValue } from "./context/globalContext";
 import { User } from "../server/src/models/User";
 import Register from "./screens/signup/Register";
-import Login from "./screens/Login";
 import MyAssignedCourses from "./screens/MyAssignedCourses";
 import GlobalProvider from "./context/GlobalProvider";
+import CourseCreator from "./screens/CourseCreator";
 
 const App: React.FC = () => {
-    
     // console.log("current user", currentUser);
     const route = (
         screen: React.ReactNode,
@@ -87,7 +86,6 @@ const App: React.FC = () => {
                             element={route(<Dashboard />, true, "fixed")}
                         />
                         <Route path="/register" element={<Register />} />
-                        <Route path="/login" element={<Login />} />
                         <Route
                             path="/my-assigned-courses"
                             element={route(
@@ -95,6 +93,10 @@ const App: React.FC = () => {
                                 true,
                                 "fixed"
                             )}
+                        />
+                        <Route
+                            path="/course-creator"
+                            element={route(<CourseCreator />, true, "fixed")}
                         />
                     </Routes>
                 </Router>

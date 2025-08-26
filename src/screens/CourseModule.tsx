@@ -19,6 +19,7 @@ import CourseQuiz from "../components/CourseQuiz";
 import { useParams } from "react-router-dom";
 import { globalContext } from "../context/globalContext";
 import { z } from "zod";
+import { currentLineHeight } from "pdfkit";
 
 // Constants
 const DRAWER_WIDTH = 280;
@@ -128,12 +129,22 @@ const CourseModule: React.FC = () => {
     //const updateModules = useStore((state) => state.updateModules);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState();
-    const [completedModules, setCompletedModules] = useState<string[]>([]);
-    const [currentModuleId, setCurrentModuleId] = useState<string>("");
+    const [currentModuleId, setCurrentModuleId] = useState<string>();
+    const [moduleProgresses, setModuleProgresses] = useState<ModuleProgress[]>(
+        []
+    );
     const [quizCompleted, setQuizCompleted] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
-
-    console.log("Current Module ID:", currentModuleId);
+    const currentModule = modules.find(
+        (module) => module._id === currentModuleId
+    );
+    const currentModuleProgress = moduleProgresses.find(
+        (progress) => progress.module_id === currentModuleId
+    );
+    console.log("Current module progress:", currentModuleProgress);
+    console.log("module state:", modules);
+    console.log("module progress state:", moduleProgresses);
+    console.log("current module id:", currentModuleId);
 
     // Fetch modules data
     useEffect(() => {
@@ -157,21 +168,20 @@ const CourseModule: React.FC = () => {
                 console.log("Related Data:", relatedData);
 
                 // get the modules associated with this course
-
                 const sortedModules = relatedData.modules.sort(
                     (a: Module, b: Module) => a.order - b.order
                 );
                 setModules(sortedModules);
-                const nextModule = sortedModules.find((module: Module) => {
-                    const moduleProgress = relatedData.moduleProgresses.find(
+                setModuleProgresses(relatedData.moduleProgresses);
+                const currentModule = modules.find((module: Module) => {
+                    const moduleProgress = moduleProgresses.find(
                         (moduleProgress: ModuleProgress) => {
                             return moduleProgress.module_id === module._id;
                         }
                     );
-                    return !moduleProgress.end_module;
+                    return !moduleProgress?.end_module;
                 });
-
-                setCurrentModuleId(nextModule?._id || "");
+                if (currentModule) setCurrentModuleId(currentModule._id);
             } catch (error) {
                 console.error("Detailed fetch error:", error);
                 //updateCourses
@@ -204,22 +214,19 @@ const CourseModule: React.FC = () => {
             </ModuleContainer>
         );
     }
-
-    const currentModule = modules.find((m) => m._id === currentModuleId);
-
-    const progress = (completedModules.length / modules.length) * 100;
+    const completedProgresses = moduleProgresses.filter(
+        (progress) => progress.end_module
+    );
+    const progress = (completedProgresses.length / modules.length) * 100;
 
     // Helper function to check if a module is should be locked or open depending on progress
     const isModuleAccessible = (moduleId: string) => {
-        const moduleIndex = modules.findIndex((m) => m._id === moduleId);
-        const lastCompletedIndex = Math.max(
-            -1,
-            ...completedModules.map((id) =>
-                modules.findIndex((m) => m._id === id)
-            )
+        if (currentModuleId === moduleId) return true;
+        const progress = moduleProgresses.find(
+            (item) => item.module_id === moduleId
         );
-
-        return moduleIndex <= lastCompletedIndex + 1;
+        if (!progress) return false;
+        return progress.end_module;
     };
 
     // Update module selection handler
@@ -230,14 +237,8 @@ const CourseModule: React.FC = () => {
     };
 
     const handleNextModule = async () => {
-        await fetch("http://localhost:5001/api/v1/module_progresses", {
-            headers: { authorization: `Bearer ${global?.token}` },
-            method: "POST",
-        });
+        if (!currentModuleId) return;
         // Mark current module as completed if it's not already
-        if (currentModuleId && !completedModules.includes(currentModuleId)) {
-            setCompletedModules([...completedModules, currentModuleId]);
-        }
 
         // Find the next module
         const currentIndex = modules.findIndex(
@@ -249,12 +250,41 @@ const CourseModule: React.FC = () => {
         if (nextModule) {
             setCurrentModuleId(nextModule._id);
         }
+
+        const response = await fetch(
+            "http://localhost:5001/api/v1/module_progress",
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${global?.token}`,
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    currentModuleId,
+                    ...(nextModule ? { nextModuleId: nextModule._id } : {}),
+                }),
+            }
+        );
+        const data = await response.json();
+        if (data.createdProgress) {
+            setModuleProgresses((prev) => {
+                return [...prev, data.createdProgress];
+            });
+        }
+        setModuleProgresses((prev) => {
+            return prev.map((item) => {
+                if (item._id !== data.completedModule._id) return item;
+                return data.completedModule;
+            });
+        });
     };
 
     const handleQuizComplete = (passed: boolean) => {
         setQuizCompleted(passed);
         // TODO Add to backend
     };
+    const firstModule = modules[0];
+    console.log("First Module:", firstModule);
 
     return (
         <ModuleContainer>
@@ -262,7 +292,7 @@ const CourseModule: React.FC = () => {
             <SideBar>
                 <CourseTitle>
                     <Typography variant="h6">
-                        {modules[0]?.course_name || "Loading..."}
+                        {firstModule?.course_name || "Loading..."}
                     </Typography>
                 </CourseTitle>
 
@@ -281,12 +311,13 @@ const CourseModule: React.FC = () => {
                                 pointerEvents: isLocked ? "none" : "auto",
                             }}
                         >
-                            {completedModules.includes(module._id) ? (
-                                <CheckCircleIcon color="success" />
-                            ) : isLocked ? (
+                            {isLocked ? (
                                 <CancelIcon color="disabled" />
-                            ) : (
+                            ) : module._id === currentModuleId &&
+                              !currentModuleProgress?.end_module ? (
                                 <CheckCircleIcon color="disabled" />
+                            ) : (
+                                <CheckCircleIcon color="success" />
                             )}
                             <Typography
                                 color={
@@ -304,14 +335,8 @@ const CourseModule: React.FC = () => {
                         mt: 2,
                         borderTop: 1,
                         borderColor: "divider",
-                        opacity:
-                            completedModules.length === modules.length
-                                ? 1
-                                : 0.5,
-                        pointerEvents:
-                            completedModules.length === modules.length
-                                ? "auto"
-                                : "none",
+                        opacity: !currentModuleId ? 1 : 0.5,
+                        pointerEvents: !currentModuleId ? "auto" : "none",
                     }}
                 >
                     {quizCompleted ? (
@@ -364,7 +389,7 @@ const CourseModule: React.FC = () => {
                 </Paper>
 
                 {/* Show quiz when all modules are completed */}
-                {completedModules.length === modules.length ? (
+                {!currentModuleId ? (
                     <>
                         <CourseQuiz
                             courseId={modules[0]?.course_id || ""}

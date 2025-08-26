@@ -7,21 +7,53 @@ import authenticate from "../utils/authenticate";
 
 const router = express.Router();
 
-router.get("/", async (req: Request, res: Response) => {})
-
 router.post("/", async (req: Request, res: Response) => {
     const user = await authenticate(req.headers.authorization);
     if (!user) {
         return res.json({
-            message: "You must be logged in to register a course",
+            message: "You must be logged in to begin progress on a course",
         });
     }
 
-    const courseId = req.params.courseId;
+    const currentModuleId = req.body.currentModuleId;
+    const nextModuleId = req.body.nextModuleId;
 
     let completedModule = await ModuleProgressModel.findOne({
         user_id: user.id,
-        course_id: courseId,
-        module_id: module.id
+        module_id: currentModuleId,
+    });
+
+    if (!completedModule) {
+        throw new Error("Module not found.");
+    }
+
+    if (!completedModule.end_module) {
+        completedModule.end_module = new Date();
+        await completedModule.save();
+    }
+
+    let nextModuleProgress = await ModuleProgressModel.findOne({
+        user_id: user.id,
+        module_id: nextModuleId,
+    });
+    console.log("Next module progress", nextModuleProgress);
+    if (!nextModuleProgress) {
+        const createdProgress = await ModuleProgressModel.create({
+            module_id: nextModuleId,
+            user_id: user.id,
+            start_module: new Date(),
+        });
+        return res.json({
+            message: "Created module progress",
+            createdProgress,
+            completedModule,
+        });
+    }
+
+    res.status(200).json({
+        message: "Updated module progress",
+        completedModule,
     });
 });
+
+export default router;

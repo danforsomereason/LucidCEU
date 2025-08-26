@@ -12,6 +12,7 @@ export default function MyAssignedCourses() {
     const [courses, setCourses] = useState<RelatedAssignedCourse[]>([]);
     const [loading, setLoading] = useState(false);
     const global = useContext(globalContext);
+    console.log("global object", global);
 
     useEffect(() => {
         setLoading(true);
@@ -118,15 +119,24 @@ export default function MyAssignedCourses() {
 
     return (
         <DashboardLayout>
-            <h2>My Assigned Courses:</h2>
-            <VirtualList
-                items={virtualListItems}
-                height={600}
-                itemSize={70}
-                buttonText="Start"
-                onItemClick={handleCourseClick}
-                maxWidth={800}
-            />
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <h2>My Assigned Courses:</h2>
+                <VirtualList
+                    items={virtualListItems}
+                    height={600}
+                    itemSize={70}
+                    buttonText="Start"
+                    onItemClick={handleCourseClick}
+                    maxWidth={800}
+                />
+            </Box>
         </DashboardLayout>
     );
 }

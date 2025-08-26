@@ -35,7 +35,7 @@ export default function GlobalProvider({ children }: GlobalProviderProps) {
             setCurrentUserLoading(false);
         }
         identify();
-    }, []);
+    }, [token]);
 
     const globalValue: GlobalValue = {
         currentUser,

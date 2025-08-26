@@ -4,13 +4,13 @@ interface Course extends Document {
     name: string;
     ce_hours: number;
     course_state: string;
-    course_tags: string[];
+    course_tags?: string[];
     learning_objectives: string[];
     course_description: string;
     instructor_id: string;
     course_modules: string[];
     premium: boolean;
-    imageurl: string;
+    imageurl?: string;
     approved_by?: Array<{
         board: "NBCC" | "APA" | "ASWB" | "NAADAC" | "CAMFT" | "Nursing";
         logo_url: string;
@@ -21,7 +21,7 @@ const CourseSchema: Schema = new Schema({
     name: { type: String, required: true },
     ce_hours: { type: Number, required: true },
     course_state: { type: String, required: true },
-    course_tags: { type: [String], required: true },
+    course_tags: { type: [String], required: false },
     learning_objectives: { type: [String], required: true },
     instructor_id: { type: mongoose.Types.ObjectId, required: true },
     course_description: { type: String, required: true },

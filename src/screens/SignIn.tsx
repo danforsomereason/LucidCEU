@@ -36,6 +36,8 @@ const SignIn: React.FC = () => {
         // if there is a global value, call the setCurrentUser
         console.log("response", response);
         globalValue?.setCurrentUser(response.user);
+        globalValue?.setToken(response.token);
+
         // After successful login, use the navigate function from react-router-dom
         // to programmatically redirect the user to the dashboard page
         // The navigate function accepts a path string as an argument
