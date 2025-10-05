@@ -21,20 +21,14 @@ export const ContentItemZod = TextItemZod.or(VideoItemZod);
 
 export type ContentItem = z.infer<typeof ContentItemZod>;
 
-export const ContentItemArrayZod = ContentItemZod.array();
-
-export type ContentItemArray = z.infer<typeof ContentItemArrayZod>;
-
 export const ModuleZod = z.object({
     _id: z.string(),
-    course_name: z.string(),
     course_id: z.string(),
     content: ContentItemZod.array(),
 });
 
 export interface Module {
     _id: string;
-    course_name: string;
     course_id: string;
     heading: string;
     content: ContentItem[];
@@ -70,7 +64,6 @@ const ContentItemSchema = new Schema({
 });
 
 const ModuleSchema: Schema = new Schema({
-    course_name: { type: String, required: true },
     course_id: {
         type: Schema.Types.ObjectId,
         ref: "Course",
@@ -78,7 +71,7 @@ const ModuleSchema: Schema = new Schema({
     },
     heading: { type: String, required: true },
     content: { type: [ContentItemSchema], required: true },
-    estimated_time: { type: Number, required: true },
+    estimated_minutes: { type: Number, required: true },
     order: { type: Number, required: true },
 });
 

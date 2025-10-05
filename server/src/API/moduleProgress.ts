@@ -32,11 +32,19 @@ router.post("/", async (req: Request, res: Response) => {
         await completedModule.save();
     }
 
+    if (!nextModuleId) {
+        return res.json({
+            message: "There are no more modules for the course.",
+            completedModule,
+        });
+    }
+
     let nextModuleProgress = await ModuleProgressModel.findOne({
         user_id: user.id,
         module_id: nextModuleId,
     });
     console.log("Next module progress", nextModuleProgress);
+
     if (!nextModuleProgress) {
         const createdProgress = await ModuleProgressModel.create({
             module_id: nextModuleId,

@@ -18,47 +18,11 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import CourseQuiz from "../components/CourseQuiz";
 import { useParams } from "react-router-dom";
 import { globalContext } from "../context/globalContext";
-import { z } from "zod";
-import { currentLineHeight } from "pdfkit";
+import { Course, ModuleProgress, Module, CourseZod } from "../types";
 
 // Constants
 const DRAWER_WIDTH = 280;
 const NAVBAR_HEIGHT = 84;
-
-// Types
-export interface TextItem {
-    type: "text";
-    content: string;
-}
-
-export interface VideoItem {
-    type: "video";
-    videoUrl: string;
-    videoTitle: string;
-}
-
-export type ContentItem = TextItem | VideoItem;
-
-export interface Module {
-    _id: string;
-    course_name: string;
-    course_id: string;
-    heading: string;
-    content: ContentItem[];
-    estimated_time: number;
-    order: number;
-    completed?: boolean;
-}
-
-export const ModuleProgressZod = z.object({
-    _id: z.string(),
-    module_id: z.string(),
-    user_id: z.string(),
-    start_module: z.date(),
-    end_module: z.date().optional(),
-});
-
-export type ModuleProgress = z.infer<typeof ModuleProgressZod>;
 
 interface SectionItemProps extends BoxProps {
     isLocked?: boolean;
@@ -124,6 +88,7 @@ const HelpButton = styled(Button)(({ theme }) => ({
 const CourseModule: React.FC = () => {
     const global = useContext(globalContext);
     const { courseId } = useParams();
+    const [course, setCourse] = useState<Course>();
     const [modules, setModules] = useState<Module[]>([]);
     //const modules = useStore((state) => state.modules);
     //const updateModules = useStore((state) => state.updateModules);
@@ -166,7 +131,7 @@ const CourseModule: React.FC = () => {
                 );
                 const relatedData = await relatedRes.json();
                 console.log("Related Data:", relatedData);
-
+                setCourse(CourseZod.parse(relatedData.course));
                 // get the modules associated with this course
                 const sortedModules = relatedData.modules.sort(
                     (a: Module, b: Module) => a.order - b.order
@@ -249,6 +214,8 @@ const CourseModule: React.FC = () => {
         // If there's a next module, set it as current
         if (nextModule) {
             setCurrentModuleId(nextModule._id);
+        } else {
+            setCurrentModuleId(undefined);
         }
 
         const response = await fetch(
@@ -292,7 +259,7 @@ const CourseModule: React.FC = () => {
             <SideBar>
                 <CourseTitle>
                     <Typography variant="h6">
-                        {firstModule?.course_name || "Loading..."}
+                        {course?.name || "Loading..."}
                     </Typography>
                 </CourseTitle>
 
@@ -389,10 +356,10 @@ const CourseModule: React.FC = () => {
                 </Paper>
 
                 {/* Show quiz when all modules are completed */}
-                {!currentModuleId ? (
+                {!currentModuleId && course ? (
                     <>
                         <CourseQuiz
-                            courseId={modules[0]?.course_id || ""}
+                            course={course}
                             onQuizComplete={handleQuizComplete}
                         />
                     </>

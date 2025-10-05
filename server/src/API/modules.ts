@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import Module, { ContentItemArrayZod, ModuleZod } from "../models/Module";
+import Module, { ModuleZod } from "../models/Module";
 import authenticate from "../utils/authenticate";
 import CourseProgress from "../models/CourseProgress";
 import CourseModel from "../models/Course";

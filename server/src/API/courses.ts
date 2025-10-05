@@ -104,7 +104,7 @@ router.get("/related/:id", async (req: any, res: any) => {
         });
 
         const relatedCourse = {
-            ...course,
+            course,
             assignedCourse,
             modules,
             moduleProgresses,

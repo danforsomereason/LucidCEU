@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from "react";
-import { User } from "../../server/src/models/User";
+import { User } from "../requests/user";
 
 export interface GlobalValue {
     currentUser?: User;
