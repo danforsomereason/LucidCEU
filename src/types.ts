@@ -60,7 +60,7 @@ export const quizDefZod = z.object({
     explanation: z.string(),
 });
 
-export type QuizDef = z.infer<typeof quizDefZod>;
+export type QuizQuestionDef = z.infer<typeof quizDefZod>;
 
 export const quizQuestionZod = quizDefZod.extend({
     _id: z.string(),
@@ -102,8 +102,6 @@ export const CourseZod = z.object({
 });
 
 export type Course = z.infer<typeof CourseZod>;
-
-
 
 // Quiz Response
 export const quizResponseZod = z.object({
