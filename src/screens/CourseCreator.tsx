@@ -8,8 +8,18 @@ import {
 } from "../context/courseCreator/CourseCreatorContext";
 
 export default function CourseCreator() {
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
     const [modules, setModules] = useState<ModuleDef[]>([NEW_MODULE]);
     const [quizQuestions, setQuizQuestions] = useState<QuizQuestionDef[]>([]);
+
+    function updateTitle(value: string) {
+        setTitle(value);
+    }
+
+    function updateDescription(value: string) {
+        setDescription(value);
+    }
 
     function addModule() {
         setModules((prev) => {
@@ -63,13 +73,20 @@ export default function CourseCreator() {
         });
     }
 
-    function addOption(questionIndex: number){
+    function removeQuestion(questionIndex: number) {
+        const newQuestions = quizQuestions.filter((question, innerIndex) => {
+            return innerIndex !== questionIndex;
+        });
+        setQuizQuestions(newQuestions);
+    }
+
+    function addOption(questionIndex: number) {
         setQuizQuestions((prev) => {
             return prev.map((question, innerQuestionIndex) => {
                 if (questionIndex !== innerQuestionIndex) {
                     return question;
                 }
-                const newOptions = [...question.options, ""]
+                const newOptions = [...question.options, ""];
 
                 const newQuestion = {
                     ...question,
@@ -81,60 +98,75 @@ export default function CourseCreator() {
         });
     }
 
-    function updateOption(questionIndex: number, optionIndex: number, optionValue: string){
+    function updateOption(
+        questionIndex: number,
+        optionIndex: number,
+        optionValue: string
+    ) {
         setQuizQuestions((previousQuestions) => {
-            const newQuestions = previousQuestions.map((question, innerQuestionIndex) => {
-                if(questionIndex !== innerQuestionIndex){
-                    return question;
-                }
-                const newOptions = question.options.map((option, innerOptionIndex) => {
-                    if(innerOptionIndex !== optionIndex){
-                        return option;
+            const newQuestions = previousQuestions.map(
+                (question, innerQuestionIndex) => {
+                    if (questionIndex !== innerQuestionIndex) {
+                        return question;
                     }
-                    return optionValue;
-                })
-                const newQuestion = {...question, options: newOptions}
-                return newQuestion;
-            })
+                    const newOptions = question.options.map(
+                        (option, innerOptionIndex) => {
+                            if (innerOptionIndex !== optionIndex) {
+                                return option;
+                            }
+                            return optionValue;
+                        }
+                    );
+                    const newQuestion = { ...question, options: newOptions };
+                    return newQuestion;
+                }
+            );
             return newQuestions;
-        })
+        });
     }
 
-    function removeOption(questionIndex: number, optionIndex: number){
+    function removeOption(questionIndex: number, optionIndex: number) {
         setQuizQuestions((prev) => {
             return prev.map((question, innerQuestionIndex) => {
-                if(questionIndex !== innerQuestionIndex){
+                if (questionIndex !== innerQuestionIndex) {
                     return question;
                 }
 
-                const newOptions = question.options.filter((option, innerOptionIndex) => {
-                    return innerOptionIndex !== optionIndex;
-                })
+                const newOptions = question.options.filter(
+                    (option, innerOptionIndex) => {
+                        return innerOptionIndex !== optionIndex;
+                    }
+                );
                 const newQuestion = {
                     ...question,
-                    options: newOptions
-                }
+                    options: newOptions,
+                };
                 return newQuestion;
-            })
-        })
+            });
+        });
     }
 
-    function clearForm(){
-        setModules([NEW_MODULE])
-        setQuizQuestions([])
+    function clearForm() {
+        setModules([NEW_MODULE]);
+        setQuizQuestions([]);
     }
 
     const courseCreatorValue: CourseCreatorValue = {
         modules,
         quizQuestions,
+        title,
+        description,
+        updateTitle,
+        updateDescription,
         addModule,
         updateModule,
         addQuestion,
         updateQuestion,
+        removeQuestion,
         addOption,
         updateOption,
         removeOption,
-        clearForm
+        clearForm,
     };
 
     return (

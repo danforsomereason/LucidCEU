@@ -15,7 +15,7 @@ export const QuizQuestionZod = z.object({
     question_text: z.string(),
     question_type: questionTypeZod,
     options: z.array(z.string()),
-    correct_answer: z.string(),
+    correct_answer: z.number(),
     explanation: z.string(),
 });
 
@@ -50,6 +50,7 @@ export const CourseZod = z.object({
             })
         )
         .optional(),
+    organization_id: z.string().optional(),
 });
 
 export type Course = z.infer<typeof CourseZod>;
@@ -77,7 +78,7 @@ const CourseSchema: Schema = new Schema({
                 required: true,
             },
             options: { type: [String], required: true },
-            correct_answer: { type: String, required: true },
+            correct_answer: { type: Number, required: true },
             explanation: { type: String, required: true },
         },
     ],
@@ -92,6 +93,7 @@ const CourseSchema: Schema = new Schema({
             logo_url: { type: String, required: false },
         },
     ],
+    organization_id: { type: mongoose.Types.ObjectId, required: false },
 });
 
 const CourseModel = mongoose.model<Course>("Course", CourseSchema);

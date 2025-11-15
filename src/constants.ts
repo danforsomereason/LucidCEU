@@ -10,6 +10,6 @@ export const NEW_QUIZ_QUESTION: QuizQuestionDef = {
     question_text: "",
     question_type: "Multiple choice",
     options: ["", ""],
-    correct_answer: "",
+    correct_answer: 0,
     explanation: "",
 };

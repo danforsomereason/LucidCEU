@@ -56,7 +56,7 @@ export const quizDefZod = z.object({
     question_text: z.string(),
     question_type: questionTypeZod,
     options: z.array(z.string()),
-    correct_answer: z.string(),
+    correct_answer: z.number(),
     explanation: z.string(),
 });
 

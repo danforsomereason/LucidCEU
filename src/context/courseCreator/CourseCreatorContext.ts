@@ -4,6 +4,10 @@ import { ModuleDef, QuizQuestionDef } from "../../types";
 export interface CourseCreatorValue {
     modules: ModuleDef[];
     quizQuestions: QuizQuestionDef[];
+    title: string;
+    description: string;
+    updateTitle: (value: string) => void;
+    updateDescription: (value: string) => void;
     addModule: () => void;
     updateModule: <K extends keyof ModuleDef>(
         key: K,
@@ -16,8 +20,13 @@ export interface CourseCreatorValue {
         index: number,
         value: QuizQuestionDef[K]
     ) => void;
+    removeQuestion: (questionIndex: number) => void;
     addOption: (questionIndex: number) => void;
-    updateOption: (questionIndex: number, optionIndex: number, optionValue: string) => void;
+    updateOption: (
+        questionIndex: number,
+        optionIndex: number,
+        optionValue: string
+    ) => void;
     removeOption: (questionIndex: number, optionIndex: number) => void;
     clearForm: () => void;
 }

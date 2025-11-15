@@ -7,8 +7,12 @@ import {
     Stack,
     TextField,
     Typography,
+    Dialog,
+    DialogTitle,
+    DialogActions,
+    DialogContent,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { NEW_MODULE, NEW_QUIZ_QUESTION } from "../constants";
 import useCourseCreator from "../context/courseCreator/useCourseCreator";
 import { globalContext } from "../context/globalContext";
@@ -17,6 +21,7 @@ import { questionTypeZod } from "../types";
 export default function CourseCreatorConsumer() {
     const global = useContext(globalContext);
     const courseCreator = useCourseCreator();
+    const [clearDialogOpened, setClearDialogOpened] = useState(false);
 
     if (
         !global?.currentUser ||
@@ -31,6 +36,14 @@ export default function CourseCreatorConsumer() {
         );
     }
 
+    function handleOpenClearDialog() {
+        setClearDialogOpened(true);
+    }
+
+    function handleCloseClearDialog() {
+        setClearDialogOpened(false);
+    }
+
     return (
         <Container sx={{ mt: 8 }}>
             <Typography variant="h3" gutterBottom>
@@ -42,22 +55,30 @@ export default function CourseCreatorConsumer() {
                     variant="outlined"
                     label="Course Title"
                     fullWidth
+                    onChange={(event) =>
+                        courseCreator.updateTitle(event.target.value)
+                    }
+                    value={courseCreator.title}
                 />
                 <TextField
                     name="course_description"
                     variant="outlined"
                     label="Course Description"
+                    value={courseCreator.description}
+                    onChange={(event) =>
+                        courseCreator.updateDescription(event.target.value)
+                    }
                     fullWidth
                     multiline
                     rows={4}
                 />
             </Stack>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h3" gutterBottom sx={{ mt: 2 }}>
                 Course Modules
             </Typography>
             {courseCreator.modules.map((module, index) => {
                 return (
-                    <Stack spacing={2}>
+                    <Stack spacing={2} sx={{ mb: 2 }}>
                         <TextField
                             name="heading"
                             variant="outlined"
@@ -110,16 +131,10 @@ export default function CourseCreatorConsumer() {
             >
                 Add Module
             </Button>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h3" gutterBottom sx={{ m: 2 }}>
                 Course Quiz
             </Typography>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={courseCreator.addQuestion}
-            >
-                Add Quiz Question
-            </Button>
+
             {courseCreator.quizQuestions.map((question, questionIndex) => {
                 const options = question.options.map((option, optionIndex) => {
                     return (
@@ -128,6 +143,9 @@ export default function CourseCreatorConsumer() {
                                 variant="outlined"
                                 label="Option"
                                 value={option}
+                                disabled={
+                                    question.question_type === "True/False"
+                                }
                                 onChange={(event) => {
                                     courseCreator.updateOption(
                                         questionIndex,
@@ -168,6 +186,7 @@ export default function CourseCreatorConsumer() {
                                     event.target.value
                                 );
                             }}
+                            sx={{ mt: 2 }}
                         />
                         <InputLabel>Question type</InputLabel>
                         <Select
@@ -179,7 +198,7 @@ export default function CourseCreatorConsumer() {
                                 );
                                 const newOptions =
                                     newQuestionType === "True/False"
-                                        ? question.options.slice(0, 2)
+                                        ? ["True", "False"]
                                         : question.options;
 
                                 courseCreator.updateQuestion(
@@ -212,20 +231,26 @@ export default function CourseCreatorConsumer() {
                             </Button>
                         )}
                         {options}
-
-                        <TextField
-                            name="correct_answer"
+                        <InputLabel>Correct Answer (Choose)</InputLabel>
+                        <Select
                             variant="outlined"
-                            label="Correct answer"
                             value={question.correct_answer}
                             onChange={(event) => {
                                 courseCreator.updateQuestion(
                                     "correct_answer",
                                     questionIndex,
-                                    event.target.value
+                                    Number(event.target.value)
                                 );
                             }}
-                        />
+                        >
+                            {question.options.map((option, optionIndex) => {
+                                return (
+                                    <MenuItem value={optionIndex}>
+                                        {option}
+                                    </MenuItem>
+                                );
+                            })}
+                        </Select>
                         <TextField
                             name="explanation"
                             variant="outlined"
@@ -240,16 +265,59 @@ export default function CourseCreatorConsumer() {
                                 );
                             }}
                         />
+                        <Button
+                            onClick={() => {
+                                courseCreator.removeQuestion(questionIndex);
+                            }}
+                        >
+                            Remove Question
+                        </Button>
                     </Stack>
                 );
             })}
             <Button
                 variant="contained"
                 color="primary"
-                onClick={courseCreator.clearForm}
+                onClick={courseCreator.addQuestion}
+                sx={{ mb: 2 }}
+            >
+                Add Quiz Question
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleOpenClearDialog}
             >
                 Clear
             </Button>
+            <Dialog onClose={handleCloseClearDialog} open={clearDialogOpened}>
+                <DialogTitle>
+                    Are you sure you want to clear the form?
+                </DialogTitle>
+                <DialogContent>
+                    All modules and quiz questions will be cleared. This cannot
+                    be undone.
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseClearDialog}>Cancel</Button>
+                    <Button
+                        onClick={() => {
+                            courseCreator.clearForm();
+                            handleCloseClearDialog();
+                        }}
+                        sx={{
+                            color: "error.main",
+                            "&:hover": {
+                                backgroundColor: "error.main",
+                                color: "white",
+                            },
+                            transition: "all 0.2s ease-in-out",
+                        }}
+                    >
+                        Clear
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }
