@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { globalContext, GlobalValue } from "./globalContext";
-import { User } from "../../server/src/models/User";
+import { User } from "lucid-shared";
 
 interface GlobalProviderProps {
     children: ReactNode;

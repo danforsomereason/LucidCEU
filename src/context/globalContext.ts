@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from "react";
-import { User } from "../requests/user";
+import { User } from "lucid-shared";
 
 export interface GlobalValue {
     currentUser?: User;

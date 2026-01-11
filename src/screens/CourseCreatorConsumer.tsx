@@ -13,7 +13,7 @@ import {
     DialogContent,
 } from "@mui/material";
 import { useContext, useState } from "react";
-import { NEW_MODULE, NEW_QUIZ_QUESTION } from "../constants";
+// import { NEW_MODULE, NEW_QUIZ_QUESTION } from "../constants";
 import useCourseCreator from "../context/courseCreator/useCourseCreator";
 import { globalContext } from "../context/globalContext";
 import { questionTypeZod } from "../types";
@@ -283,13 +283,21 @@ export default function CourseCreatorConsumer() {
             >
                 Add Quiz Question
             </Button>
-            <Button
+            <Stack direction={"row"} spacing={2} justifyContent={"flex-end"}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleOpenClearDialog}
+                    
+                >
+                    Clear
+                </Button>
+                <Button
                 variant="contained"
-                color="primary"
-                onClick={handleOpenClearDialog}
-            >
-                Clear
-            </Button>
+                color="primary">
+                    Save
+                </Button>
+            </Stack>
             <Dialog onClose={handleCloseClearDialog} open={clearDialogOpened}>
                 <DialogTitle>
                     Are you sure you want to clear the form?

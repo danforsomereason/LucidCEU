@@ -28,7 +28,11 @@ import {
     checkUserExists,
 } from "../../requests/user";
 import { globalContext } from "../../context/globalContext";
-import { Console, log } from "console";
+import {
+    registerInputSchema,
+    RegisterInput,
+    registerOutputSchema,
+} from "lucid-shared";
 
 interface UserFormData {
     first_name: string;
@@ -41,28 +45,43 @@ interface UserFormData {
 
 const steps = ["Account Details", "Payment Information", "Review"];
 
+/**
+ * "counseling",
+    "social_work",
+    "nursing",
+    "addiction_counselor",
+    "psychology",
+    "physician",
+    "peer_support",
+ */
+
 const LICENSE_TYPES = [
-    "Mental Health Counselor (e.g., LPC, LMHC)",
-    "Social Worker",
-    "Marriage & Family Therapist",
-    "Licensed Drug and Alcohol Counselor (e.g., LADAC, LCDC)",
-    "Nurse",
-    "Psychologist",
-    "MD, DO, NP, PA",
-    "Other",
-    "Not Applicable",
+    { label: "Mental Health Counselor (e.g., LPC, LMHC)", value: "counseling" },
+    { label: "Social Worker", value: "social_work" },
+    { label: "Marriage & Family Therapist", value: "counseling" },
+    {
+        label: "Licensed Drug and Alcohol Counselor (e.g., LADAC, LCDC)",
+        value: "addiction_counselor",
+    },
+    { label: "Nurse", value: "nursing" },
+    { label: "Psychologist", value: "psychology" },
+    { label: "MD, DO, NP, PA", value: "physician" },
+    { label: "Peer Support", value: "peer_support" },
+    { label: "Not Applicable", value: "not_applicable" },
 ] as const;
 
 const IndividualCheckout: React.FC = () => {
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
-    const [formData, setFormData] = useState<UserFormData>({
-        first_name: "",
-        last_name: "",
+    const [formData, setFormData] = useState<
+        RegisterInput & { confirm_password: string }
+    >({
+        firstName: "",
+        lastName: "",
         email: "",
         password: "",
         confirm_password: "",
-        license_type: "",
+        licenseType: "counseling",
     });
 
     const [formErrors, setFormErrors] = useState<{ message: string } | null>(
@@ -83,10 +102,10 @@ const IndividualCheckout: React.FC = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        console.log(name, value);
+        const newFormData = { ...formData, [name]: value };
+        console.log(newFormData);
+        setFormData(newFormData);
     };
 
     const handleSelectChange = (e: SelectChangeEvent) => {
@@ -130,7 +149,8 @@ const IndividualCheckout: React.FC = () => {
         if (formErrors) return;
 
         try {
-            const body = JSON.stringify(formData);
+            const input = registerInputSchema.parse(formData);
+            const body = JSON.stringify(input);
             const headers = {
                 "Content-Type": "application/json",
             };
@@ -143,16 +163,19 @@ const IndividualCheckout: React.FC = () => {
                 "http://localhost:5001/api/v1/users/signup",
                 init
             );
-            const output = await response.json();
+            const data = await response.json();
+            const output = registerOutputSchema.parse(data);
             console.log(output);
             localStorage.setItem("token", output.token);
-            globalValue?.setCurrentUser(output.user);
+            globalValue?.setCurrentUser(output);
             navigate("/dashboard");
         } catch (error) {
-            console.error("Error during signup:", error);
             setVerificationMessage(
                 "An error occurred during signup. Please try again."
             );
+            if (!(error instanceof Error)) throw error;
+            console.log(error.message);
+            throw error;
         }
     };
 
@@ -239,8 +262,8 @@ const IndividualCheckout: React.FC = () => {
                                         required
                                         fullWidth
                                         label="First Name"
-                                        name="first_name"
-                                        value={formData.first_name}
+                                        name="firstName"
+                                        value={formData.firstName}
                                         onChange={handleTextFieldChange}
                                         autoComplete="given-name"
                                     />
@@ -250,8 +273,8 @@ const IndividualCheckout: React.FC = () => {
                                         required
                                         fullWidth
                                         label="Last Name"
-                                        name="last_name"
-                                        value={formData.last_name}
+                                        name="lastName"
+                                        value={formData.lastName}
                                         onChange={handleTextFieldChange}
                                         autoComplete="family-name"
                                     />
@@ -298,17 +321,20 @@ const IndividualCheckout: React.FC = () => {
                                     <FormControl fullWidth required>
                                         <InputLabel>License Type</InputLabel>
                                         <Select
-                                            name="license_type"
-                                            value={formData.license_type}
+                                            name="licenseType"
+                                            value={
+                                                formData.licenseType ??
+                                                undefined
+                                            }
                                             label="License Type"
                                             onChange={handleSelectChange}
                                         >
                                             {LICENSE_TYPES.map((license) => (
                                                 <MenuItem
-                                                    key={license}
-                                                    value={license}
+                                                    key={license.value}
+                                                    value={license.value}
                                                 >
-                                                    {license}
+                                                    {license.label}
                                                 </MenuItem>
                                             ))}
                                         </Select>
